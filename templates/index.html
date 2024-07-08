@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-4">People</h1>
+
+<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+        hx-get="{{ url_for('create') }}"
+        hx-target="#modal"
+        hx-swap="innerHTML"
+        hx-trigger="click">
+    Add Person
+</button>
+
+<div class="overflow-x-auto">
+    <div class="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
+        <table id="people-table" class="w-full bg-white shadow-md rounded mb-4">
+            <thead>
+                <tr>
+                    <th class="w-16 py-2 px-4 bg-gray-200 font-bold uppercase text-sm text-gray-600 border-b border-gray-300 text-left">ID</th>
+                    <th class="py-2 px-4 bg-gray-200 font-bold uppercase text-sm text-gray-600 border-b border-gray-300 text-left">Name</th>
+                    <th class="py-2 px-4 bg-gray-200 font-bold uppercase text-sm text-gray-600 border-b border-gray-300 text-left">Age</th>
+                    <th class="py-2 px-4 bg-gray-200 font-bold uppercase text-sm text-gray-600 border-b border-gray-300 text-right">Actions</th>
+                </tr>
+            </thead>
+        </table>
+        <div id="people-table-2" class="overflow-y-auto h-[calc(100vh-10rem)] max-h-96">
+            <table class="min-w-full leading-normal">
+                <tbody>
+                    {% include 'table_body.html' %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>  
+
+<div id="modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+    _="on htmx:afterSwap remove .hidden">
+</div>
+
+{% endblock %}

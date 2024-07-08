@@ -1,0 +1,20 @@
+<tr id="person-{{ person.id }}">
+  <td class="w-16 py-2 px-4 border-b border-gray-300 text-left">{{ person.id }}</td>
+  <td class="py-2 px-4 border-b border-gray-300 text-left">{{ person.name }}</td>
+  <td class="py-2 px-4 border-b border-gray-300 text-left bg-slate-200">{{ person.age }}</td>
+  <td class="py-2 px-4 border-b border-gray-300 text-right">
+      <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded mr-2"
+              hx-get="{{ url_for('edit', id=person.id) }}"
+              hx-target="#modal"
+              hx-swap="innerHTML"
+              hx-trigger="click">
+          Edit
+      </button>
+      <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+              hx-delete="{{ url_for('delete', id=person.id) }}"
+              hx-target="#people-table-2 tbody"
+              hx-swap="innerHTML">
+          Delete
+      </button>
+  </td>
+</tr>
