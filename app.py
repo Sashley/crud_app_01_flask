@@ -98,5 +98,9 @@ def delete(id):
     # Render the updated table body
     return render_template('table_body.html', people=people)
 
+@app.route('/get_id/<int:id>')
+def get_id(id):
+    return str(id)
+
 if __name__ == '__main__':
     app.run(debug=True, host=config.HOST, port=config.PORT)

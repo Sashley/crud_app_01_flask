@@ -1,40 +1,50 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="text-3xl font-bold mb-4">People</h1>
+<div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold mb-4">People</h1>
 
-<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-        hx-get="{{ url_for('create') }}"
-        hx-target="#modal"
-        hx-swap="innerHTML"
-        hx-trigger="click">
-    Add Person
-</button>
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+            hx-get="{{ url_for('create') }}"
+            hx-target="#modal"
+            hx-swap="innerHTML"
+            hx-trigger="click">
+        Add Person
+    </button>
 
-<div class="overflow-x-auto">
-    <div class="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
-        <table id="people-table" class="w-full bg-white shadow-md rounded mb-4">
-            <thead>
-                <tr>
-                    <th class="w-16 py-2 px-4 bg-gray-200 font-bold uppercase text-sm text-gray-600 border-b border-gray-300 text-left">ID</th>
-                    <th class="py-2 px-4 bg-gray-200 font-bold uppercase text-sm text-gray-600 border-b border-gray-300 text-left">Name</th>
-                    <th class="py-2 px-4 bg-gray-200 font-bold uppercase text-sm text-gray-600 border-b border-gray-300 text-left">Age</th>
-                    <th class="py-2 px-4 bg-gray-200 font-bold uppercase text-sm text-gray-600 border-b border-gray-300 text-right">Actions</th>
-                </tr>
-            </thead>
-        </table>
-        <div id="people-table-2" class="overflow-y-auto h-[calc(100vh-10rem)] max-h-96">
-            <table class="min-w-full leading-normal">
+    <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
+        <div class="max-h-[calc(60vh-16rem)]">
+            <table id="people-table" class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-200 sticky top-0">
+                    <tr>
+                        <th scope="col" class="py-3 px-2">ID</th>
+                        <th scope="col" class="py-3 px-2">Name</th>
+                        <th scope="col" class="py-3 px-2">Age</th>
+                        <th scope="col" class="py-3 px-6 text-right">Actions</th>
+                    </tr>
+                </thead>
                 <tbody>
                     {% include 'table_body.html' %}
                 </tbody>
             </table>
         </div>
     </div>
-</div>  
 
-<div id="modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
-    _="on htmx:afterSwap remove .hidden">
+    <div id="selected-row" class="mt-4 p-4 bg-gray-100 rounded-lg">
+        <p>Selected ID: <span id="selected-id" class="font-bold">None</span></p>
+    </div>
+
+    <div id="modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+         _="on htmx:afterSwap remove .hidden">
+    </div>
 </div>
 
 {% endblock %}
+
+<script>
+    document.addEventListener('click', function(event) {
+        if (event.target.matches('button')) {
+            event.stopPropagation();
+        }
+    });
+</script>

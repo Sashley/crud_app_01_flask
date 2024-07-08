@@ -7,7 +7,7 @@
             <div class="mt-2 px-7 py-3">
                 <form id="person-form" 
                       hx-{% if mode == 'edit' %}put{% else %}post{% endif %}="{{ url_for('edit', id=person.id) if mode == 'edit' else url_for('create') }}"
-                      hx-target="#people-table-2 tbody"
+                      hx-target="#people-table tbody"
                       hx-swap="innerHTML">
                     <input type="text" name="name" value="{{ person.name }}" placeholder="Name" required
                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
@@ -18,7 +18,7 @@
                         <button id="close-modal-btn" 
                                 class="mt-4 px-4 py-2 bg-gray-300 text-gray-700 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
                                 hx-get="{{ url_for('get_all_people') }}"
-                                hx-target="#people-table-2 tbody"
+                                hx-target="#people-table tbody"
                                 hx-swap="innerHTML"
                                 onclick="document.getElementById('modal').classList.add('hidden')">
                             Close
