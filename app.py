@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, make_response, json # type: ignore
 from flask_cors import CORS # type: ignore
 from db import get_db
 from models import Person
@@ -8,34 +8,45 @@ app = Flask(__name__)
 CORS(app)
 app.secret_key = 'your_secret_key_here'  # Set a secret key for sessions
 
-@app.after_request
-def add_header(response):
-    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '-1'
-    return response
+from db import get_db
+from models import Person
+import config
+import json
+
+app = Flask(__name__)
 
 @app.route('/')
 def index():
-    session['new_records'] = []  # Clear new records when loading the main page
+    initial_people = get_people(0, config.RECORDS_PER_PAGE)
+    return render_template('index.html', 
+        people=initial_people, 
+        records_per_page=config.RECORDS_PER_PAGE)
+
+@app.route('/load_more')
+def load_more():
+    offset = int(request.args.get('offset', 0))
+    limit = config.RECORDS_PER_PAGE
+    print(f"Load More - Offset: {offset}, Limit: {limit}")
+    people = get_people(offset, limit)
+    print(f"Fetched {len(people)} records")
+    
+    response = make_response(render_template('table_body.html', people=people))
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    
+    if len(people) < limit:
+        print("No more records")
+        response.headers['HX-Trigger'] = json.dumps({"noMoreRecords": True})
+    
+    return response
+
+def get_people(offset, limit):
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM people ORDER BY id DESC")
-    people = [Person(id=row[0], name=row[1], age=row[2]) for row in cursor.fetchall()]
-    return render_template('index.html', people=people)
-
-@app.route('/get_all_people')
-def get_all_people():
-    db = get_db()
-    cursor = db.cursor()
-    cursor.execute("SELECT * FROM people ORDER BY id DESC")
-    people = [Person(id=row[0], name=row[1], age=row[2]) for row in cursor.fetchall()]
-
-    # Clear the new records from the session
-    session['new_records'] = []
-    session.modified = True
-
-    return render_template('table_body.html', people=people)
+    print(f"Fetching {limit} records starting from {offset}")
+    cursor.execute("SELECT * FROM people ORDER BY id DESC LIMIT ? OFFSET ?", (limit, offset))
+    return [Person(id=row[0], name=row[1], age=row[2]) for row in cursor.fetchall()]
 
 @app.route('/create', methods=['GET', 'POST'])
 def create():
@@ -80,6 +91,7 @@ def edit(id):
         row = cursor.fetchone()
         if row:
             person = Person(id=row[0], name=row[1], age=row[2])
+            print("person: ", person)
             return render_template('modal.html', person=person, mode='edit')
         else:
             return "Person not found", 404

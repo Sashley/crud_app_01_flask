@@ -17,7 +17,7 @@
                     <div class="flex justify-end space-x-2 mt-4">
                         <button id="close-modal-btn" 
                                 class="mt-4 px-4 py-2 bg-gray-300 text-gray-700 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
-                                hx-get="{{ url_for('get_all_people') }}"
+                                hx-get="{{ url_for('index') }}"
                                 hx-target="#people-table tbody"
                                 hx-swap="innerHTML"
                                 onclick="document.getElementById('modal').classList.add('hidden')">

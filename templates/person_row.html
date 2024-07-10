@@ -1,9 +1,9 @@
 <tr id="person-{{ person.id }}"
     class="bg-white border-b hover:bg-gray-50 cursor-pointer"
-        hx-get="{{ url_for('get_id', id=person.id) }}"
-        hx-target="#selected-id"
-        hx-swap="innerHTML"
-        hx-trigger="click"
+    hx-get="{{ url_for('get_id', id=person.id) }}"
+    hx-target="#selected-id"
+    hx-swap="innerHTML"
+    hx-trigger="click"
 >
   <td class="w-16 py-1 px-4 border-b border-gray-300 text-left">{{ person.id }}</td>
   <td class="py-1 px-2 border-b border-gray-300 text-left">{{ person.name }}</td>

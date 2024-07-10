@@ -13,11 +13,8 @@
     </button>
 
     <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
-        <div id="table-container" class="overflow-y-auto max-h-[calc(60vh-16rem)]"
-            hx-trigger="revealed"
-            hx-get="/get_people?page=1"
-            hx-swap="innerHTML">
-            <table id="people-table" class="w-full text-sm text-left text-gray-500">
+        <div id="people-container" data-total-records="{{ people|length }}" class="overflow-y-auto max-h-[calc(80vh-16rem)]">
+            <table id="people-table" class="w-full text-sm text-left text-gray-500 ">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-200 sticky top-0">
                     <tr>
                         <th scope="col" class="py-3 px-2">ID</th>
@@ -26,10 +23,31 @@
                         <th scope="col" class="py-3 px-6 text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="people-tbody">
                     {% include 'table_body.html' %}
                 </tbody>
+
             </table>
+            
+            <div class="flex justify-end m-4>">
+                <button id="load-more" 
+                    class="hover:bg-slate-300 py-1 px-2 text-xs rounded m-4 align-right"
+                    hx-headers='{"Cache-Control": "no-cache"}'
+                    hx-get="{{ url_for('load_more') }}"
+                    hx-trigger="click"
+                    hx-target="#people-tbody"
+                    hx-swap="beforeend"
+                    hx-indicator="#load-more"
+                    data-offset="{{ people|length }}"
+                    data-records-per-page="{{ records_per_page }}"
+                    {% if people|length < records_per_page %}disabled{% endif %}>
+                    Load More ... (Offset: <span id="current-offset">{{ people|length }}</span>)
+                </button>
+
+                {% if people|length == 0 %}
+                    <p class="text-center">No more records</p>
+                {% endif %}
+            </div> 
         </div>
     </div>
 
@@ -42,12 +60,50 @@
     </div>
 </div>
 
-{% endblock %}
-
 <script>
-    document.addEventListener('click', function(event) {
-        if (event.target.matches('button')) {
-            event.stopPropagation();
+    console.log("Script loaded");
+    
+    document.body.addEventListener('htmx:configRequest', function(event) {
+        if (event.detail.elt.id === 'load-more') {
+            var offset = parseInt(event.detail.elt.getAttribute('data-offset'));
+            event.detail.parameters['offset'] = offset;
         }
     });
+    
+    document.body.addEventListener('htmx:afterOnLoad', function(event) {
+        console.log("htmx:afterOnLoad event triggered", event.detail);
+        if (event.detail.elt.id === 'load-more') {
+            console.log("Load more button clicked");
+            var loadMoreBtn = document.getElementById('load-more');
+            var currentOffsetSpan = document.getElementById('current-offset');
+            var recordsPerPage = parseInt(loadMoreBtn.getAttribute('data-records-per-page'));
+            var currentOffset = parseInt(loadMoreBtn.getAttribute('data-offset'));
+            var newOffset = currentOffset + recordsPerPage;
+    
+            console.log('Current offset:', currentOffset);
+            console.log('New offset:', newOffset);
+    
+            currentOffsetSpan.textContent = newOffset;
+            loadMoreBtn.setAttribute('data-offset', newOffset);
+            console.log("New data-offset value:", loadMoreBtn.getAttribute('data-offset'));
+    
+            if (event.detail.xhr.getResponseHeader('Hx-Trigger') === '{"noMoreRecords":true}') {
+                loadMoreBtn.setAttribute('disabled', 'disabled');
+            }
+
+            var triggerHeader = event.detail.xhr.getResponseHeader('HX-Trigger');  
+            if (triggerHeader && JSON.parse(triggerHeader).noMoreRecords) {
+                loadMoreBtn.disabled = true;
+                loadMoreBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                loadMoreBtn.textContent = 'No More Records';  // Add this line
+            }
+        }
+    });
+    
+    document.body.addEventListener('htmx:beforeRequest', function(event) {
+        console.log("htmx:beforeRequest - URL:", event.detail.requestConfig.url);
+        console.log("htmx:beforeRequest - Parameters:", event.detail.requestConfig.parameters);
+    });
+
 </script>
+{% endblock %}
