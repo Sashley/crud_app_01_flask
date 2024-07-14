@@ -1,42 +1,44 @@
-from flask import Flask, render_template, request, jsonify, session, make_response, json # type: ignore
-from flask_cors import CORS # type: ignore
+from flask import Flask, render_template, request, jsonify, make_response, json, session
+from flask_cors import CORS  # type: ignore
 from db import get_db
 from models import Person
+from dotenv import load_dotenv
 import config
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
-app.secret_key = 'your_secret_key_here'  # Set a secret key for sessions
+# app.secret_key = 'your_secret_key_here'  # Set a secret key for sessions
+app.secret_key = os.environ.get('FLASK_SECRET_KEY') or 'fallback_secret_key'
 
-from db import get_db
-from models import Person
-import config
-import json
-
-app = Flask(__name__)
 
 @app.route('/')
 def index():
     initial_people = get_people(0, config.RECORDS_PER_PAGE)
     return render_template('index.html', 
         people=initial_people, 
-        records_per_page=config.RECORDS_PER_PAGE)
+        records_per_page=config.RECORDS_PER_PAGE
+        )
 
 @app.route('/load_more')
 def load_more():
+    # print("request_args: ", request.args.get('offset', 0))
     offset = int(request.args.get('offset', 0))
     limit = config.RECORDS_PER_PAGE
-    print(f"Load More - Offset: {offset}, Limit: {limit}")
-    people = get_people(offset, limit)
-    print(f"Fetched {len(people)} records")
+    query = request.args.get('query', '')
+    
+    if query:
+        # print("query: ")
+        people = search_people(query, offset, limit)
+    else:
+        # print('not query:', 'offset:', offset, 'limit:', limit)
+        people = get_people(offset, limit)
     
     response = make_response(render_template('table_body.html', people=people))
-    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
     
     if len(people) < limit:
-        print("No more records")
         response.headers['HX-Trigger'] = json.dumps({"noMoreRecords": True})
     
     return response
@@ -44,7 +46,6 @@ def load_more():
 def get_people(offset, limit):
     db = get_db()
     cursor = db.cursor()
-    print(f"Fetching {limit} records starting from {offset}")
     cursor.execute("SELECT * FROM people ORDER BY id DESC LIMIT ? OFFSET ?", (limit, offset))
     return [Person(id=row[0], name=row[1], age=row[2]) for row in cursor.fetchall()]
 
@@ -68,6 +69,7 @@ def create():
 
         # Fetch all new records
         new_records = [Person(**record) for record in session['new_records']]
+        print("new_records: ", new_records)
         return render_template('table_body.html', people=new_records)
     else:
         return render_template('modal.html', person=Person(id=0, name='', age=0), mode='create')
@@ -83,15 +85,24 @@ def edit(id):
         db.commit()
         
         # Fetch all people to update the table
-        cursor.execute("SELECT * FROM people ORDER BY id DESC")
-        people = [Person(id=row[0], name=row[1], age=row[2]) for row in cursor.fetchall()]
-        return render_template('table_body.html', people=people)
+        # cursor.execute("SELECT * FROM people ORDER BY id DESC")
+        # people = [Person(id=row[0], name=row[1], age=row[2]) for row in cursor.fetchall()]
+        # people = get_people(0, config.RECORDS_PER_PAGE)
+
+        # Fetch the updated person
+        cursor.execute("SELECT * FROM people WHERE id = ?", (id,))
+        row = cursor.fetchone()
+        updated_person = Person(id=row[0], name=row[1], age=row[2])
+        
+        # Render only the updated row
+        return render_template('person_row.html', person=updated_person)
+        # return render_template('table_body.html', people=people)
     else:
         cursor.execute("SELECT * FROM people WHERE id = ?", (id,))
         row = cursor.fetchone()
         if row:
             person = Person(id=row[0], name=row[1], age=row[2])
-            print("person: ", person)
+            # print("person: ", person)
             return render_template('modal.html', person=person, mode='edit')
         else:
             return "Person not found", 404
@@ -110,9 +121,44 @@ def delete(id):
     # Render the updated table body
     return render_template('table_body.html', people=people)
 
+@app.route('/refresh_table')
+def refresh_table():
+    session['new_records'] = [] # Clear the session records
+    # This should be similar to your index route, but only return the table body
+    people = get_people(0, config.RECORDS_PER_PAGE)  # Or however you're fetching initial data
+    return render_template('table_body.html', people=people)
+
 @app.route('/get_id/<int:id>')
 def get_id(id):
     return str(id)
+
+@app.route('/search')
+def search():
+    query = request.args.get('query', '')
+    # print("query: ", query)
+    people = search_people(query, 0, config.RECORDS_PER_PAGE)
+    # print("people: ", people)
+    response = make_response(render_template('table_body.html', people=people)) 
+    if len(people) < config.RECORDS_PER_PAGE:
+        response.headers['HX-Trigger'] = json.dumps({"noMoreRecords": True})
+    return response
+
+def search_people(query, offset, limit):
+    db = get_db()
+    cursor = db.cursor()
+    sql = """
+    SELECT * FROM people
+    WHERE INSTR(LOWER(name), LOWER(?)) > 0 
+        OR INSTR(LOWER(age), LOWER(?)) > 0
+    ORDER BY id DESC
+    LIMIT ? OFFSET ?
+    """
+    # print("sql: ", sql)
+    # print("search_param: ", query, limit, offset)
+    cursor.execute(sql, (query, query, limit, offset))
+    results = cursor.fetchall()
+    # print("number of rows: ", len(results))
+    return [Person(id=row[0], name=row[1], age=row[2]) for row in results]
 
 if __name__ == '__main__':
     app.run(debug=True, host=config.HOST, port=config.PORT)

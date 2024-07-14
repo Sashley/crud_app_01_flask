@@ -7,8 +7,8 @@
             <div class="mt-2 px-7 py-3">
                 <form id="person-form" 
                       hx-{% if mode == 'edit' %}put{% else %}post{% endif %}="{{ url_for('edit', id=person.id) if mode == 'edit' else url_for('create') }}"
-                      hx-target="#people-table tbody"
-                      hx-swap="innerHTML">
+                      hx-target="{% if mode == 'edit' %}#person-{{ person.id }}{% else %}#people-table tbody{% endif %}"
+                      hx-swap="{% if mode == 'edit' %}outerHTML{% else %}beforeend{% endif %}">
                     <input type="text" name="name" value="{{ person.name }}" placeholder="Name" required
                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                     <input type="number" name="age" value="{{ person.age }}" placeholder="Age" required
@@ -16,11 +16,9 @@
                     
                     <div class="flex justify-end space-x-2 mt-4">
                         <button id="close-modal-btn" 
+                                type="button"
                                 class="mt-4 px-4 py-2 bg-gray-300 text-gray-700 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
-                                hx-get="{{ url_for('index') }}"
-                                hx-target="#people-table tbody"
-                                hx-swap="innerHTML"
-                                onclick="document.getElementById('modal').classList.add('hidden')">
+                                onclick="closeModal()">
                             Close
                         </button>
                         <button id="submit-btn" type="submit"
@@ -33,19 +31,21 @@
             </div>
         </div>
         <button class="absolute top-0 right-0 mt-4 mr-4 text-gray-600 hover:text-gray-900"
-                onclick="document.getElementById('modal').classList.add('hidden')">
+                onclick="closeModal()">
             ×
         </button>
     </div>
 </div>
 
 <script>
+function closeModal() {
+    document.getElementById('modal').classList.add('hidden');
+}
+
 document.getElementById('person-form').addEventListener('htmx:afterOnLoad', function(event) {
-    // Display a success message
     document.getElementById('form-result').innerHTML = '<p class="text-green-500">Person {% if mode == "edit" %}updated{% else %}added{% endif %} successfully!</p>';
     
     if ('{{ mode }}' === 'edit') {
-        // Hide the modal after a short delay
         setTimeout(function() {
             document.getElementById('modal').classList.add('hidden');
         }, 1000);
