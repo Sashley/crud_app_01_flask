@@ -8,24 +8,23 @@
         <button class="bg-slate-400 hover:bg-slate-500 text-white text-sm font-semibold py-1 px-4 rounded"
             hx-get="{{ url_for('create') }}"
             hx-target="#modal"
-            hx-swap="innerHTML"
-            hx-trigger="click">
+            hx-swap="innerHTML">
             Add Person
         </button>
 
-        <div class="flex items-center">
-            <form id="search-form" hx-get="{{ url_for('search') }}" hx-trigger="submit, keyup delay:500ms" hx-target="#people-tbody">
-                <input type="text" id="search-input" name="query"
-                    class="text-slate-400 hover:text-slate-500 text-sm border rounded py-1 px-3 mr-2 rounded" 
-                    placeholder="Search..."
-                    hx-indicator="#search-indicator">
-                <div id="search-indicator" class="htmx-indicator">Searching...</div>
-            </form>
-        </div>
+        <form id="search-form" hx-get="{{ url_for('search') }}" hx-trigger="submit, keyup delay:500ms" hx-target="#people-tbody">
+            <input type="text" id="search-input" name="query"
+                class="text-slate-400 hover:text-slate-500 text-sm border rounded py-1 px-3 mr-2" 
+                placeholder="Search..."
+                hx-indicator="#search-indicator">
+            <div id="search-indicator" class="htmx-indicator">Searching...</div>
+        </form>
     </div>
 
     <div class="overflow-x-auto relative shadow-lg sm:rounded-lg">
-        <div id="people-container" class="overflow-y-auto max-h-[calc(80vh-16rem)]">
+        <div id="people-container" 
+             class="overflow-y-auto max-h-[calc(80vh-16rem)]"
+             data-records-per-page="{{ records_per_page }}">
             <table id="people-table" class="w-full text-sm text-left text-slate-500">
                 <thead class="text-xs text-slate-700 uppercase bg-slate-100 sticky top-0">
                     <tr>
@@ -36,13 +35,15 @@
                     </tr>
                 </thead>
                 <tbody id="people-tbody">
-                    {% include 'table_body.html' %}
+                    {% for person in people %}
+                        {% include 'person_row.html' %}
+                    {% endfor %}
                 </tbody>
             </table>
             
             <div class="flex justify-end m-4">
                 <button id="load-more" 
-                    class="bg-slate-200 border-slate-800 hover:bg-slate-300 py-1 px-3 text-xs rounded mt-2 align-right"
+                    class="bg-slate-200 border-slate-800 hover:bg-slate-300 py-1 px-3 text-xs rounded mt-2"
                     hx-get="{{ url_for('load_more') }}"
                     hx-trigger="click"
                     hx-target="#people-tbody"
@@ -50,85 +51,14 @@
                     hx-indicator="#load-more"
                     data-offset="{{ records_per_page }}"
                     data-records-per-page="{{ records_per_page }}">
-                    Load More... (Offset: <span id="current-offset">{{ records_per_page }}</span>)
+                    Load More... (<span id="current-offset">{{ records_per_page }}</span>)
                 </button>
-
-                {% if people|length == 0 %}
-                    <p class="text-center">No more records</p>
-                {% endif %}
             </div> 
         </div>
-    </div>
-
-    <div id="selected-row" class="mt-4 p-4 bg-gray-100 rounded-lg">
-        <p>Selected ID: <span id="selected-id" class="font-bold">None</span></p>
     </div>
 
     <div id="modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
          _="on htmx:afterSwap remove .hidden">
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var searchForm = document.getElementById('search-form');
-    var searchInput = document.getElementById('search-input');
-    var loadMoreBtn = document.getElementById('load-more');
-    var peopleContainer = document.getElementById('people-container');
-    var currentOffsetSpan = document.getElementById('current-offset');
-
-    function updateOffsetDisplay() {
-        var currentOffset = loadMoreBtn.getAttribute('data-offset');
-        currentOffsetSpan.textContent = currentOffset;
-        console.log('current offset', currentOffsetSpan.textContent);
-    }
-
-    function getCurrentRowCount() {
-        return document.querySelectorAll('#people-tbody tr').length;
-    }
-
-    searchForm.addEventListener('htmx:configRequest', function(event) {
-        var searchQuery = searchInput.value;
-        event.detail.parameters['query'] = searchQuery;
-    });
-
-    searchForm.addEventListener('htmx:afterOnLoad', function(event) {
-        console.log('Search complete');
-        loadMoreBtn.setAttribute('data-offset', '{{ records_per_page }}');
-        updateOffsetDisplay();
-
-        var triggerHeader = event.detail.xhr.getResponseHeader('HX-Trigger');
-        if (triggerHeader && JSON.parse(triggerHeader).noMoreRecords) {
-            loadMoreBtn.style.display = 'none';
-        } else {
-            loadMoreBtn.style.display = 'block';
-        }
-
-        peopleContainer.setAttribute('data-total-records', currentRowCount.toString());
-        updateOffsetDisplay();
-    });
-
-    loadMoreBtn.addEventListener('htmx:configRequest', function(event) {
-        
-        event.detail.parameters['offset'] = this.getAttribute('data-offset');
-        event.detail.parameters['query'] = searchInput.value;
-        
-        console.log('Configuring request:', event.detail.parameters);
-    });
-
-    loadMoreBtn.addEventListener('htmx:afterOnLoad', function(event) {
-        var currentRowCount = getCurrentRowCount();
-        this.setAttribute('data-offset', currentRowCount.toString());
-        
-        peopleContainer.setAttribute('data-total-records', currentRowCount.toString());
-
-        var triggerHeader = event.detail.xhr.getResponseHeader('HX-Trigger');
-        if (triggerHeader && JSON.parse(triggerHeader).noMoreRecords) {
-            this.style.display = 'none';
-        }
-        updateOffsetDisplay();
-    });
-});
-</script>
 {% endblock %}
-
