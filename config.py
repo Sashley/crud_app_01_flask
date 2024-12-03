@@ -1,9 +1,9 @@
-import os
-from dotenv import load_dotenv
+# Server configuration
+HOST = '127.0.0.1'
+PORT = 5000
 
-load_dotenv()
+# Pagination
+RECORDS_PER_PAGE = 10
 
-HOST = os.getenv('HOST', '127.0.0.2')
-PORT = int(os.getenv('PORT', 5008))
-VISIBLE_ROWS = 5  # Number of rows visible before scrolling
-RECORDS_PER_PAGE = 6
+# Database
+DATABASE_URL = 'sqlite:///manifest.db'

@@ -1,0 +1,155 @@
+
+
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title></title>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+                <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+            </head>
+            <body>
+                
+<div class="container">
+    <h1>{{ mode|title }} Shipping Manifest</h1>
+    
+    <form method="POST">
+        <div class="mb-3">
+            <label for="bill_of_lading" class="form-label">Bill_of_lading</label>
+            <input type="text"
+                   class="form-control"
+                   id="bill_of_lading"
+                   name="bill_of_lading"
+                   value="{{ item.bill_of_lading if item else '' }}"
+                   >
+        </div>
+        <div class="mb-3">
+            <label for="shipper_id" class="form-label">Shipper_id</label>
+            <select class="form-control" id="shipper_id" name="shipper_id" >
+                <option value="">Select Shipper_id</option>
+                {% for client in clients %}
+                <option value="{{ client.id }}"
+                        {% if item and item.shipper_id == client.id %}selected{% endif %}>
+                    {{ client.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="consignee_id" class="form-label">Consignee_id</label>
+            <select class="form-control" id="consignee_id" name="consignee_id" >
+                <option value="">Select Consignee_id</option>
+                {% for client in clients %}
+                <option value="{{ client.id }}"
+                        {% if item and item.consignee_id == client.id %}selected{% endif %}>
+                    {{ client.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="vessel_id" class="form-label">Vessel_id</label>
+            <select class="form-control" id="vessel_id" name="vessel_id" >
+                <option value="">Select Vessel_id</option>
+                {% for vessel in vessels %}
+                <option value="{{ vessel.id }}"
+                        {% if item and item.vessel_id == vessel.id %}selected{% endif %}>
+                    {{ vessel.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="voyage_id" class="form-label">Voyage_id</label>
+            <select class="form-control" id="voyage_id" name="voyage_id" >
+                <option value="">Select Voyage_id</option>
+                {% for voyage in voyages %}
+                <option value="{{ voyage.id }}"
+                        {% if item and item.voyage_id == voyage.id %}selected{% endif %}>
+                    {{ voyage.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="port_of_loading_id" class="form-label">Port_of_loading_id</label>
+            <select class="form-control" id="port_of_loading_id" name="port_of_loading_id" >
+                <option value="">Select Port_of_loading_id</option>
+                {% for port in ports %}
+                <option value="{{ port.id }}"
+                        {% if item and item.port_of_loading_id == port.id %}selected{% endif %}>
+                    {{ port.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="port_of_discharge_id" class="form-label">Port_of_discharge_id</label>
+            <select class="form-control" id="port_of_discharge_id" name="port_of_discharge_id" >
+                <option value="">Select Port_of_discharge_id</option>
+                {% for port in ports %}
+                <option value="{{ port.id }}"
+                        {% if item and item.port_of_discharge_id == port.id %}selected{% endif %}>
+                    {{ port.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="place_of_delivery" class="form-label">Place_of_delivery</label>
+            <input type="text"
+                   class="form-control"
+                   id="place_of_delivery"
+                   name="place_of_delivery"
+                   value="{{ item.place_of_delivery if item else '' }}"
+                   >
+        </div>
+        <div class="mb-3">
+            <label for="place_of_receipt" class="form-label">Place_of_receipt</label>
+            <input type="text"
+                   class="form-control"
+                   id="place_of_receipt"
+                   name="place_of_receipt"
+                   value="{{ item.place_of_receipt if item else '' }}"
+                   >
+        </div>
+        <div class="mb-3">
+            <label for="clauses" class="form-label">Clauses</label>
+            <input type="text"
+                   class="form-control"
+                   id="clauses"
+                   name="clauses"
+                   value="{{ item.clauses if item else '' }}"
+                   >
+        </div>
+        <div class="mb-3">
+            <label for="date_of_receipt" class="form-label">Date_of_receipt</label>
+            <input type="datetime-local"
+                   class="form-control"
+                   id="date_of_receipt"
+                   name="date_of_receipt"
+                   value="{{ item.date_of_receipt if item else '' }}"
+                   >
+        </div>
+        <div class="mb-3">
+            <label for="manifester_id" class="form-label">Manifester_id</label>
+            <select class="form-control" id="manifester_id" name="manifester_id" >
+                <option value="">Select Manifester_id</option>
+                {% for user in users %}
+                <option value="{{ user.id }}"
+                        {% if item and item.manifester_id == user.id %}selected{% endif %}>
+                    {{ user.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{{ url_for('list_manifest') }}" 
+           class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+            </body>
+            </html>
+            
