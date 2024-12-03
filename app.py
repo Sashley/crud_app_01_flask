@@ -93,11 +93,22 @@ def edit(id):
 def delete(id):
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("DELETE FROM people WHERE id = ?", (id,))
-    db.commit()
-    cursor.execute("SELECT * FROM people ORDER BY id DESC")
-    people = [Person(id=row[0], name=row[1], age=row[2]) for row in cursor.fetchall()]
-    return render_template('table_body.html', people=people)
+    try:
+        cursor.execute("DELETE FROM people WHERE id = ?", (id,))
+        db.commit()
+        # Return fresh data for the first page
+        people = get_people(0, config.RECORDS_PER_PAGE)
+        response = make_response(render_template('table_body.html', people=people))
+        # Reset the session's new records after delete
+        if 'new_records' in session:
+            session['new_records'] = []
+            session.modified = True
+        # Add HX-Trigger to force refresh of the table
+        response.headers['HX-Trigger'] = json.dumps({"tableRefreshed": True})
+        return response
+    except Exception as e:
+        db.rollback()
+        return make_response(jsonify({"error": str(e)}), 500)
 
 @app.route('/refresh_table')
 def refresh_table():
