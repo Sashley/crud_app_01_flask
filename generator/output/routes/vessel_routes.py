@@ -2,6 +2,7 @@
 from flask import request, render_template, redirect, url_for
 from database import db_session
 from generator.output.models.vessel import Vessel
+import config
 
 def register_vessel_routes(app):
     @app.route('/vessel')

@@ -2,6 +2,7 @@
 from flask import request, render_template, redirect, url_for
 from database import db_session
 from generator.output.models.rate import Rate
+import config
 
 def register_rate_routes(app):
     @app.route('/rate')

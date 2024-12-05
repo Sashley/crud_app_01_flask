@@ -102,6 +102,7 @@ class {{ config.name }}(Base):
 from flask import request, render_template, redirect, url_for
 from database import db_session
 from generator.output.models.{{ config.table_name }} import {{ config.name }}
+import config
 
 def register_{{ config.table_name }}_routes(app):
     @app.route('/{{ config.table_name }}')

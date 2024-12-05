@@ -2,6 +2,7 @@
 from flask import request, render_template, redirect, url_for
 from database import db_session
 from generator.output.models.container import Container
+import config
 
 def register_container_routes(app):
     @app.route('/container')
