@@ -1,0 +1,77 @@
+
+
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title></title>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+                <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+            </head>
+            <body>
+                
+<div class="container">
+    <h1>{{ mode|title }} Leg</h1>
+    
+    <form method="POST">
+        <div class="mb-3">
+            <label for="voyage_id" class="form-label">Voyage_id</label>
+            <select class="form-control" id="voyage_id" name="voyage_id" >
+                <option value="">Select Voyage_id</option>
+                {% for voyage in voyages %}
+                <option value="{{ voyage.id }}"
+                        {% if item and item.voyage_id == voyage.id %}selected{% endif %}>
+                    {{ voyage.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="port_id" class="form-label">Port_id</label>
+            <select class="form-control" id="port_id" name="port_id" >
+                <option value="">Select Port_id</option>
+                {% for port in ports %}
+                <option value="{{ port.id }}"
+                        {% if item and item.port_id == port.id %}selected{% endif %}>
+                    {{ port.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="leg_number" class="form-label">Leg_number</label>
+            <input type="number"
+                   class="form-control"
+                   id="leg_number"
+                   name="leg_number"
+                   value="{{ item.leg_number if item else '' }}"
+                   >
+        </div>
+        <div class="mb-3">
+            <label for="eta" class="form-label">Eta</label>
+            <input type="datetime-local"
+                   class="form-control"
+                   id="eta"
+                   name="eta"
+                   value="{{ item.eta if item else '' }}"
+                   >
+        </div>
+        <div class="mb-3">
+            <label for="etd" class="form-label">Etd</label>
+            <input type="datetime-local"
+                   class="form-control"
+                   id="etd"
+                   name="etd"
+                   value="{{ item.etd if item else '' }}"
+                   >
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{{ url_for('list_leg') }}" 
+           class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+            </body>
+            </html>
+            

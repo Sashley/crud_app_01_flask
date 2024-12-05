@@ -1,0 +1,1011 @@
+{
+  "models": {
+    "manifest": {
+      "name": "Manifest",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "bill_of_lading",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "shipper_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "client.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "consignee_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "client.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "vessel_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "vessel.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "voyage_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "voyage.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "port_of_loading_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "port.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "port_of_discharge_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "port.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "place_of_delivery",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "place_of_receipt",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "clauses",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "date_of_receipt",
+          "field_type": "datetime",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "manifester_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "user.id",
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    },
+    "lineitem": {
+      "name": "LineItem",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "manifest_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "manifest.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "description",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "quantity",
+          "field_type": "integer",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "weight",
+          "field_type": "integer",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "volume",
+          "field_type": "integer",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "pack_type_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "packtype.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "commodity_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "commodity.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "container_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "container.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "manifester_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "user.id",
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    },
+    "commodity": {
+      "name": "Commodity",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "name",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "description",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    },
+    "packtype": {
+      "name": "PackType",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "name",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "description",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    },
+    "container": {
+      "name": "Container",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "number",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "port_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "port.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "updated",
+          "field_type": "datetime",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    },
+    "containerhistory": {
+      "name": "ContainerHistory",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "container_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "container.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "port_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "port.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "client_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "client.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "container_status_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "containerstatus.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "damage",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "updated",
+          "field_type": "datetime",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    },
+    "containerstatus": {
+      "name": "ContainerStatus",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "name",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "description",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    },
+    "shippingcompany": {
+      "name": "ShippingCompany",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "name",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    },
+    "vessel": {
+      "name": "Vessel",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "name",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "shipping_company_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "shippingcompany.id",
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    },
+    "voyage": {
+      "name": "Voyage",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "name",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "vessel_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "vessel.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "rotation_number",
+          "field_type": "integer",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    },
+    "leg": {
+      "name": "Leg",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "voyage_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "voyage.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "port_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "port.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "leg_number",
+          "field_type": "integer",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "eta",
+          "field_type": "datetime",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "etd",
+          "field_type": "datetime",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    },
+    "port": {
+      "name": "Port",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "name",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "country_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "country.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "prefix",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    },
+    "portpair": {
+      "name": "PortPair",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "pol_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "port.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "pod_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "port.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "distance",
+          "field_type": "integer",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    },
+    "country": {
+      "name": "Country",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "name",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    },
+    "client": {
+      "name": "Client",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "name",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "address",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "town",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "country_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "country.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "contact_person",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "email",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "phone",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    },
+    "user": {
+      "name": "User",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "name",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "email",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "password_hash",
+          "field_type": "string",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    },
+    "rate": {
+      "name": "Rate",
+      "fields": [
+        {
+          "name": "id",
+          "field_type": "integer",
+          "nullable": false,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "distance",
+          "field_type": "integer",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "commodity_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "commodity.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "pack_type_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "packtype.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "client_id",
+          "field_type": "foreign_key",
+          "nullable": true,
+          "foreign_key": "client.id",
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "rate",
+          "field_type": "float",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        },
+        {
+          "name": "effective",
+          "field_type": "datetime",
+          "nullable": true,
+          "foreign_key": null,
+          "relationship": null,
+          "validation": null
+        }
+      ]
+    }
+  },
+  "relationships": [
+    {
+      "name": "shipper_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "client.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "consignee_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "client.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "vessel_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "vessel.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "voyage_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "voyage.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "port_of_loading_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "port.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "port_of_discharge_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "port.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "manifester_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "user.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "manifest_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "manifest.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "pack_type_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "packtype.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "commodity_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "commodity.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "container_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "container.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "manifester_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "user.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "port_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "port.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "container_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "container.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "port_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "port.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "client_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "client.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "container_status_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "containerstatus.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "shipping_company_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "shippingcompany.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "vessel_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "vessel.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "voyage_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "voyage.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "port_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "port.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "country_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "country.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "pol_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "port.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "pod_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "port.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "country_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "country.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "commodity_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "commodity.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "pack_type_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "packtype.id",
+      "relationship": null,
+      "validation": null
+    },
+    {
+      "name": "client_id",
+      "field_type": "foreign_key",
+      "nullable": true,
+      "foreign_key": "client.id",
+      "relationship": null,
+      "validation": null
+    }
+  ]
+}
