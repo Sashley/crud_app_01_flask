@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Set
 from .model_config import ModelConfig, FieldType, RelationType
 import os
 from jinja2 import Environment, DictLoader
@@ -37,6 +37,17 @@ class ModelGenerator:
             return 'manifester'
         else:
             return related_table
+
+    def get_related_models(self, config: ModelConfig) -> Dict[str, str]:
+        """Get a dict of related model names and their class names from foreign key fields"""
+        related_models = {}
+        for field in config.fields:
+            if field.field_type.value == 'foreign_key':
+                related_table = field.foreign_key.split('.')[0]
+                # Use the actual class name from the registry
+                if related_table in self.model_registry:
+                    related_models[related_table] = self.model_registry[related_table].name
+        return related_models
 
     def generate_model_class(self, config: ModelConfig) -> str:
         """Generate SQLAlchemy model class code"""
@@ -98,10 +109,14 @@ class {{ config.name }}(Base):
 
     def generate_route_handler(self, config: ModelConfig) -> str:
         """Generate Flask route handler code"""
+        related_models = self.get_related_models(config)
         template = '''
 from flask import request, render_template, redirect, url_for
 from database import db_session
 from generator.output.models.{{ config.table_name }} import {{ config.name }}
+{%- for table_name, class_name in related_models.items() %}
+from generator.output.models.{{ table_name }} import {{ class_name }}
+{%- endfor %}
 import config
 
 def register_{{ config.table_name }}_routes(app):
@@ -142,19 +157,27 @@ def register_{{ config.table_name }}_routes(app):
             return redirect(url_for('list_{{ config.table_name }}'))
         
         # Get related data for dropdowns
+        {%- set seen_tables = [] %}
         {%- for field in config.fields %}
         {%- if field.field_type.value == 'foreign_key' %}
         {%- set related_table = field.foreign_key.split('.')[0] %}
-        {{ related_table }}s = db_session.query({{ related_table|title }}).all()
+        {%- if related_table not in seen_tables %}
+        {{ related_table }}s = db_session.query({{ related_models[related_table] }}).all()
+        {%- set _ = seen_tables.append(related_table) %}
+        {%- endif %}
         {%- endif %}
         {%- endfor %}
         
         return render_template('{{ config.table_name }}/form.html', 
             mode='create',
+            {%- set seen_tables = [] %}
             {%- for field in config.fields %}
             {%- if field.field_type.value == 'foreign_key' %}
             {%- set related_table = field.foreign_key.split('.')[0] %}
+            {%- if related_table not in seen_tables %}
             {{ related_table }}s={{ related_table }}s,
+            {%- set _ = seen_tables.append(related_table) %}
+            {%- endif %}
             {%- endif %}
             {%- endfor %}
         )
@@ -182,20 +205,28 @@ def register_{{ config.table_name }}_routes(app):
             return redirect(url_for('list_{{ config.table_name }}'))
         
         # Get related data for dropdowns
+        {%- set seen_tables = [] %}
         {%- for field in config.fields %}
         {%- if field.field_type.value == 'foreign_key' %}
         {%- set related_table = field.foreign_key.split('.')[0] %}
-        {{ related_table }}s = db_session.query({{ related_table|title }}).all()
+        {%- if related_table not in seen_tables %}
+        {{ related_table }}s = db_session.query({{ related_models[related_table] }}).all()
+        {%- set _ = seen_tables.append(related_table) %}
+        {%- endif %}
         {%- endif %}
         {%- endfor %}
         
         return render_template('{{ config.table_name }}/form.html', 
             item=item,
             mode='edit',
+            {%- set seen_tables = [] %}
             {%- for field in config.fields %}
             {%- if field.field_type.value == 'foreign_key' %}
             {%- set related_table = field.foreign_key.split('.')[0] %}
+            {%- if related_table not in seen_tables %}
             {{ related_table }}s={{ related_table }}s,
+            {%- set _ = seen_tables.append(related_table) %}
+            {%- endif %}
             {%- endif %}
             {%- endfor %}
         )
@@ -228,7 +259,10 @@ def register_{{ config.table_name }}_routes(app):
             .limit(limit)\\
             .all()
 '''
-        return self.jinja_env.from_string(template).render(config=config)
+        return self.jinja_env.from_string(template).render(
+            config=config,
+            related_models=related_models
+        )
 
     def generate_list_template(self, config: ModelConfig) -> str:
         """Generate list view template"""
@@ -348,6 +382,18 @@ def register_{{ config.table_name }}_routes(app):
 '''
         return self.jinja_env.from_string(template).render(config=config)
 
+    def generate_routes_init(self) -> str:
+        """Generate routes/__init__.py content"""
+        imports = []
+        exports = []
+        
+        for config in self.model_registry.values():
+            route_name = f"register_{config.table_name}_routes"
+            imports.append(f"from .{config.table_name}_routes import {route_name}")
+            exports.append(route_name)
+        
+        return "\n".join(imports) + "\n\n__all__ = " + str(exports)
+
     def generate_all(self):
         """Generate all necessary files for all models"""
         # Create necessary directories
@@ -376,6 +422,10 @@ def register_{{ config.table_name }}_routes(app):
             
             with open(f'{template_dir}/form.html', 'w') as f:
                 f.write(self.generate_form_template(config))
+        
+        # Generate routes/__init__.py
+        with open('generator/output/routes/__init__.py', 'w') as f:
+            f.write(self.generate_routes_init())
 
 if __name__ == '__main__':
     from .model_config import model_registry

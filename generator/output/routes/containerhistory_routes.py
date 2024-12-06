@@ -2,6 +2,10 @@
 from flask import request, render_template, redirect, url_for
 from database import db_session
 from generator.output.models.containerhistory import ContainerHistory
+from generator.output.models.container import Container
+from generator.output.models.port import Port
+from generator.output.models.client import Client
+from generator.output.models.containerstatus import ContainerStatus
 import config
 
 def register_containerhistory_routes(app):
@@ -41,7 +45,7 @@ def register_containerhistory_routes(app):
         containers = db_session.query(Container).all()
         ports = db_session.query(Port).all()
         clients = db_session.query(Client).all()
-        containerstatuss = db_session.query(Containerstatus).all()
+        containerstatuss = db_session.query(ContainerStatus).all()
         
         return render_template('containerhistory/form.html', 
             mode='create',
@@ -72,7 +76,7 @@ def register_containerhistory_routes(app):
         containers = db_session.query(Container).all()
         ports = db_session.query(Port).all()
         clients = db_session.query(Client).all()
-        containerstatuss = db_session.query(Containerstatus).all()
+        containerstatuss = db_session.query(ContainerStatus).all()
         
         return render_template('containerhistory/form.html', 
             item=item,

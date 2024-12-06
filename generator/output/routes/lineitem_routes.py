@@ -2,6 +2,11 @@
 from flask import request, render_template, redirect, url_for
 from database import db_session
 from generator.output.models.lineitem import LineItem
+from generator.output.models.manifest import Manifest
+from generator.output.models.packtype import PackType
+from generator.output.models.commodity import Commodity
+from generator.output.models.container import Container
+from generator.output.models.user import User
 import config
 
 def register_lineitem_routes(app):
@@ -45,7 +50,7 @@ def register_lineitem_routes(app):
         
         # Get related data for dropdowns
         manifests = db_session.query(Manifest).all()
-        packtypes = db_session.query(Packtype).all()
+        packtypes = db_session.query(PackType).all()
         commoditys = db_session.query(Commodity).all()
         containers = db_session.query(Container).all()
         users = db_session.query(User).all()
@@ -81,7 +86,7 @@ def register_lineitem_routes(app):
         
         # Get related data for dropdowns
         manifests = db_session.query(Manifest).all()
-        packtypes = db_session.query(Packtype).all()
+        packtypes = db_session.query(PackType).all()
         commoditys = db_session.query(Commodity).all()
         containers = db_session.query(Container).all()
         users = db_session.query(User).all()

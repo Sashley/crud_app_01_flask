@@ -2,6 +2,9 @@
 from flask import request, render_template, redirect, url_for
 from database import db_session
 from generator.output.models.rate import Rate
+from generator.output.models.commodity import Commodity
+from generator.output.models.packtype import PackType
+from generator.output.models.client import Client
 import config
 
 def register_rate_routes(app):
@@ -39,7 +42,7 @@ def register_rate_routes(app):
         
         # Get related data for dropdowns
         commoditys = db_session.query(Commodity).all()
-        packtypes = db_session.query(Packtype).all()
+        packtypes = db_session.query(PackType).all()
         clients = db_session.query(Client).all()
         
         return render_template('rate/form.html', 
@@ -68,7 +71,7 @@ def register_rate_routes(app):
         
         # Get related data for dropdowns
         commoditys = db_session.query(Commodity).all()
-        packtypes = db_session.query(Packtype).all()
+        packtypes = db_session.query(PackType).all()
         clients = db_session.query(Client).all()
         
         return render_template('rate/form.html', 

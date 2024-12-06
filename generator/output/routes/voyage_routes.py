@@ -2,6 +2,7 @@
 from flask import request, render_template, redirect, url_for
 from database import db_session
 from generator.output.models.voyage import Voyage
+from generator.output.models.vessel import Vessel
 import config
 
 def register_voyage_routes(app):

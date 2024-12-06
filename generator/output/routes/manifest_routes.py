@@ -1,8 +1,13 @@
-
 from flask import request, render_template, redirect, url_for
 from database import db_session
 from generator.output.models.manifest import Manifest
+from generator.output.models.client import Client
+from generator.output.models.vessel import Vessel
+from generator.output.models.voyage import Voyage
+from generator.output.models.port import Port
+from generator.output.models.user import User
 import config
+from datetime import datetime
 
 def register_manifest_routes(app):
     @app.route('/manifest')
@@ -28,8 +33,11 @@ def register_manifest_routes(app):
             place_of_delivery = request.form['place_of_delivery'] if request.form['place_of_delivery'] else None
             place_of_receipt = request.form['place_of_receipt'] if request.form['place_of_receipt'] else None
             clauses = request.form['clauses'] if request.form['clauses'] else None
-            date_of_receipt = request.form['date_of_receipt'] if request.form['date_of_receipt'] else None
+            date_str = request.form['date_of_receipt'] if request.form['date_of_receipt'] else None
             manifester_id = request.form['manifester_id'] if request.form['manifester_id'] else None
+            
+            # Convert date string to datetime object
+            date_of_receipt = datetime.strptime(date_str, '%Y-%m-%dT%H:%M') if date_str else None
             
             new_item = Manifest(
                 bill_of_lading=bill_of_lading,
@@ -51,20 +59,16 @@ def register_manifest_routes(app):
         
         # Get related data for dropdowns
         clients = db_session.query(Client).all()
-        clients = db_session.query(Client).all()
         vessels = db_session.query(Vessel).all()
         voyages = db_session.query(Voyage).all()
-        ports = db_session.query(Port).all()
         ports = db_session.query(Port).all()
         users = db_session.query(User).all()
         
         return render_template('manifest/form.html', 
             mode='create',
             clients=clients,
-            clients=clients,
             vessels=vessels,
             voyages=voyages,
-            ports=ports,
             ports=ports,
             users=users,
         )
@@ -86,18 +90,19 @@ def register_manifest_routes(app):
             item.place_of_delivery = request.form['place_of_delivery'] if request.form['place_of_delivery'] else None
             item.place_of_receipt = request.form['place_of_receipt'] if request.form['place_of_receipt'] else None
             item.clauses = request.form['clauses'] if request.form['clauses'] else None
-            item.date_of_receipt = request.form['date_of_receipt'] if request.form['date_of_receipt'] else None
+            date_str = request.form['date_of_receipt'] if request.form['date_of_receipt'] else None
             item.manifester_id = request.form['manifester_id'] if request.form['manifester_id'] else None
+            
+            # Convert date string to datetime object
+            item.date_of_receipt = datetime.strptime(date_str, '%Y-%m-%dT%H:%M') if date_str else None
             
             db_session.commit()
             return redirect(url_for('list_manifest'))
         
         # Get related data for dropdowns
         clients = db_session.query(Client).all()
-        clients = db_session.query(Client).all()
         vessels = db_session.query(Vessel).all()
         voyages = db_session.query(Voyage).all()
-        ports = db_session.query(Port).all()
         ports = db_session.query(Port).all()
         users = db_session.query(User).all()
         
@@ -105,10 +110,8 @@ def register_manifest_routes(app):
             item=item,
             mode='edit',
             clients=clients,
-            clients=clients,
             vessels=vessels,
             voyages=voyages,
-            ports=ports,
             ports=ports,
             users=users,
         )

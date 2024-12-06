@@ -2,6 +2,7 @@
 from flask import request, render_template, redirect, url_for
 from database import db_session
 from generator.output.models.portpair import PortPair
+from generator.output.models.port import Port
 import config
 
 def register_portpair_routes(app):
@@ -33,11 +34,9 @@ def register_portpair_routes(app):
         
         # Get related data for dropdowns
         ports = db_session.query(Port).all()
-        ports = db_session.query(Port).all()
         
         return render_template('portpair/form.html', 
             mode='create',
-            ports=ports,
             ports=ports,
         )
 
@@ -57,12 +56,10 @@ def register_portpair_routes(app):
         
         # Get related data for dropdowns
         ports = db_session.query(Port).all()
-        ports = db_session.query(Port).all()
         
         return render_template('portpair/form.html', 
             item=item,
             mode='edit',
-            ports=ports,
             ports=ports,
         )
 

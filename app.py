@@ -5,8 +5,14 @@ from dotenv import load_dotenv
 import os
 from config import HOST, PORT
 
-# Import generated route handlers
-from generator.output.routes import register_manifest_routes
+# Import all generated route handlers
+from generator.output.routes import (
+    register_manifest_routes, register_lineitem_routes, register_commodity_routes,
+    register_packtype_routes, register_container_routes, register_containerhistory_routes,
+    register_containerstatus_routes, register_shippingcompany_routes, register_vessel_routes,
+    register_voyage_routes, register_leg_routes, register_port_routes, register_portpair_routes,
+    register_country_routes, register_client_routes, register_user_routes, register_rate_routes
+)
 
 load_dotenv()
 
@@ -25,8 +31,24 @@ def shutdown_session_handler(exception=None):
 def index():
     return redirect(url_for('list_manifest'))
 
-# Register generated routes
+# Register all generated routes
 register_manifest_routes(app)
+register_lineitem_routes(app)
+register_commodity_routes(app)
+register_packtype_routes(app)
+register_container_routes(app)
+register_containerhistory_routes(app)
+register_containerstatus_routes(app)
+register_shippingcompany_routes(app)
+register_vessel_routes(app)
+register_voyage_routes(app)
+register_leg_routes(app)
+register_port_routes(app)
+register_portpair_routes(app)
+register_country_routes(app)
+register_client_routes(app)
+register_user_routes(app)
+register_rate_routes(app)
 
 if __name__ == '__main__':
     init_db()
