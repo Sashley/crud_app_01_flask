@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}New Commodity{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">New Commodity</h1>
+    
+    <form method="post" class="space-y-4">
+        <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="name" name="name" value="">
+        </div>
+        
+        <div>
+            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+            <textarea class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                      id="description" name="description" rows="3"></textarea>
+        </div>
+        
+        <div>
+            <label for="hazmat_code" class="block text-sm font-medium text-gray-700">Hazmat Code</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="hazmat_code" name="hazmat_code" value="">
+        </div>
+        
+        <div class="flex gap-4 mt-6">
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                Save
+            </button>
+            <a href="#" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">Model Relationships</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for model_name, relationships in relationship_tree.items() %}
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold text-blue-600 mb-4">{{ model_name }}</h2>
+            <ul class="space-y-2">
+                {% for rel in relationships %}
+                <li class="flex items-center text-gray-700">
+                    <span class="font-medium">{{ rel.name }}</span>
+                    <span class="relationship-arrow">-></span>
+                    <span class="text-purple-600">{{ rel.target }}</span>
+                    <span class="ml-2 text-xs text-gray-500">({{ rel.type }})</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

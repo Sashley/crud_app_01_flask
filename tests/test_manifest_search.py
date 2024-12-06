@@ -1,7 +1,12 @@
 import unittest
 from app import app
 from database import db_session, init_db
-from generator.output.models import Manifest, Client, Vessel, Voyage, Port, User
+from generator.output.models.manifest import Manifest
+from generator.output.models.client import Client
+from generator.output.models.vessel import Vessel
+from generator.output.models.voyage import Voyage
+from generator.output.models.port import Port
+from generator.output.models.user import User
 from datetime import datetime
 
 class TestManifestSearch(unittest.TestCase):
@@ -12,32 +17,34 @@ class TestManifestSearch(unittest.TestCase):
         init_db()
         
         # Create test data
-        shipper = Client(name="Test Shipper Corp")
-        consignee = Client(name="Test Consignee Ltd")
-        vessel = Vessel(name="Test Vessel")
-        voyage = Voyage(voyage_number="V123")
-        user = User(username="testuser", email="testuser@example.com")  # Added email
+        shipper1 = Client(name="Test Shipper Corp")
+        shipper2 = Client(name="Another Shipper")
+        vessel1 = Vessel(name="Test Vessel")
+        vessel2 = Vessel(name="Another Vessel")
+        voyage1 = Voyage(name="V123")
+        voyage2 = Voyage(name="V456")
+        user = User(name="testuser", email="testuser@example.com")
         
-        db_session.add_all([shipper, consignee, vessel, voyage, user])
+        db_session.add_all([shipper1, shipper2, vessel1, vessel2, voyage1, voyage2, user])
         db_session.commit()
         
-        # Create test manifests
+        # Create test manifests with different relationships
         manifests = [
             Manifest(
                 bill_of_lading="BOL123",
-                shipper_id=shipper.id,
-                consignee_id=consignee.id,
-                vessel_id=vessel.id,
-                voyage_id=voyage.id,
+                shipper_id=shipper1.id,
+                consignee_id=shipper2.id,
+                vessel_id=vessel1.id,
+                voyage_id=voyage1.id,
                 manifester_id=user.id,
                 date_of_receipt=datetime.now()
             ),
             Manifest(
                 bill_of_lading="BOL456",
-                shipper_id=shipper.id,
-                consignee_id=consignee.id,
-                vessel_id=vessel.id,
-                voyage_id=voyage.id,
+                shipper_id=shipper2.id,
+                consignee_id=shipper1.id,
+                vessel_id=vessel2.id,
+                voyage_id=voyage2.id,
                 manifester_id=user.id,
                 date_of_receipt=datetime.now()
             )
@@ -46,10 +53,12 @@ class TestManifestSearch(unittest.TestCase):
         db_session.commit()
         
         cls.test_data = {
-            'shipper': shipper,
-            'consignee': consignee,
-            'vessel': vessel,
-            'voyage': voyage,
+            'shipper1': shipper1,
+            'shipper2': shipper2,
+            'vessel1': vessel1,
+            'vessel2': vessel2,
+            'voyage1': voyage1,
+            'voyage2': voyage2,
             'user': user,
             'manifests': manifests
         }
@@ -63,31 +72,31 @@ class TestManifestSearch(unittest.TestCase):
 
     def test_search_by_shipper_name(self):
         """Test searching by shipper name"""
-        response = self.client.get('/manifest/search?query=Shipper Corp')
+        response = self.client.get('/manifest/search?query=Test Shipper Corp')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'BOL123', response.data)
-        self.assertIn(b'BOL456', response.data)  # Both manifests should appear as they share the shipper
+        self.assertNotIn(b'BOL456', response.data)
 
     def test_search_by_vessel_name(self):
         """Test searching by vessel name"""
         response = self.client.get('/manifest/search?query=Test Vessel')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'BOL123', response.data)
-        self.assertIn(b'BOL456', response.data)
+        self.assertNotIn(b'BOL456', response.data)
 
-    def test_search_by_voyage_number(self):
-        """Test searching by voyage number"""
+    def test_search_by_voyage_name(self):
+        """Test searching by voyage name"""
         response = self.client.get('/manifest/search?query=V123')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'BOL123', response.data)
-        self.assertIn(b'BOL456', response.data)
+        self.assertNotIn(b'BOL456', response.data)
 
     def test_case_insensitive_search(self):
         """Test that search is case insensitive"""
         response = self.client.get('/manifest/search?query=test vessel')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'BOL123', response.data)
-        self.assertIn(b'BOL456', response.data)
+        self.assertNotIn(b'BOL456', response.data)
 
     def test_partial_match_search(self):
         """Test that search works with partial matches"""

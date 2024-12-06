@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}New Container{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">New Container</h1>
+    
+    <form method="post" class="space-y-4">
+        <div>
+            <label for="container_number" class="block text-sm font-medium text-gray-700">Container Number</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="container_number" name="container_number" value="">
+        </div>
+        
+        <div>
+            <label for="container_type" class="block text-sm font-medium text-gray-700">Container Type</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="container_type" name="container_type" value="">
+        </div>
+        
+        <div>
+            <label for="size" class="block text-sm font-medium text-gray-700">Size</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="size" name="size" value="">
+        </div>
+        
+        <div>
+            <label for="max_weight" class="block text-sm font-medium text-gray-700">Max Weight</label>
+            <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="max_weight" name="max_weight" value="">
+        </div>
+        
+        <div>
+            <label for="tare_weight" class="block text-sm font-medium text-gray-700">Tare Weight</label>
+            <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="tare_weight" name="tare_weight" value="">
+        </div>
+        
+        <div>
+            <label for="status_id" class="block text-sm font-medium text-gray-700">Status ID</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="status_id" name="status_id" value="">
+        </div>
+        
+        <div class="flex gap-4 mt-6">
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                Save
+            </button>
+            <a href="#" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

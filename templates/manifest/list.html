@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Manifest List{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Manifest List</h1>
+    
+    <div class="flex justify-between items-center mb-6">
+        <div class="flex-1 max-w-lg">
+            <div class="flex">
+                <input type="text" 
+                       id="searchInput"
+                       class="flex-1 rounded-l-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                       placeholder="Search by Bill of Lading, Shipper, Consignee, Vessel, or Voyage..." 
+                       value="{{ search or '' }}"
+                       autofocus>
+                <button type="button" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Search
+                </button>
+            </div>
+            {% if search %}
+            <div class="mt-2">
+                <a href="{{ url_for('manifest.list_manifest') }}" class="text-sm text-blue-600 hover:text-blue-800">
+                    Clear search
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        <a href="{{ url_for('manifest.create_manifest') }}" 
+           class="ml-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+            Add New
+        </a>
+    </div>
+
+    <div id="searchResults" class="overflow-x-auto">
+        {% include "manifest/table.html" %}
+    </div>
+</div>
+
+<script>
+let searchTimeout;
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+
+function performSearch() {
+    const searchTerm = searchInput.value;
+    const url = new URL(window.location.href);
+    url.searchParams.set('search', searchTerm);
+
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newResults = doc.querySelector('#searchResults').innerHTML;
+            searchResults.innerHTML = newResults;
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+searchInput.addEventListener('input', function(e) {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(performSearch, 300); // Wait 300ms after user stops typing
+});
+</script>
+{% endblock %}

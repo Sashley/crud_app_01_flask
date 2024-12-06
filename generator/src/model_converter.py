@@ -12,6 +12,7 @@ class SQLAlchemyModelParser:
         self.models: Dict[str, dict] = {}
         self.relationships: Dict[str, List[dict]] = {}  # model -> [{field, target, type, back_populates, foreign_keys}]
         self.model_nodes = {}  # Store AST nodes for cross-referencing
+        self.model_names = {}  # Map tablename to class name
         
     def parse_models(self) -> None:
         """Parse SQLAlchemy models from the source file"""
@@ -33,6 +34,11 @@ class SQLAlchemyModelParser:
         # Second pass: parse each model
         for model_name, node in self.model_nodes.items():
             self._parse_model(model_name, node)
+            
+        # Store model names mapping
+        for model_name, model_data in self.models.items():
+            if model_data['tablename']:
+                self.model_names[model_data['tablename']] = model_name
         
         # Third pass: resolve back references
         self._resolve_back_references()
@@ -230,14 +236,23 @@ class ModelConfigGenerator:
                     if existing_field:
                         existing_field.relationship = self._get_relation_type(rel['type'])
                 
-                # Add relationship field
-                field = Field(
-                    name=rel['field'],
-                    field_type=FieldType.FOREIGN_KEY,
-                    relationship=self._get_relation_type(rel['type']),
-                    foreign_key=f"{rel['target'].lower()}.id"
-                )
-                config.fields.append(field)
+                # Get the target model's table name from the model name
+                target_model = rel['target']
+                target_table = None
+                for model, data in self.parser.models.items():
+                    if model == target_model:
+                        target_table = data['tablename']
+                        break
+                
+                if target_table:
+                    # Add relationship field
+                    field = Field(
+                        name=rel['field'],
+                        field_type=FieldType.FOREIGN_KEY,
+                        relationship=self._get_relation_type(rel['type']),
+                        foreign_key=f"{target_table}.id"  # Use the actual table name
+                    )
+                    config.fields.append(field)
         
         return configs
 

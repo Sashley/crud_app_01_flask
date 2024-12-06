@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}New Manifest{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">New Manifest</h1>
+    
+    <form method="post" class="space-y-4">
+        <div>
+            <label for="bill_of_lading" class="block text-sm font-medium text-gray-700">Bill of Lading</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="bill_of_lading" name="bill_of_lading" value="">
+        </div>
+        
+        <div>
+            <label for="shipper_id" class="block text-sm font-medium text-gray-700">Shipper ID</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="shipper_id" name="shipper_id" value="">
+        </div>
+        
+        <div>
+            <label for="consignee_id" class="block text-sm font-medium text-gray-700">Consignee ID</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="consignee_id" name="consignee_id" value="">
+        </div>
+        
+        <div>
+            <label for="vessel_id" class="block text-sm font-medium text-gray-700">Vessel ID</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="vessel_id" name="vessel_id" value="">
+        </div>
+        
+        <div>
+            <label for="voyage_id" class="block text-sm font-medium text-gray-700">Voyage ID</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="voyage_id" name="voyage_id" value="">
+        </div>
+        
+        <div>
+            <label for="port_of_loading_id" class="block text-sm font-medium text-gray-700">Port of Loading ID</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="port_of_loading_id" name="port_of_loading_id" value="">
+        </div>
+        
+        <div>
+            <label for="port_of_discharge_id" class="block text-sm font-medium text-gray-700">Port of Discharge ID</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="port_of_discharge_id" name="port_of_discharge_id" value="">
+        </div>
+        
+        <div>
+            <label for="place_of_delivery" class="block text-sm font-medium text-gray-700">Place of Delivery</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="place_of_delivery" name="place_of_delivery" value="">
+        </div>
+        
+        <div>
+            <label for="place_of_receipt" class="block text-sm font-medium text-gray-700">Place of Receipt</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="place_of_receipt" name="place_of_receipt" value="">
+        </div>
+        
+        <div>
+            <label for="clauses" class="block text-sm font-medium text-gray-700">Clauses</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="clauses" name="clauses" value="">
+        </div>
+        
+        <div>
+            <label for="date_of_receipt" class="block text-sm font-medium text-gray-700">Date of Receipt</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="date_of_receipt" name="date_of_receipt" value="">
+        </div>
+        
+        <div>
+            <label for="manifester_id" class="block text-sm font-medium text-gray-700">Manifester ID</label>
+            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="manifester_id" name="manifester_id" value="">
+        </div>
+        
+        <div class="flex gap-4 mt-6">
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                Save
+            </button>
+            <a href="#" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
