@@ -1,89 +1,138 @@
 {% extends "base.html" %}
 
-{% block title %}New Manifest{% endblock %}
+{% block title %}{% if item %}Edit{% else %}New{% endif %} Manifest{% endblock %}
 
 {% block content %}
 <div class="max-w-2xl mx-auto">
-    <h1 class="text-2xl font-bold mb-6">New Manifest</h1>
+    <h1 class="text-2xl font-bold mb-6">{% if item %}Edit{% else %}New{% endif %} Manifest</h1>
     
     <form method="post" class="space-y-4">
         <div>
             <label for="bill_of_lading" class="block text-sm font-medium text-gray-700">Bill of Lading</label>
             <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                   id="bill_of_lading" name="bill_of_lading" value="">
+                   id="bill_of_lading" name="bill_of_lading" value="{{ item.bill_of_lading if item else '' }}">
         </div>
         
         <div>
-            <label for="shipper_id" class="block text-sm font-medium text-gray-700">Shipper ID</label>
-            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                   id="shipper_id" name="shipper_id" value="">
+            <label for="shipper_id" class="block text-sm font-medium text-gray-700">Shipper</label>
+            <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                    id="shipper_id" name="shipper_id">
+                <option value="">Select a shipper</option>
+                {% for client in clients %}
+                <option value="{{ client.id }}" {% if item and item.shipper_id == client.id %}selected{% endif %}>
+                    {{ client.name }}
+                </option>
+                {% endfor %}
+            </select>
         </div>
         
         <div>
-            <label for="consignee_id" class="block text-sm font-medium text-gray-700">Consignee ID</label>
-            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                   id="consignee_id" name="consignee_id" value="">
+            <label for="consignee_id" class="block text-sm font-medium text-gray-700">Consignee</label>
+            <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                    id="consignee_id" name="consignee_id">
+                <option value="">Select a consignee</option>
+                {% for client in clients %}
+                <option value="{{ client.id }}" {% if item and item.consignee_id == client.id %}selected{% endif %}>
+                    {{ client.name }}
+                </option>
+                {% endfor %}
+            </select>
         </div>
         
         <div>
-            <label for="vessel_id" class="block text-sm font-medium text-gray-700">Vessel ID</label>
-            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                   id="vessel_id" name="vessel_id" value="">
+            <label for="vessel_id" class="block text-sm font-medium text-gray-700">Vessel</label>
+            <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                    id="vessel_id" name="vessel_id">
+                <option value="">Select a vessel</option>
+                {% for vessel in vessels %}
+                <option value="{{ vessel.id }}" {% if item and item.vessel_id == vessel.id %}selected{% endif %}>
+                    {{ vessel.name }}
+                </option>
+                {% endfor %}
+            </select>
         </div>
         
         <div>
-            <label for="voyage_id" class="block text-sm font-medium text-gray-700">Voyage ID</label>
-            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                   id="voyage_id" name="voyage_id" value="">
+            <label for="voyage_id" class="block text-sm font-medium text-gray-700">Voyage</label>
+            <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                    id="voyage_id" name="voyage_id">
+                <option value="">Select a voyage</option>
+                {% for voyage in voyages %}
+                <option value="{{ voyage.id }}" {% if item and item.voyage_id == voyage.id %}selected{% endif %}>
+                    {{ voyage.name }}
+                </option>
+                {% endfor %}
+            </select>
         </div>
         
         <div>
-            <label for="port_of_loading_id" class="block text-sm font-medium text-gray-700">Port of Loading ID</label>
-            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                   id="port_of_loading_id" name="port_of_loading_id" value="">
+            <label for="port_of_loading_id" class="block text-sm font-medium text-gray-700">Port of Loading</label>
+            <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                    id="port_of_loading_id" name="port_of_loading_id">
+                <option value="">Select a port</option>
+                {% for port in ports %}
+                <option value="{{ port.id }}" {% if item and item.port_of_loading_id == port.id %}selected{% endif %}>
+                    {{ port.name }}
+                </option>
+                {% endfor %}
+            </select>
         </div>
         
         <div>
-            <label for="port_of_discharge_id" class="block text-sm font-medium text-gray-700">Port of Discharge ID</label>
-            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                   id="port_of_discharge_id" name="port_of_discharge_id" value="">
+            <label for="port_of_discharge_id" class="block text-sm font-medium text-gray-700">Port of Discharge</label>
+            <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                    id="port_of_discharge_id" name="port_of_discharge_id">
+                <option value="">Select a port</option>
+                {% for port in ports %}
+                <option value="{{ port.id }}" {% if item and item.port_of_discharge_id == port.id %}selected{% endif %}>
+                    {{ port.name }}
+                </option>
+                {% endfor %}
+            </select>
         </div>
         
         <div>
             <label for="place_of_delivery" class="block text-sm font-medium text-gray-700">Place of Delivery</label>
             <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                   id="place_of_delivery" name="place_of_delivery" value="">
+                   id="place_of_delivery" name="place_of_delivery" value="{{ item.place_of_delivery if item else '' }}">
         </div>
         
         <div>
             <label for="place_of_receipt" class="block text-sm font-medium text-gray-700">Place of Receipt</label>
             <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                   id="place_of_receipt" name="place_of_receipt" value="">
+                   id="place_of_receipt" name="place_of_receipt" value="{{ item.place_of_receipt if item else '' }}">
         </div>
         
         <div>
             <label for="clauses" class="block text-sm font-medium text-gray-700">Clauses</label>
             <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                   id="clauses" name="clauses" value="">
+                   id="clauses" name="clauses" value="{{ item.clauses if item else '' }}">
         </div>
         
         <div>
             <label for="date_of_receipt" class="block text-sm font-medium text-gray-700">Date of Receipt</label>
-            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                   id="date_of_receipt" name="date_of_receipt" value="">
+            <input type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                   id="date_of_receipt" name="date_of_receipt" value="{{ item.date_of_receipt if item else '' }}">
         </div>
         
         <div>
-            <label for="manifester_id" class="block text-sm font-medium text-gray-700">Manifester ID</label>
-            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                   id="manifester_id" name="manifester_id" value="">
+            <label for="manifester_id" class="block text-sm font-medium text-gray-700">Manifester</label>
+            <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                    id="manifester_id" name="manifester_id">
+                <option value="">Select a manifester</option>
+                {% for user in manifesters %}
+                <option value="{{ user.id }}" {% if item and item.manifester_id == user.id %}selected{% endif %}>
+                    {{ user.name }}
+                </option>
+                {% endfor %}
+            </select>
         </div>
         
         <div class="flex gap-4 mt-6">
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                 Save
             </button>
-            <a href="#" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+            <a href="{{ url_for('manifest.list_manifest') }}" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                 Cancel
             </a>
         </div>
