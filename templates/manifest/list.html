@@ -8,18 +8,17 @@
     
     <div class="flex justify-between items-center mb-6">
         <div class="flex-1 max-w-lg">
-            <div class="flex">
-                <input type="text" 
-                       id="searchInput"
-                       class="flex-1 rounded-l-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                       placeholder="Search by Bill of Lading, Shipper, Consignee, Vessel, or Voyage..." 
-                       value="{{ search or '' }}"
-                       autofocus>
-                <button type="button" 
-                        class="px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    Search
-                </button>
-            </div>
+            <input type="text" 
+                   id="searchInput"
+                   name="search"
+                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2" 
+                   placeholder="Search..." 
+                   value="{{ search or '' }}"
+                   hx-get="{{ url_for('manifest.list_manifest') }}"
+                   hx-trigger="keyup changed delay:300ms"
+                   hx-target="#tableContainer"
+                   hx-include="[name='page_size']"
+                   autofocus>
             {% if search %}
             <div class="mt-2">
                 <a href="{{ url_for('manifest.list_manifest') }}" class="text-sm text-blue-600 hover:text-blue-800">
@@ -28,41 +27,87 @@
             </div>
             {% endif %}
         </div>
-        <a href="{{ url_for('manifest.create_manifest') }}" 
-           class="ml-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-            Add New
-        </a>
+
+        <div class="flex items-center space-x-4">
+            <a href="{{ url_for('manifest.create_manifest') }}" 
+               class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2">
+                Add New
+            </a>
+        </div>
     </div>
 
-    <div id="searchResults" class="overflow-x-auto">
-        {% include "manifest/table.html" %}
+    <div class="border rounded-lg shadow-sm bg-white">
+        <div id="tableContainer" class="overflow-auto" style="height: calc(100vh - 300px); min-height: 400px;">
+            {% include "manifest/table.html" %}
+        </div>
+
+        {% if has_more %}
+        <div class="p-4 border-t bg-white sticky bottom-0 flex justify-end items-center space-x-4">
+            <select id="pageSize" 
+                    name="page_size"
+                    class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    hx-get="{{ url_for('manifest.list_manifest') }}"
+                    hx-target="#tableContainer"
+                    hx-include="[name='search']"
+                    hx-trigger="change">
+                <option value="10" {% if page_size == 10 %}selected{% endif %}>10</option>
+                <option value="25" {% if page_size == 25 %}selected{% endif %}>25</option>
+                <option value="50" {% if page_size == 50 %}selected{% endif %}>50</option>
+                <option value="100" {% if page_size == 100 %}selected{% endif %}>100</option>
+            </select>
+            <button hx-get="{{ url_for('manifest.list_manifest', page=page+1, page_size=page_size, search=search, sort=sort) }}"
+                    hx-target="#manifestTableBody"
+                    hx-swap="beforeend"
+                    class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2">
+                Load More
+            </button>
+        </div>
+        {% else %}
+        <div class="p-4 border-t bg-white sticky bottom-0 flex justify-end items-center">
+            <select id="pageSize" 
+                    name="page_size"
+                    class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    hx-get="{{ url_for('manifest.list_manifest') }}"
+                    hx-target="#tableContainer"
+                    hx-include="[name='search']"
+                    hx-trigger="change">
+                <option value="10" {% if page_size == 10 %}selected{% endif %}>10</option>
+                <option value="25" {% if page_size == 25 %}selected{% endif %}>25</option>
+                <option value="50" {% if page_size == 50 %}selected{% endif %}>50</option>
+                <option value="100" {% if page_size == 100 %}selected{% endif %}>100</option>
+            </select>
+        </div>
+        {% endif %}
     </div>
 </div>
 
 <script>
 let searchTimeout;
 const searchInput = document.getElementById('searchInput');
-const searchResults = document.getElementById('searchResults');
+const tableContainer = document.getElementById('tableContainer');
 
 function performSearch() {
     const searchTerm = searchInput.value;
+    const pageSize = document.getElementById('pageSize').value;
     const url = new URL(window.location.href);
     url.searchParams.set('search', searchTerm);
+    url.searchParams.set('page_size', pageSize);
+    url.searchParams.set('page', '1');
 
     fetch(url)
         .then(response => response.text())
         .then(html => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
-            const newResults = doc.querySelector('#searchResults').innerHTML;
-            searchResults.innerHTML = newResults;
+            const newResults = doc.querySelector('#tableContainer').innerHTML;
+            tableContainer.innerHTML = newResults;
         })
         .catch(error => console.error('Error:', error));
 }
 
 searchInput.addEventListener('input', function(e) {
     clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(performSearch, 300); // Wait 300ms after user stops typing
+    searchTimeout = setTimeout(performSearch, 300);
 });
 </script>
 {% endblock %}

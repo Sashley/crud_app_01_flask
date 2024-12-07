@@ -1,0 +1,20 @@
+{% for manifest in items %}
+<tr class="hover:bg-gray-50">
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.bill_of_lading }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.shipper_name or 'N/A' }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.consignee_name or 'N/A' }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.vessel_name or 'N/A' }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.voyage_name or 'N/A' }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+        <div class="flex space-x-2">
+            <a href="{{ url_for('manifest.edit_manifest', id=manifest.id) }}" 
+               class="px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2">Edit</a>
+            <form method="post" action="{{ url_for('manifest.delete_manifest', id=manifest.id) }}" class="inline">
+                <button type="submit" 
+                        class="px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+                        onclick="return confirm('Are you sure you want to delete this manifest?')">Delete</button>
+            </form>
+        </div>
+    </td>
+</tr>
+{% endfor %}

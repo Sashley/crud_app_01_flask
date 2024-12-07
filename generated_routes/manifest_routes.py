@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, abort
+from flask import Blueprint, render_template, request, redirect, url_for, abort, jsonify
 from database import db_session
 from sqlalchemy import or_, cast, String, func
 from sqlalchemy.orm import aliased
@@ -52,83 +52,97 @@ def parse_date(date_str):
     logger.debug("No date string provided")
     return None
 
+def get_filtered_query():
+    """Get base query with all joins and filters applied"""
+    # Create aliases for the same table used multiple times
+    ShipperAlias = aliased(Client)
+    ConsigneeAlias = aliased(Client)
+    
+    # Start with a query that joins all related entities
+    query = db_session.query(Manifest)\
+        .outerjoin(ShipperAlias, Manifest.shipper_id == ShipperAlias.id)\
+        .outerjoin(ConsigneeAlias, Manifest.consignee_id == ConsigneeAlias.id)\
+        .outerjoin(Vessel, Manifest.vessel_id == Vessel.id)\
+        .outerjoin(Voyage, Manifest.voyage_id == Voyage.id)
+    
+    # Apply search filters
+    search = request.args.get('search', '').strip()
+    logger.debug(f"Search parameter: '{search}'")
+    
+    if search:
+        search_term = f"%{search}%"
+        logger.debug(f"Search term: '{search_term}'")
+        
+        # Convert IDs to string for comparison if the search term looks like a number
+        if search.isdigit():
+            logger.debug("Search term is numeric")
+            filters = [
+                cast(Manifest.id, String).ilike(search_term),
+                cast(Manifest.shipper_id, String).ilike(search_term),
+                cast(Manifest.consignee_id, String).ilike(search_term),
+                cast(Manifest.vessel_id, String).ilike(search_term),
+                cast(Manifest.voyage_id, String).ilike(search_term),
+                # Also search in bill of lading for numeric patterns
+                func.lower(Manifest.bill_of_lading).like(func.lower(search_term))
+            ]
+        else:
+            logger.debug("Search term is text")
+            filters = [
+                # Case-insensitive search for bill of lading
+                func.lower(Manifest.bill_of_lading).like(func.lower(search_term)),
+                func.lower(Manifest.place_of_delivery).like(func.lower(search_term)),
+                func.lower(Manifest.place_of_receipt).like(func.lower(search_term)),
+                # Search in related entities
+                func.lower(ShipperAlias.name).like(func.lower(search_term)),
+                func.lower(ConsigneeAlias.name).like(func.lower(search_term)),
+                func.lower(Vessel.name).like(func.lower(search_term)),
+                func.lower(Voyage.name).like(func.lower(search_term))
+            ]
+        
+        # Remove None filters
+        filters = [f for f in filters if f is not None]
+        
+        if filters:
+            query = query.filter(or_(*filters))
+            logger.debug(f"Applied {len(filters)} search filters")
+    
+    # Apply sorting
+    sort = request.args.get('sort', '-id')
+    logger.debug(f"Sort parameter: {sort}")
+    
+    if sort.startswith('-'):
+        sort_field = sort[1:]
+        query = query.order_by(getattr(Manifest, sort_field).desc())
+    else:
+        query = query.order_by(getattr(Manifest, sort))
+    
+    # Add columns to select
+    query = query.add_columns(
+        ShipperAlias.name.label('shipper_name'),
+        ConsigneeAlias.name.label('consignee_name'),
+        Vessel.name.label('vessel_name'),
+        Voyage.name.label('voyage_name')
+    )
+    
+    return query
+
 @bp.route('/manifest')
 def list_manifest():
     logger.debug("Entering list_manifest route")
     try:
-        # Create aliases for the same table used multiple times
-        ShipperAlias = aliased(Client)
-        ConsigneeAlias = aliased(Client)
+        page_size = int(request.args.get('page_size', '10'))
+        page = int(request.args.get('page', '1'))
+        offset = (page - 1) * page_size
         
-        # Start with a query that joins all related entities
-        query = db_session.query(Manifest)\
-            .outerjoin(ShipperAlias, Manifest.shipper_id == ShipperAlias.id)\
-            .outerjoin(ConsigneeAlias, Manifest.consignee_id == ConsigneeAlias.id)\
-            .outerjoin(Vessel, Manifest.vessel_id == Vessel.id)\
-            .outerjoin(Voyage, Manifest.voyage_id == Voyage.id)
+        query = get_filtered_query()
         
-        # Apply search filters
-        search = request.args.get('search', '').strip()
-        logger.debug(f"Search parameter: '{search}'")
+        # Get total count for pagination
+        total_count = query.count()
+        logger.debug(f"Total count: {total_count}")
         
-        if search:
-            search_term = f"%{search}%"
-            logger.debug(f"Search term: '{search_term}'")
-            
-            # Convert IDs to string for comparison if the search term looks like a number
-            if search.isdigit():
-                logger.debug("Search term is numeric")
-                filters = [
-                    cast(Manifest.id, String).ilike(search_term),
-                    cast(Manifest.shipper_id, String).ilike(search_term),
-                    cast(Manifest.consignee_id, String).ilike(search_term),
-                    cast(Manifest.vessel_id, String).ilike(search_term),
-                    cast(Manifest.voyage_id, String).ilike(search_term),
-                    # Also search in bill of lading for numeric patterns
-                    func.lower(Manifest.bill_of_lading).like(func.lower(search_term))
-                ]
-            else:
-                logger.debug("Search term is text")
-                filters = [
-                    # Case-insensitive search for bill of lading
-                    func.lower(Manifest.bill_of_lading).like(func.lower(search_term)),
-                    func.lower(Manifest.place_of_delivery).like(func.lower(search_term)),
-                    func.lower(Manifest.place_of_receipt).like(func.lower(search_term)),
-                    # Search in related entities
-                    func.lower(ShipperAlias.name).like(func.lower(search_term)),
-                    func.lower(ConsigneeAlias.name).like(func.lower(search_term)),
-                    func.lower(Vessel.name).like(func.lower(search_term)),
-                    func.lower(Voyage.name).like(func.lower(search_term))
-                ]
-            
-            # Remove None filters
-            filters = [f for f in filters if f is not None]
-            
-            if filters:
-                query = query.filter(or_(*filters))
-                logger.debug(f"Applied {len(filters)} search filters")
-        
-        # Apply sorting
-        sort = request.args.get('sort', '-id')
-        logger.debug(f"Sort parameter: {sort}")
-        
-        if sort.startswith('-'):
-            sort_field = sort[1:]
-            query = query.order_by(getattr(Manifest, sort_field).desc())
-        else:
-            query = query.order_by(getattr(Manifest, sort))
-        
-        # Add columns to select
-        query = query.add_columns(
-            ShipperAlias.name.label('shipper_name'),
-            ConsigneeAlias.name.label('consignee_name'),
-            Vessel.name.label('vessel_name'),
-            Voyage.name.label('voyage_name')
-        )
-        
-        # Execute query
-        results = query.all()
-        logger.debug(f"Found {len(results)} manifests")
+        # Apply pagination
+        results = query.offset(offset).limit(page_size).all()
+        logger.debug(f"Found {len(results)} manifests for page {page}")
         
         # Process results
         items = []
@@ -140,17 +154,48 @@ def list_manifest():
             manifest.voyage_name = result.voyage_name
             items.append(manifest)
         
-        # Log first few results for debugging
-        for item in items[:3]:
-            logger.debug(f"Sample manifest: ID={item.id}, BL={item.bill_of_lading}, "
-                        f"Shipper={item.shipper_name}, Consignee={item.consignee_name}, "
-                        f"Vessel={item.vessel_name}, Voyage={item.voyage_name}")
+        # Check if this is an HTMX request
+        is_htmx = request.headers.get('HX-Request') == 'true'
+        logger.debug(f"Is HTMX request: {is_htmx}")
         
+        # If this is an HTMX request for more items, return just the rows
+        if is_htmx and page > 1:
+            logger.debug("Returning rows template for HTMX request")
+            return render_template(
+                'manifest/rows.html',
+                items=items,
+                search=request.args.get('search', ''),
+                sort=request.args.get('sort', '-id'),
+                page=page,
+                page_size=page_size,
+                total_count=total_count,
+                has_more=total_count > (page * page_size)
+            )
+        elif is_htmx:
+            # For other HTMX requests (like search), return the full table
+            logger.debug("Returning table template for HTMX request")
+            return render_template(
+                'manifest/table.html',
+                items=items,
+                search=request.args.get('search', ''),
+                sort=request.args.get('sort', '-id'),
+                page=page,
+                page_size=page_size,
+                total_count=total_count,
+                has_more=total_count > (page * page_size)
+            )
+        
+        # Otherwise return the full page
+        logger.debug("Returning full template")
         return render_template(
             'manifest/list.html',
             items=items,
-            search=search,
-            sort=sort
+            search=request.args.get('search', ''),
+            sort=request.args.get('sort', '-id'),
+            page=page,
+            page_size=page_size,
+            total_count=total_count,
+            has_more=total_count > (page * page_size)
         )
     except Exception as e:
         logger.error(f"Error in list_manifest: {str(e)}", exc_info=True)

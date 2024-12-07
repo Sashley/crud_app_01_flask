@@ -1,60 +1,44 @@
 {% if items %}
 <table class="min-w-full divide-y divide-gray-200">
-    <thead class="bg-gray-50">
+    <thead class="bg-gray-50 sticky top-0 z-10">
         <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <a href="{{ url_for('manifest.list_manifest', sort='bill_of_lading' if sort != 'bill_of_lading' else '-bill_of_lading', search=search) }}" class="flex items-center hover:text-gray-700">
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+                <a href="{{ url_for('manifest.list_manifest', sort='bill_of_lading' if sort != 'bill_of_lading' else '-bill_of_lading', search=search, page_size=page_size) }}" class="flex items-center hover:text-gray-700">
                     Bill of Lading
                     {% if sort == 'bill_of_lading' %}↑{% elif sort == '-bill_of_lading' %}↓{% endif %}
                 </a>
             </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <a href="{{ url_for('manifest.list_manifest', sort='shipper_id' if sort != 'shipper_id' else '-shipper_id', search=search) }}" class="flex items-center hover:text-gray-700">
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+                <a href="{{ url_for('manifest.list_manifest', sort='shipper_id' if sort != 'shipper_id' else '-shipper_id', search=search, page_size=page_size) }}" class="flex items-center hover:text-gray-700">
                     Shipper
                     {% if sort == 'shipper_id' %}↑{% elif sort == '-shipper_id' %}↓{% endif %}
                 </a>
             </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <a href="{{ url_for('manifest.list_manifest', sort='consignee_id' if sort != 'consignee_id' else '-consignee_id', search=search) }}" class="flex items-center hover:text-gray-700">
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+                <a href="{{ url_for('manifest.list_manifest', sort='consignee_id' if sort != 'consignee_id' else '-consignee_id', search=search, page_size=page_size) }}" class="flex items-center hover:text-gray-700">
                     Consignee
                     {% if sort == 'consignee_id' %}↑{% elif sort == '-consignee_id' %}↓{% endif %}
                 </a>
             </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <a href="{{ url_for('manifest.list_manifest', sort='vessel_id' if sort != 'vessel_id' else '-vessel_id', search=search) }}" class="flex items-center hover:text-gray-700">
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+                <a href="{{ url_for('manifest.list_manifest', sort='vessel_id' if sort != 'vessel_id' else '-vessel_id', search=search, page_size=page_size) }}" class="flex items-center hover:text-gray-700">
                     Vessel
                     {% if sort == 'vessel_id' %}↑{% elif sort == '-vessel_id' %}↓{% endif %}
                 </a>
             </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <a href="{{ url_for('manifest.list_manifest', sort='voyage_id' if sort != 'voyage_id' else '-voyage_id', search=search) }}" class="flex items-center hover:text-gray-700">
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+                <a href="{{ url_for('manifest.list_manifest', sort='voyage_id' if sort != 'voyage_id' else '-voyage_id', search=search, page_size=page_size) }}" class="flex items-center hover:text-gray-700">
                     Voyage
                     {% if sort == 'voyage_id' %}↑{% elif sort == '-voyage_id' %}↓{% endif %}
                 </a>
             </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
                 Actions
             </th>
         </tr>
     </thead>
-    <tbody class="bg-white divide-y divide-gray-200">
-        {% for manifest in items %}
-        <tr class="hover:bg-gray-50">
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.bill_of_lading }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.shipper_name or 'N/A' }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.consignee_name or 'N/A' }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.vessel_name or 'N/A' }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.voyage_name or 'N/A' }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                <div class="flex space-x-2">
-                    <a href="{{ url_for('manifest.edit_manifest', id=manifest.id) }}" class="text-blue-600 hover:text-blue-900">Edit</a>
-                    <form method="post" action="{{ url_for('manifest.delete_manifest', id=manifest.id) }}" class="inline">
-                        <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to delete this manifest?')">Delete</button>
-                    </form>
-                </div>
-            </td>
-        </tr>
-        {% endfor %}
+    <tbody id="manifestTableBody" class="bg-white divide-y divide-gray-200">
+        {% include "manifest/rows.html" %}
     </tbody>
 </table>
 {% else %}
