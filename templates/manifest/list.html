@@ -51,15 +51,18 @@
                         hx-target="#tableContainer"
                         hx-include="[name='search']"
                         hx-trigger="change">
+                    <option value="3" {% if page_size == 3 %}selected{% endif %}>3</option>
+                    <option value="5" {% if page_size == 5 %}selected{% endif %}>5</option>
                     <option value="10" {% if page_size == 10 %}selected{% endif %}>10</option>
                     <option value="25" {% if page_size == 25 %}selected{% endif %}>25</option>
                     <option value="50" {% if page_size == 50 %}selected{% endif %}>50</option>
                     <option value="100" {% if page_size == 100 %}selected{% endif %}>100</option>
                 </select>
                 {% if has_more %}
-                <button hx-get="{{ url_for('manifest.list_manifest', page=page+1, page_size=page_size, search=search, sort=sort) }}"
+                <button hx-get="{{ url_for('manifest.list_manifest', page=page+1) }}"
                         hx-target="#manifestTableBody"
                         hx-swap="beforeend"
+                        hx-include="[name='page_size'], [name='search'], [name='sort']"
                         class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2">
                     Load More
                 </button>
@@ -80,7 +83,26 @@ document.addEventListener('DOMContentLoaded', function() {
     let searchTimeout;
     const searchInput = document.getElementById('searchInput');
     const tableContainer = document.getElementById('tableContainer');
+    const pageSizeSelect = document.getElementById('pageSize');
     let selectedRow = null;
+
+    // Function to adjust table container height based on page size
+    function adjustTableHeight() {
+        const pageSize = parseInt(pageSizeSelect.value);
+        if (pageSize < 5) {
+            tableContainer.style.height = 'calc(50vh - 150px)';
+            tableContainer.style.minHeight = '200px';
+        } else {
+            tableContainer.style.height = 'calc(100vh - 300px)';
+            tableContainer.style.minHeight = '400px';
+        }
+    }
+
+    // Initial height adjustment
+    adjustTableHeight();
+
+    // Adjust height when page size changes
+    pageSizeSelect.addEventListener('change', adjustTableHeight);
 
     // Function to handle row selection
     window.selectRow = function(row, billOfLading) {
@@ -101,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle search functionality
     function performSearch() {
         const searchTerm = searchInput.value;
-        const pageSize = document.getElementById('pageSize').value;
+        const pageSize = pageSizeSelect.value;
         const url = new URL(window.location.href);
         url.searchParams.set('search', searchTerm);
         url.searchParams.set('page_size', pageSize);
@@ -138,6 +160,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('selectedBill').textContent = billOfLading;
             }
         }
+        // Re-adjust table height after content changes
+        adjustTableHeight();
     });
 
     // Handle click events on the table container
