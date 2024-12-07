@@ -41,73 +41,113 @@
             {% include "manifest/table.html" %}
         </div>
 
-        {% if has_more %}
-        <div class="p-4 border-t bg-white sticky bottom-0 flex justify-end items-center space-x-4">
-            <select id="pageSize" 
-                    name="page_size"
-                    class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    hx-get="{{ url_for('manifest.list_manifest') }}"
-                    hx-target="#tableContainer"
-                    hx-include="[name='search']"
-                    hx-trigger="change">
-                <option value="10" {% if page_size == 10 %}selected{% endif %}>10</option>
-                <option value="25" {% if page_size == 25 %}selected{% endif %}>25</option>
-                <option value="50" {% if page_size == 50 %}selected{% endif %}>50</option>
-                <option value="100" {% if page_size == 100 %}selected{% endif %}>100</option>
-            </select>
-            <button hx-get="{{ url_for('manifest.list_manifest', page=page+1, page_size=page_size, search=search, sort=sort) }}"
-                    hx-target="#manifestTableBody"
-                    hx-swap="beforeend"
-                    class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2">
-                Load More
-            </button>
+        <div class="p-4 border-t bg-white sticky bottom-0 flex justify-between items-center">
+            <div id="selectedBill" class="text-sm text-gray-900 font-medium min-w-[200px]"></div>
+            <div class="flex items-center space-x-4">
+                <select id="pageSize" 
+                        name="page_size"
+                        class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        hx-get="{{ url_for('manifest.list_manifest') }}"
+                        hx-target="#tableContainer"
+                        hx-include="[name='search']"
+                        hx-trigger="change">
+                    <option value="10" {% if page_size == 10 %}selected{% endif %}>10</option>
+                    <option value="25" {% if page_size == 25 %}selected{% endif %}>25</option>
+                    <option value="50" {% if page_size == 50 %}selected{% endif %}>50</option>
+                    <option value="100" {% if page_size == 100 %}selected{% endif %}>100</option>
+                </select>
+                {% if has_more %}
+                <button hx-get="{{ url_for('manifest.list_manifest', page=page+1, page_size=page_size, search=search, sort=sort) }}"
+                        hx-target="#manifestTableBody"
+                        hx-swap="beforeend"
+                        class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2">
+                    Load More
+                </button>
+                {% endif %}
+            </div>
         </div>
-        {% else %}
-        <div class="p-4 border-t bg-white sticky bottom-0 flex justify-end items-center">
-            <select id="pageSize" 
-                    name="page_size"
-                    class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    hx-get="{{ url_for('manifest.list_manifest') }}"
-                    hx-target="#tableContainer"
-                    hx-include="[name='search']"
-                    hx-trigger="change">
-                <option value="10" {% if page_size == 10 %}selected{% endif %}>10</option>
-                <option value="25" {% if page_size == 25 %}selected{% endif %}>25</option>
-                <option value="50" {% if page_size == 50 %}selected{% endif %}>50</option>
-                <option value="100" {% if page_size == 100 %}selected{% endif %}>100</option>
-            </select>
-        </div>
-        {% endif %}
     </div>
 </div>
 
-<script>
-let searchTimeout;
-const searchInput = document.getElementById('searchInput');
-const tableContainer = document.getElementById('tableContainer');
-
-function performSearch() {
-    const searchTerm = searchInput.value;
-    const pageSize = document.getElementById('pageSize').value;
-    const url = new URL(window.location.href);
-    url.searchParams.set('search', searchTerm);
-    url.searchParams.set('page_size', pageSize);
-    url.searchParams.set('page', '1');
-
-    fetch(url)
-        .then(response => response.text())
-        .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const newResults = doc.querySelector('#tableContainer').innerHTML;
-            tableContainer.innerHTML = newResults;
-        })
-        .catch(error => console.error('Error:', error));
+<style>
+.selected-row {
+    background-color: #EBF5FF !important;
 }
+</style>
 
-searchInput.addEventListener('input', function(e) {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(performSearch, 300);
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let searchTimeout;
+    const searchInput = document.getElementById('searchInput');
+    const tableContainer = document.getElementById('tableContainer');
+    let selectedRow = null;
+
+    // Function to handle row selection
+    window.selectRow = function(row, billOfLading) {
+        // Remove highlight from previously selected row
+        if (selectedRow) {
+            selectedRow.classList.remove('selected-row');
+        }
+        
+        // Highlight the clicked row
+        row.classList.add('selected-row');
+        selectedRow = row;
+        
+        // Update the selected bill display
+        const selectedBill = document.getElementById('selectedBill');
+        selectedBill.textContent = billOfLading;
+    };
+
+    // Handle search functionality
+    function performSearch() {
+        const searchTerm = searchInput.value;
+        const pageSize = document.getElementById('pageSize').value;
+        const url = new URL(window.location.href);
+        url.searchParams.set('search', searchTerm);
+        url.searchParams.set('page_size', pageSize);
+        url.searchParams.set('page', '1');
+
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newResults = doc.querySelector('#tableContainer').innerHTML;
+                tableContainer.innerHTML = newResults;
+                
+                // Clear selected bill when search results change
+                document.getElementById('selectedBill').textContent = '';
+                selectedRow = null;
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    searchInput.addEventListener('input', function(e) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(performSearch, 300);
+    });
+
+    // Handle HTMX after-swap event to maintain selection
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (selectedRow) {
+            const billOfLading = selectedRow.dataset.bill;
+            const newRow = document.querySelector(`tr[data-bill="${billOfLading}"]`);
+            if (newRow) {
+                newRow.classList.add('selected-row');
+                selectedRow = newRow;
+                document.getElementById('selectedBill').textContent = billOfLading;
+            }
+        }
+    });
+
+    // Handle click events on the table container
+    tableContainer.addEventListener('click', function(e) {
+        const row = e.target.closest('tr[data-selectable="true"]');
+        if (row) {
+            const billOfLading = row.dataset.bill;
+            selectRow(row, billOfLading);
+        }
+    });
 });
 </script>
 {% endblock %}
