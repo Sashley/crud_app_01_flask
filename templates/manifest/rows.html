@@ -1,38 +1,42 @@
 {% for manifest in items %}
-<tr class="hover:bg-gray-50 cursor-pointer transition-colors duration-150 group" 
+<tr class="hover:bg-gray-50 cursor-pointer transition-colors duration-150 group h-9" 
     data-selectable="true"
     data-bill="{{ manifest.bill_of_lading }}"
     onclick="selectRow(this, '{{ manifest.bill_of_lading }}')"
     style="transition: background-color 0.15s ease-in-out;">
-    <td class="px-3 sm:px-6 py-2 sm:py-4 text-sm text-gray-900">
-        <div class="truncate max-w-[120px] sm:max-w-none">{{ manifest.bill_of_lading }}</div>
+    <td class="px-6 py-1.5 text-sm text-gray-900">
+        <div class="truncate max-w-[170px] sm:max-w-[190px]">{{ manifest.bill_of_lading }}</div>
     </td>
-    <td class="px-3 sm:px-6 py-2 sm:py-4 text-sm text-gray-900">
-        <div class="truncate max-w-[120px] sm:max-w-none">{{ manifest.shipper_name or 'N/A' }}</div>
+    <td class="px-6 py-1.5 text-sm text-gray-900">
+        <div class="truncate max-w-[150px] sm:max-w-[170px]">{{ manifest.shipper_name or 'N/A' }}</div>
     </td>
-    <td class="px-3 sm:px-6 py-2 sm:py-4 text-sm text-gray-900 hidden sm:table-cell">
-        <div class="truncate max-w-[120px] sm:max-w-none">{{ manifest.consignee_name or 'N/A' }}</div>
+    <td class="px-6 py-1.5 text-sm text-gray-900 hidden sm:table-cell">
+        <div class="truncate max-w-[150px] sm:max-w-[170px]">{{ manifest.consignee_name or 'N/A' }}</div>
     </td>
-    <td class="px-3 sm:px-6 py-2 sm:py-4 text-sm text-gray-900 hidden md:table-cell">
-        <div class="truncate max-w-[120px] sm:max-w-none">{{ manifest.vessel_name or 'N/A' }}</div>
+    <td class="px-6 py-1.5 text-sm text-gray-900 hidden md:table-cell">
+        <div class="truncate max-w-[130px] sm:max-w-[150px]">{{ manifest.vessel_name or 'N/A' }}</div>
     </td>
-    <td class="px-3 sm:px-6 py-2 sm:py-4 text-sm text-gray-900 hidden lg:table-cell">
-        <div class="truncate max-w-[120px] sm:max-w-none">{{ manifest.voyage_name or 'N/A' }}</div>
+    <td class="px-6 py-1.5 text-sm text-gray-900 hidden lg:table-cell">
+        <div class="truncate max-w-[130px] sm:max-w-[150px]">{{ manifest.voyage_name or 'N/A' }}</div>
     </td>
-    <td class="px-2 sm:px-6 py-2 sm:py-4 text-sm text-gray-900">
-        <div class="flex space-x-1 sm:space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+    <td class="px-6 py-1.5 text-sm text-gray-900">
+        <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
             <a href="{{ url_for('manifest.edit_manifest', id=manifest.id) }}" 
-               class="p-1 sm:px-2 sm:py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+               class="inline-flex items-center justify-center px-2 py-0.5 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
                onclick="event.stopPropagation()">
                <span class="hidden sm:inline">Edit</span>
-               <span class="sm:hidden">📝</span>
+               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+               </svg>
             </a>
-            <form method="post" action="{{ url_for('manifest.delete_manifest', id=manifest.id) }}" class="inline">
+            <form method="post" action="{{ url_for('manifest.delete_manifest', id=manifest.id) }}" class="inline-flex">
                 <button type="submit" 
-                        class="p-1 sm:px-2 sm:py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+                        class="inline-flex items-center justify-center px-2 py-0.5 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
                         onclick="event.stopPropagation(); return confirm('Are you sure you want to delete this manifest?')">
                     <span class="hidden sm:inline">Delete</span>
-                    <span class="sm:hidden">🗑️</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
                 </button>
             </form>
         </div>

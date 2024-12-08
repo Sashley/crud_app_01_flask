@@ -37,7 +37,7 @@
     </div>
 
     <div class="border rounded-lg shadow-sm bg-white overflow-hidden">
-        <div id="tableContainer" class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style="height: calc(100vh - 280px); min-height: 400px;">
+        <div id="tableContainer" class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
             {% include "manifest/table.html" %}
         </div>
 
@@ -114,21 +114,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to adjust table container height based on page size
     function adjustTableHeight() {
+        const headerHeight = document.querySelector('thead').offsetHeight;
+        const rowHeight = 36; // Height of each row in pixels
         const pageSize = parseInt(pageSizeSelect.value);
-        const viewportHeight = window.innerHeight;
-        const headerHeight = 180; // Approximate height of header elements
-        const footerHeight = 100; // Approximate height of footer elements
-        
-        if (viewportHeight < 640) { // Mobile viewport
-            tableContainer.style.height = `${viewportHeight - headerHeight - footerHeight}px`;
-            tableContainer.style.minHeight = '300px';
-        } else if (pageSize < 5) {
-            tableContainer.style.height = 'calc(50vh - 140px)';
-            tableContainer.style.minHeight = '300px';
-        } else {
-            tableContainer.style.height = 'calc(100vh - 280px)';
-            tableContainer.style.minHeight = '400px';
-        }
+        const maxRows = Math.min(pageSize, 25); // Cap at 25 rows maximum
+        const totalHeight = headerHeight + (maxRows * rowHeight);
+        tableContainer.style.height = `${totalHeight}px`;
     }
 
     // Initial height adjustment
@@ -138,7 +129,10 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', adjustTableHeight);
 
     // Adjust height when page size changes
-    pageSizeSelect.addEventListener('change', adjustTableHeight);
+    pageSizeSelect.addEventListener('change', function() {
+        // Wait for HTMX to update the content
+        setTimeout(adjustTableHeight, 100);
+    });
 
     // Function to handle row selection
     window.selectRow = function(row, billOfLading) {
@@ -176,6 +170,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Clear selected bill when search results change
                 document.getElementById('selectedBill').textContent = '';
                 selectedRow = null;
+                
+                // Adjust height after content update
+                adjustTableHeight();
             })
             .catch(error => console.error('Error:', error));
     }
