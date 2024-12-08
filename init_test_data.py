@@ -1,20 +1,20 @@
 from database import db_session
-from generator.output.models.client import Client
-from generator.output.models.vessel import Vessel
-from generator.output.models.voyage import Voyage
-from generator.output.models.port import Port
-from generator.output.models.user import User
-from generator.output.models.manifest import Manifest
-from generator.output.models.country import Country
-from generator.output.models.containerstatus import ContainerStatus
-from generator.output.models.packtype import PackType
-from generator.output.models.commodity import Commodity
-from generator.output.models.container import Container
-from generator.output.models.lineitem import LineItem
-from generator.output.models.containerhistory import ContainerHistory
-from generator.output.models.portpair import PortPair
-from generator.output.models.rate import Rate
-from generator.output.models.shippingcompany import ShippingCompany
+from generated_models.client import Client
+from generated_models.vessel import Vessel
+from generated_models.voyage import Voyage
+from generated_models.port import Port
+from generated_models.user import User
+from generated_models.manifest import Manifest
+from generated_models.country import Country
+from generated_models.containerstatus import ContainerStatus
+from generated_models.packtype import PackType
+from generated_models.commodity import Commodity
+from generated_models.container import Container
+from generated_models.lineitem import LineItem
+from generated_models.containerhistory import ContainerHistory
+from generated_models.portpair import PortPair
+from generated_models.rate import Rate
+from generated_models.shippingcompany import ShippingCompany
 from datetime import datetime, timedelta
 import random
 import hashlib

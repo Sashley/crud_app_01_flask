@@ -26,7 +26,7 @@ class LineItem(Base):
     manifester_id = Column(Integer, ForeignKey("user.id"), nullable=True)
 
     # Relationships
-    manifest = relationship("Manifest", foreign_keys=[manifest_id])
+    manifest = relationship("Manifest", foreign_keys=[manifest_id], back_populates="line_items")
     pack_type = relationship("PackType", foreign_keys=[pack_type_id])
     commodity = relationship("Commodity", foreign_keys=[commodity_id])
     container = relationship("Container", foreign_keys=[container_id])

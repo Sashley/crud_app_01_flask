@@ -4,11 +4,13 @@ document.addEventListener('DOMContentLoaded', function () {
   var loadMoreBtn = document.getElementById('load-more');
   var peopleContainer = document.getElementById('people-container');
   var currentOffsetSpan = document.getElementById('current-offset');
-  var recordsPerPage = parseInt(peopleContainer.dataset.recordsPerPage);
+  var recordsPerPage = peopleContainer ? parseInt(peopleContainer.dataset.recordsPerPage) : 10;
 
   function updateOffsetDisplay() {
-    var currentOffset = loadMoreBtn.getAttribute('data-offset');
-    currentOffsetSpan.textContent = currentOffset;
+    if (loadMoreBtn && currentOffsetSpan) {
+      var currentOffset = loadMoreBtn.getAttribute('data-offset');
+      currentOffsetSpan.textContent = currentOffset;
+    }
   }
 
   function getCurrentRowCount() {
@@ -20,18 +22,20 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   searchForm?.addEventListener('htmx:afterOnLoad', function (event) {
-    loadMoreBtn.setAttribute('data-offset', recordsPerPage);
-    updateOffsetDisplay();
+    if (loadMoreBtn) {
+      loadMoreBtn.setAttribute('data-offset', recordsPerPage);
+      updateOffsetDisplay();
 
-    var triggerHeader = event.detail.xhr.getResponseHeader('HX-Trigger');
-    if (triggerHeader && JSON.parse(triggerHeader).noMoreRecords) {
-      loadMoreBtn.style.display = 'none';
-    } else {
-      loadMoreBtn.style.display = 'block';
+      var triggerHeader = event.detail.xhr.getResponseHeader('HX-Trigger');
+      if (triggerHeader && JSON.parse(triggerHeader).noMoreRecords) {
+        loadMoreBtn.style.display = 'none';
+      } else {
+        loadMoreBtn.style.display = 'block';
+      }
+
+      peopleContainer.setAttribute('data-total-records', getCurrentRowCount().toString());
+      updateOffsetDisplay();
     }
-
-    peopleContainer.setAttribute('data-total-records', getCurrentRowCount().toString());
-    updateOffsetDisplay();
   });
 
   loadMoreBtn?.addEventListener('htmx:configRequest', function (event) {
@@ -68,6 +72,101 @@ document.addEventListener('htmx:afterOnLoad', function (event) {
     if (formResult) {
       formResult.innerHTML = '<p class="text-green-500">Person updated successfully!</p>';
       setTimeout(closeModal, 1000);
+    }
+  }
+});
+
+// Store the currently selected row identifiers and descriptions
+let selectedManifestIdentifier = null;
+let selectedLineItemIdentifier = null;
+let selectedLineItemDescription = null;
+
+// Handle manifest row selection
+function selectRow(row, identifier) {
+  // Store the selected manifest identifier
+  selectedManifestIdentifier = identifier;
+
+  // Remove selected class from all manifest rows
+  document.querySelectorAll('#manifest-table tr.selected-row').forEach(tr => {
+    tr.classList.remove('selected-row', 'bg-blue-50');
+  });
+
+  // Add selected class to clicked manifest row
+  row.classList.add('selected-row', 'bg-blue-50');
+
+  // Clear line item selection when a new manifest is selected
+  selectedLineItemIdentifier = null;
+  selectedLineItemDescription = null;
+  document.querySelectorAll('#lineitem-container tr.selected-row').forEach(tr => {
+    tr.classList.remove('selected-row', 'bg-blue-50');
+  });
+  updateLineItemSelection();
+}
+
+// Handle line item row selection
+function selectLineItemRow(row, identifier) {
+  // Store the selected line item identifier
+  selectedLineItemIdentifier = identifier;
+
+  // Store the line item description from the first cell
+  const cells = row.querySelectorAll('td div');
+  let description = '';
+  cells.forEach((cell, index) => {
+    if (index < cells.length - 1) { // Skip the last cell (actions cell)
+      const text = cell.textContent.trim();
+      if (text && text !== 'N/A') {
+        description += (description ? ' - ' : '') + text;
+      }
+    }
+  });
+  selectedLineItemDescription = description;
+
+  // Remove selected class from all line item rows
+  document.querySelectorAll('#lineitem-container tr.selected-row').forEach(tr => {
+    tr.classList.remove('selected-row', 'bg-blue-50');
+  });
+
+  // Add selected class to clicked line item row
+  row.classList.add('selected-row', 'bg-blue-50');
+
+  // Update the selection display
+  updateLineItemSelection();
+}
+
+// Update the line item selection display
+function updateLineItemSelection() {
+  const selectionDisplay = document.querySelector('#selected-lineitem-display');
+  if (selectionDisplay) {
+    selectionDisplay.textContent = selectedLineItemDescription || '';
+  }
+}
+
+// Add HTMX after-swap event listener to maintain row selections
+document.addEventListener('htmx:afterSwap', function (evt) {
+  // If this is a line item container swap, scroll it into view
+  if (evt.target.id === 'lineitem-container' && evt.target.innerHTML.trim() !== '') {
+    evt.target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Clear line item selection when new line items are loaded
+    selectedLineItemIdentifier = null;
+    selectedLineItemDescription = null;
+    updateLineItemSelection();
+  }
+
+  // Restore manifest row selection if we have a selected identifier
+  if (selectedManifestIdentifier) {
+    const manifestRow = document.querySelector(`#manifest-table tr[data-identifier="${selectedManifestIdentifier}"]`);
+    if (manifestRow) {
+      manifestRow.classList.add('selected-row', 'bg-blue-50');
+    }
+  }
+
+  // Restore line item row selection if we have a selected identifier
+  if (selectedLineItemIdentifier) {
+    const lineItemRow = document.querySelector(`#lineitem-container tr[data-identifier="${selectedLineItemIdentifier}"]`);
+    if (lineItemRow) {
+      lineItemRow.classList.add('selected-row', 'bg-blue-50');
+      updateLineItemSelection();
     }
   }
 });

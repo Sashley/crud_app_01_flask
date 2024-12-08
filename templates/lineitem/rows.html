@@ -2,40 +2,15 @@
 <tr class="hover:bg-gray-50 cursor-pointer transition-colors duration-150 group h-9" 
     data-selectable="true"
     data-identifier="{{ item[identifier_field] }}"
-    hx-get="{{ url_for('lineitem.list_lineitem', manifest_id=item.id) }}"
-    hx-target="#lineitem-container"
-    hx-trigger="click"
-    hx-indicator="#loading-indicator"
-    hx-swap="innerHTML"
-    onclick="selectRow(this, '{{ item[identifier_field] }}')"
+    onclick="selectLineItemRow(this, '{{ item[identifier_field] }}')"
     style="transition: background-color 0.15s ease-in-out;">
-    <td class="px-6 py-1.5 text-sm text-gray-900 {{ columns[0].width_class }}">
-        <div class="truncate">
-            {{ item.bill_of_lading|default('N/A') }}
-            <!-- Debug info -->
-            <span class="hidden">Manifest ID: {{ item.id }}</span>
+    {% for column in columns %}
+    <td class="px-6 py-1.5 text-sm text-gray-900 {{ column.responsive_class|default('') }}">
+        <div class="truncate {{ column.width_class|default('max-w-[150px] sm:max-w-[170px]') }}">
+            {{ item[column.key]|default('N/A') }}
         </div>
     </td>
-    <td class="px-6 py-1.5 text-sm text-gray-900 {{ columns[1].width_class }}">
-        <div class="truncate">
-            {{ item.shipper_name|default('N/A') }}
-        </div>
-    </td>
-    <td class="px-6 py-1.5 text-sm text-gray-900 {{ columns[2].width_class }} {{ columns[2].responsive_class|default('') }}">
-        <div class="truncate">
-            {{ item.consignee_name|default('N/A') }}
-        </div>
-    </td>
-    <td class="px-6 py-1.5 text-sm text-gray-900 {{ columns[3].width_class }} {{ columns[3].responsive_class|default('') }}">
-        <div class="truncate">
-            {{ item.vessel_name|default('N/A') }}
-        </div>
-    </td>
-    <td class="px-6 py-1.5 text-sm text-gray-900 {{ columns[4].width_class }} {{ columns[4].responsive_class|default('') }}">
-        <div class="truncate">
-            {{ item.voyage_name|default('N/A') }}
-        </div>
-    </td>
+    {% endfor %}
     <td class="px-6 py-1.5 text-sm text-gray-900">
         <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
             <a href="{{ url_for(routes.edit, id=item.id) }}" 
@@ -74,19 +49,9 @@
 </tr>
 {% endif %}
 
-<!-- Loading indicator -->
-<div id="loading-indicator" class="htmx-indicator fixed top-0 left-0 w-full h-1 bg-blue-600" style="display: none;">
-    <div class="w-full h-full animate-pulse bg-blue-400"></div>
-</div>
-
-<!-- Debug info -->
+<!-- Selected Line Item Display -->
 <tr class="bg-gray-50">
-    <td colspan="{{ columns|length + 1 }}" class="px-6 py-2 text-xs text-gray-500">
-        <div>Total Items: {{ items|length }}</div>
-        {% if items %}
-        <div>First Item Type: {{ items[0].__class__.__name__ }}</div>
-        <div>First Item ID: {{ items[0].id }}</div>
-        <div>First Item BOL: {{ items[0].bill_of_lading }}</div>
-        {% endif %}
+    <td colspan="{{ columns|length + 1 }}" class="px-6 py-2 text-xs text-gray-500 text-left">
+        <div id="selected-lineitem-display"></div>
     </td>
 </tr>

@@ -1,0 +1,15 @@
+{% extends "generic/table_base.html" %}
+
+{% block table_id %}lineitem-table{% endblock %}
+
+{% block table_rows %}
+    {% if items %}
+        {% include 'lineitem/rows.html' %}
+    {% else %}
+        <tr>
+            <td colspan="{{ columns|length + 1 }}" class="px-6 py-4 text-center text-gray-500">
+                No line items found.
+            </td>
+        </tr>
+    {% endif %}
+{% endblock %}

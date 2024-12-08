@@ -15,7 +15,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-bp = Blueprint('manifest', __name__)
+bp = Blueprint('manifest', __name__, url_prefix='/manifest')
 
 def register_manifest_routes(app):
     app.register_blueprint(bp)
@@ -126,7 +126,7 @@ def get_filtered_query():
     
     return query
 
-@bp.route('/manifest')
+@bp.route('/')
 def list_manifest():
     logger.debug("Entering list_manifest route")
     try:
@@ -153,6 +153,65 @@ def list_manifest():
             manifest.vessel_name = result.vessel_name
             manifest.voyage_name = result.voyage_name
             items.append(manifest)
+
+        # Common template variables
+        template_vars = {
+            'items': items,
+            'search': request.args.get('search', ''),
+            'sort': request.args.get('sort', '-id'),
+            'page': page,
+            'page_size': page_size,
+            'total_count': total_count,
+            'has_more': total_count > (page * page_size),
+            'entity_name': 'Manifest',
+            'routes': {
+                'list': 'manifest.list_manifest',
+                'create': 'manifest.create_manifest',
+                'edit': 'manifest.edit_manifest',
+                'delete': 'manifest.delete_manifest'
+            },
+            'columns': [
+                {
+                    'key': 'bill_of_lading',
+                    'label': 'Bill of Lading',
+                    'sortable': True,
+                    'class': 'w-[180px] sm:w-[200px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50',
+                    'width_class': 'max-w-[170px] sm:max-w-[190px]'
+                },
+                {
+                    'key': 'shipper_name',
+                    'label': 'Shipper',
+                    'sortable': True,
+                    'class': 'w-[160px] sm:w-[180px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50',
+                    'width_class': 'max-w-[150px] sm:max-w-[170px]'
+                },
+                {
+                    'key': 'consignee_name',
+                    'label': 'Consignee',
+                    'sortable': True,
+                    'class': 'w-[160px] sm:w-[180px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50',
+                    'responsive_class': 'hidden sm:table-cell',
+                    'width_class': 'max-w-[150px] sm:max-w-[170px]'
+                },
+                {
+                    'key': 'vessel_name',
+                    'label': 'Vessel',
+                    'sortable': True,
+                    'class': 'w-[140px] sm:w-[160px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50',
+                    'responsive_class': 'hidden md:table-cell',
+                    'width_class': 'max-w-[130px] sm:max-w-[150px]'
+                },
+                {
+                    'key': 'voyage_name',
+                    'label': 'Voyage',
+                    'sortable': True,
+                    'class': 'w-[140px] sm:w-[160px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50',
+                    'responsive_class': 'hidden lg:table-cell',
+                    'width_class': 'max-w-[130px] sm:max-w-[150px]'
+                }
+            ],
+            'identifier_field': 'bill_of_lading'
+        }
         
         # Check if this is an HTMX request
         is_htmx = request.headers.get('HX-Request') == 'true'
@@ -161,48 +220,21 @@ def list_manifest():
         # If this is an HTMX request for more items, return just the rows
         if is_htmx and page > 1:
             logger.debug("Returning rows template for HTMX request")
-            return render_template(
-                'manifest/rows.html',
-                items=items,
-                search=request.args.get('search', ''),
-                sort=request.args.get('sort', '-id'),
-                page=page,
-                page_size=page_size,
-                total_count=total_count,
-                has_more=total_count > (page * page_size)
-            )
+            return render_template('manifest/rows.html', **template_vars)
         elif is_htmx:
             # For other HTMX requests (like search), return the full table
             logger.debug("Returning table template for HTMX request")
-            return render_template(
-                'manifest/table.html',
-                items=items,
-                search=request.args.get('search', ''),
-                sort=request.args.get('sort', '-id'),
-                page=page,
-                page_size=page_size,
-                total_count=total_count,
-                has_more=total_count > (page * page_size)
-            )
+            return render_template('manifest/table.html', **template_vars)
         
         # Otherwise return the full page
         logger.debug("Returning full template")
-        return render_template(
-            'manifest/list.html',
-            items=items,
-            search=request.args.get('search', ''),
-            sort=request.args.get('sort', '-id'),
-            page=page,
-            page_size=page_size,
-            total_count=total_count,
-            has_more=total_count > (page * page_size)
-        )
+        return render_template('manifest/list.html', **template_vars)
     except Exception as e:
         logger.error(f"Error in list_manifest: {str(e)}", exc_info=True)
         db_session.rollback()
         raise
 
-@bp.route('/manifest/new', methods=['GET', 'POST'])
+@bp.route('/new', methods=['GET', 'POST'])
 def create_manifest():
     if request.method == 'POST':
         try:
@@ -236,7 +268,7 @@ def create_manifest():
     choices = get_form_choices()
     return render_template('manifest/form.html', **choices)
 
-@bp.route('/manifest/<int:id>/edit', methods=['GET', 'POST'])
+@bp.route('/<int:id>/edit', methods=['GET', 'POST'])
 def edit_manifest(id):
     try:
         item = db_session.query(Manifest).get(id)
@@ -276,7 +308,7 @@ def edit_manifest(id):
         db_session.rollback()
         raise
 
-@bp.route('/manifest/<int:id>/delete', methods=['POST'])
+@bp.route('/<int:id>/delete', methods=['POST'])
 def delete_manifest(id):
     try:
         item = db_session.query(Manifest).get(id)

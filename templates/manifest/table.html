@@ -1,57 +1,7 @@
-{% if items %}
-<div class="relative {% if items|length == 3 %}h-32{% elif items|length == 5 %}h-48{% elif items|length == 10 %}h-80{% else %}h-auto{% endif %}">
-    <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none hidden sm:block" aria-hidden="true"></div>
-    <table class="min-w-full divide-y divide-gray-200 table-fixed sm:table-auto">
-        <thead class="bg-gray-50 sticky top-0 z-10">
-            <tr>
-                <th class="w-[180px] sm:w-[200px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
-                    <a href="{{ url_for('manifest.list_manifest', sort='bill_of_lading' if sort != 'bill_of_lading' else '-bill_of_lading', search=search, page_size=page_size) }}" class="flex items-center hover:text-gray-700">
-                        <span class="truncate">Bill of Lading</span>
-                        {% if sort == 'bill_of_lading' %}↑{% elif sort == '-bill_of_lading' %}↓{% endif %}
-                    </a>
-                </th>
-                <th class="w-[160px] sm:w-[180px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
-                    <a href="{{ url_for('manifest.list_manifest', sort='shipper_id' if sort != 'shipper_id' else '-shipper_id', search=search, page_size=page_size) }}" class="flex items-center hover:text-gray-700">
-                        <span class="truncate">Shipper</span>
-                        {% if sort == 'shipper_id' %}↑{% elif sort == '-shipper_id' %}↓{% endif %}
-                    </a>
-                </th>
-                <th class="w-[160px] sm:w-[180px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 hidden sm:table-cell">
-                    <a href="{{ url_for('manifest.list_manifest', sort='consignee_id' if sort != 'consignee_id' else '-consignee_id', search=search, page_size=page_size) }}" class="flex items-center hover:text-gray-700">
-                        <span class="truncate">Consignee</span>
-                        {% if sort == 'consignee_id' %}↑{% elif sort == '-consignee_id' %}↓{% endif %}
-                    </a>
-                </th>
-                <th class="w-[140px] sm:w-[160px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 hidden md:table-cell">
-                    <a href="{{ url_for('manifest.list_manifest', sort='vessel_id' if sort != 'vessel_id' else '-vessel_id', search=search, page_size=page_size) }}" class="flex items-center hover:text-gray-700">
-                        <span class="truncate">Vessel</span>
-                        {% if sort == 'vessel_id' %}↑{% elif sort == '-vessel_id' %}↓{% endif %}
-                    </a>
-                </th>
-                <th class="w-[140px] sm:w-[160px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 hidden lg:table-cell">
-                    <a href="{{ url_for('manifest.list_manifest', sort='voyage_id' if sort != 'voyage_id' else '-voyage_id', search=search, page_size=page_size) }}" class="flex items-center hover:text-gray-700">
-                        <span class="truncate">Voyage</span>
-                        {% if sort == 'voyage_id' %}↑{% elif sort == '-voyage_id' %}↓{% endif %}
-                    </a>
-                </th>
-                <th class="w-[100px] sm:w-[120px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
-                    <span class="sr-only">Actions</span>
-                </th>
-            </tr>
-        </thead>
-        <tbody id="manifestTableBody" class="bg-white divide-y divide-gray-200">
-            {% include "manifest/rows.html" %}
-        </tbody>
-    </table>
-</div>
-{% else %}
-<div class="text-center py-4">
-    <p class="text-gray-500">
-        {% if search %}
-        No manifests found matching "{{ search }}". <a href="{{ url_for('manifest.list_manifest') }}" class="text-blue-600 hover:text-blue-800">Clear search</a>
-        {% else %}
-        No manifests found.
-        {% endif %}
-    </p>
-</div>
-{% endif %}
+{% extends "generic/table_base.html" %}
+
+{% block table_id %}manifest-table{% endblock %}
+
+{% block table_rows %}
+    {% include 'manifest/rows.html' %}
+{% endblock %}

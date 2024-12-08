@@ -1,4 +1,3 @@
-
 from sqlalchemy import Column, DateTime, Float, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from database import Base
@@ -40,6 +39,7 @@ class Manifest(Base):
     port_of_loading = relationship("Port", foreign_keys=[port_of_loading_id])
     port_of_discharge = relationship("Port", foreign_keys=[port_of_discharge_id])
     manifester = relationship("User", foreign_keys=[manifester_id])
+    line_items = relationship("LineItem", back_populates="manifest")
 
     def to_dict(self):
         return {
@@ -63,4 +63,5 @@ class Manifest(Base):
             'port_of_loading': getattr(self, 'port_of_loading').to_dict() if getattr(self, 'port_of_loading') else None,
             'port_of_discharge': getattr(self, 'port_of_discharge').to_dict() if getattr(self, 'port_of_discharge') else None,
             'manifester': getattr(self, 'manifester').to_dict() if getattr(self, 'manifester') else None,
+            'line_items': [item.to_dict() for item in getattr(self, 'line_items')] if getattr(self, 'line_items') else []
         }

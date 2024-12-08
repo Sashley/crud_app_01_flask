@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}{{ entity_name }} List{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-2 sm:px-4">
+    <h1 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">{{ entity_name }}</h1>
+    
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 sm:mb-6">
+        <div class="flex-1 max-w-full sm:max-w-lg">
+            <input type="text" 
+                   id="searchInput"
+                   name="search"
+                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2" 
+                   placeholder="Search..." 
+                   value="{{ search or '' }}"
+                   hx-get="{{ url_for(routes.list) }}"
+                   hx-trigger="keyup changed delay:300ms"
+                   hx-target="#tableContainer"
+                   hx-include="[name='page_size']"
+                   autofocus>
+            {% if search %}
+            <div class="mt-2">
+                <a href="{{ url_for(routes.list) }}" class="text-sm text-blue-600 hover:text-blue-800">
+                    Clear search
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="flex items-center">
+            <a href="{{ url_for(routes.create) }}" 
+               class="w-full sm:w-auto px-4 py-2 text-gray-700 rounded-md bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 text-center">
+                Add New
+            </a>
+        </div>
+    </div>
+
+    <div class="border rounded-lg shadow-sm bg-white overflow-hidden">
+        <div id="tableContainer" class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+            {% block table_content %}{% endblock %}
+        </div>
+
+        <div class="p-3 sm:p-4 border-t bg-white sticky bottom-0 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <div id="selectedItem" class="text-sm text-gray-900 font-medium min-w-0 sm:min-w-[200px] truncate"></div>
+            <div class="flex items-center gap-2 sm:gap-4">
+                <select id="pageSize" 
+                        name="page_size"
+                        class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                        hx-get="{{ url_for(routes.list) }}"
+                        hx-target="#tableContainer"
+                        hx-include="[name='search']"
+                        hx-trigger="change">
+                    <option value="3" {% if page_size == 3 %}selected{% endif %}>3 per page</option>
+                    <option value="5" {% if page_size == 5 %}selected{% endif %}>5 per page</option>
+                    <option value="10" {% if page_size == 10 %}selected{% endif %}>10 per page</option>
+                    <option value="25" {% if page_size == 25 %}selected{% endif %}>25 per page</option>
+                    <option value="50" {% if page_size == 50 %}selected{% endif %}>50 per page</option>
+                    <option value="100" {% if page_size == 100 %}selected{% endif %}>100 per page</option>
+                </select>
+                {% if has_more %}
+                <button hx-get="{{ url_for(routes.list, page=page+1) }}"
+                        hx-target="#{{ entity_name|lower }}TableBody"
+                        hx-swap="beforeend"
+                        hx-include="[name='page_size'], [name='search'], [name='sort']"
+                        class="px-4 py-2 text-gray-700 rounded-md bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 text-sm whitespace-nowrap">
+                    Load More
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% block after_table %}{% endblock %}
+</div>
+
+<style>
+.selected-row {
+    background-color: #EBF5FF !important;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+@media (max-width: 640px) {
+    .scrollbar-thin::-webkit-scrollbar {
+        height: 4px;
+    }
+}
+</style>
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let searchTimeout;
+    const searchInput = document.getElementById('searchInput');
+    const tableContainer = document.getElementById('tableContainer');
+    const pageSizeSelect = document.getElementById('pageSize');
+    let selectedRow = null;
+
+    function adjustTableHeight() {
+        const headerHeight = document.querySelector('thead').offsetHeight;
+        const rowHeight = 36;
+        const pageSize = parseInt(pageSizeSelect.value);
+        const maxRows = Math.min(pageSize, 25);
+        const totalHeight = headerHeight + (maxRows * rowHeight);
+        tableContainer.style.height = `${totalHeight}px`;
+    }
+
+    adjustTableHeight();
+    window.addEventListener('resize', adjustTableHeight);
+    pageSizeSelect.addEventListener('change', function() {
+        setTimeout(adjustTableHeight, 100);
+    });
+
+    window.selectRow = function(row, identifier) {
+        console.log('Row clicked:', row);
+        console.log('Identifier:', identifier);
+        
+        if (selectedRow) {
+            selectedRow.classList.remove('selected-row');
+        }
+        row.classList.add('selected-row');
+        selectedRow = row;
+        document.getElementById('selectedItem').textContent = identifier;
+
+        // Don't prevent HTMX from doing its thing
+        return true;
+    };
+
+    function performSearch() {
+        const searchTerm = searchInput.value;
+        const pageSize = pageSizeSelect.value;
+        const url = new URL(window.location.href);
+        url.searchParams.set('search', searchTerm);
+        url.searchParams.set('page_size', pageSize);
+        url.searchParams.set('page', '1');
+
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newResults = doc.querySelector('#tableContainer').innerHTML;
+                tableContainer.innerHTML = newResults;
+                document.getElementById('selectedItem').textContent = '';
+                selectedRow = null;
+                adjustTableHeight();
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    searchInput.addEventListener('input', function(e) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(performSearch, 300);
+    });
+
+    // Add HTMX event listeners for debugging
+    document.body.addEventListener('htmx:beforeRequest', function(evt) {
+        console.log('HTMX Request Starting:', evt.detail);
+    });
+
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        console.log('HTMX Request Complete:', evt.detail);
+    });
+
+    document.body.addEventListener('htmx:beforeSwap', function(evt) {
+        console.log('HTMX Before Swap:', evt.detail);
+    });
+
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        console.log('HTMX After Swap:', evt.detail);
+        if (selectedRow) {
+            const identifier = selectedRow.dataset.identifier;
+            const newRow = document.querySelector(`tr[data-identifier="${identifier}"]`);
+            if (newRow) {
+                newRow.classList.add('selected-row');
+                selectedRow = newRow;
+                document.getElementById('selectedItem').textContent = identifier;
+            }
+        }
+        adjustTableHeight();
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

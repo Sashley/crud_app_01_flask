@@ -2,8 +2,9 @@
 <html>
 <head>
     <title>{% block title %}{% endblock %}</title>
-    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.6/htmx.min.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -31,6 +32,9 @@
         .logo {
             font-weight: 600;
             letter-spacing: -0.025em;
+        }
+        .selected-row {
+            background-color: #eff6ff !important;
         }
     </style>
 </head>
@@ -118,6 +122,39 @@
             const isExpanded = this.getAttribute('aria-expanded') === 'true';
             this.setAttribute('aria-expanded', !isExpanded);
             mobileMenu.classList.toggle('hidden');
+        });
+
+        // Debug HTMX events
+        document.body.addEventListener('htmx:beforeRequest', function(evt) {
+            console.log('HTMX beforeRequest:', {
+                target: evt.detail.target,
+                path: evt.detail.path,
+                requestConfig: evt.detail.requestConfig
+            });
+        });
+
+        document.body.addEventListener('htmx:afterRequest', function(evt) {
+            console.log('HTMX afterRequest:', {
+                target: evt.detail.target,
+                path: evt.detail.path,
+                successful: evt.detail.successful,
+                responseText: evt.detail.xhr.responseText
+            });
+        });
+
+        document.body.addEventListener('htmx:beforeSwap', function(evt) {
+            console.log('HTMX beforeSwap:', {
+                target: evt.detail.target,
+                swapStyle: evt.detail.swapStyle,
+                responseText: evt.detail.serverResponse
+            });
+        });
+
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            console.log('HTMX afterSwap:', {
+                target: evt.detail.target,
+                swapStyle: evt.detail.swapStyle
+            });
         });
     </script>
 </body>
