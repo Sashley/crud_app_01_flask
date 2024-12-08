@@ -1,23 +1,39 @@
 {% for manifest in items %}
-<tr class="hover:bg-gray-50 cursor-pointer transition-colors duration-150" 
+<tr class="hover:bg-gray-50 cursor-pointer transition-colors duration-150 group" 
     data-selectable="true"
     data-bill="{{ manifest.bill_of_lading }}"
     onclick="selectRow(this, '{{ manifest.bill_of_lading }}')"
     style="transition: background-color 0.15s ease-in-out;">
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.bill_of_lading }}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.shipper_name or 'N/A' }}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.consignee_name or 'N/A' }}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.vessel_name or 'N/A' }}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.voyage_name or 'N/A' }}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-        <div class="flex space-x-2">
+    <td class="px-3 sm:px-6 py-2 sm:py-4 text-sm text-gray-900">
+        <div class="truncate max-w-[120px] sm:max-w-none">{{ manifest.bill_of_lading }}</div>
+    </td>
+    <td class="px-3 sm:px-6 py-2 sm:py-4 text-sm text-gray-900">
+        <div class="truncate max-w-[120px] sm:max-w-none">{{ manifest.shipper_name or 'N/A' }}</div>
+    </td>
+    <td class="px-3 sm:px-6 py-2 sm:py-4 text-sm text-gray-900 hidden sm:table-cell">
+        <div class="truncate max-w-[120px] sm:max-w-none">{{ manifest.consignee_name or 'N/A' }}</div>
+    </td>
+    <td class="px-3 sm:px-6 py-2 sm:py-4 text-sm text-gray-900 hidden md:table-cell">
+        <div class="truncate max-w-[120px] sm:max-w-none">{{ manifest.vessel_name or 'N/A' }}</div>
+    </td>
+    <td class="px-3 sm:px-6 py-2 sm:py-4 text-sm text-gray-900 hidden lg:table-cell">
+        <div class="truncate max-w-[120px] sm:max-w-none">{{ manifest.voyage_name or 'N/A' }}</div>
+    </td>
+    <td class="px-2 sm:px-6 py-2 sm:py-4 text-sm text-gray-900">
+        <div class="flex space-x-1 sm:space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
             <a href="{{ url_for('manifest.edit_manifest', id=manifest.id) }}" 
-               class="px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
-               onclick="event.stopPropagation()">Edit</a>
+               class="p-1 sm:px-2 sm:py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+               onclick="event.stopPropagation()">
+               <span class="hidden sm:inline">Edit</span>
+               <span class="sm:hidden">📝</span>
+            </a>
             <form method="post" action="{{ url_for('manifest.delete_manifest', id=manifest.id) }}" class="inline">
                 <button type="submit" 
-                        class="px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
-                        onclick="event.stopPropagation(); return confirm('Are you sure you want to delete this manifest?')">Delete</button>
+                        class="p-1 sm:px-2 sm:py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+                        onclick="event.stopPropagation(); return confirm('Are you sure you want to delete this manifest?')">
+                    <span class="hidden sm:inline">Delete</span>
+                    <span class="sm:hidden">🗑️</span>
+                </button>
             </form>
         </div>
     </td>
