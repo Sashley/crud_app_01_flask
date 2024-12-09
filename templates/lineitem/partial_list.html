@@ -1,9 +1,9 @@
 <div class="bg-white shadow overflow-hidden border-b border-gray-200 rounded-lg">
-    <div class="flex justify-between items-center p-4 bg-gray-50">
-        <h2 class="text-xl font-semibold">{{ manifest_number }} Items</h2>
+    <div class="flex justify-between items-center p-4">
+        <h2 class="text-lg font-semibold">{{ manifest_number }} Items</h2>
         {% if manifest %}
         <a href="{{ url_for('lineitem.create_lineitem', manifest_id=manifest.id) }}" 
-           class="px-4 py-2 text-gray-700 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2">
+           class="px-4 py-2 text-sm text-gray-700 rounded-md bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2">
             Add Line Item
         </a>
         {% endif %}

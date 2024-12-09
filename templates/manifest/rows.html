@@ -61,8 +61,8 @@
 </tr>
 {% endfor %}
 
-{% if has_more %}
-<tr id="load-more-row">
+<!-- {% if has_more %}
+<tr id="load-more-row" style="display: none;">
     <td colspan="{{ columns|length + 1 }}" class="px-6 py-4 text-center">
         <button hx-get="{{ url_for(routes.list, search=search, sort=sort, page=page+1) }}"
                 hx-target="#load-more-row"
@@ -72,7 +72,7 @@
         </button>
     </td>
 </tr>
-{% endif %}
+{% endif %} -->
 
 <!-- Loading indicator -->
 <div id="loading-indicator" class="htmx-indicator fixed top-0 left-0 w-full h-1 bg-blue-600" style="display: none;">
@@ -80,7 +80,7 @@
 </div>
 
 <!-- Debug info -->
-<tr class="bg-gray-50">
+<tr class="bg-gray-50" style="display: none;">
     <td colspan="{{ columns|length + 1 }}" class="px-6 py-2 text-xs text-gray-500">
         <div>Total Items: {{ items|length }}</div>
         {% if items %}
