@@ -110,11 +110,40 @@ def get_filtered_query():
     sort = request.args.get('sort', '-id')
     logger.debug(f"Sort parameter: {sort}")
     
-    if sort.startswith('-'):
+    # Remove the minus sign if present, but remember the direction
+    is_desc = sort.startswith('-')
+    if is_desc:
         sort_field = sort[1:]
-        query = query.order_by(getattr(Manifest, sort_field).desc())
     else:
-        query = query.order_by(getattr(Manifest, sort))
+        sort_field = sort
+
+    # Handle special sorting cases for relationship fields
+    if sort_field == 'shipper_name':
+        if is_desc:
+            query = query.order_by(ShipperAlias.name.desc())
+        else:
+            query = query.order_by(ShipperAlias.name.asc())
+    elif sort_field == 'consignee_name':
+        if is_desc:
+            query = query.order_by(ConsigneeAlias.name.desc())
+        else:
+            query = query.order_by(ConsigneeAlias.name.asc())
+    elif sort_field == 'vessel_name':
+        if is_desc:
+            query = query.order_by(Vessel.name.desc())
+        else:
+            query = query.order_by(Vessel.name.asc())
+    elif sort_field == 'voyage_name':
+        if is_desc:
+            query = query.order_by(Voyage.name.desc())
+        else:
+            query = query.order_by(Voyage.name.asc())
+    elif hasattr(Manifest, sort_field):
+        # For direct Manifest attributes
+        if is_desc:
+            query = query.order_by(getattr(Manifest, sort_field).desc())
+        else:
+            query = query.order_by(getattr(Manifest, sort_field).asc())
     
     # Add columns to select
     query = query.add_columns(
