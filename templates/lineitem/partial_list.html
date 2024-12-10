@@ -9,31 +9,31 @@
         <button type="button"
                 class="inline-flex items-center px-4 py-2 text-sm text-gray-700 rounded-md bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
                 hx-get="{{ url_for('lineitem.load_form', manifest_id=manifest.id) }}"
-                hx-target="#modal-container">
+                hx-target="#modal-container"
+                hx-swap="innerHTML">
             New Line Item
         </button>
     </div>
 
-    <div id="lineitem-table-container">
+    <div id="lineitem-table-container"
+         hx-trigger="lineitemSaved from:body"
+         hx-get="{{ url_for('lineitem.list_lineitem', manifest_id=manifest.id) }}"
+         hx-target="#lineitem-table-container">
         {% include 'lineitem/table.html' %}
     </div>
 </div>
 
 <script>
-    // Handle successful form submission
-    document.body.addEventListener('htmx:afterRequest', function(evt) {
-        if (evt.detail.successful && evt.detail.target.id === 'modal-container' && !evt.detail.xhr.response) {
-            // Clear modal
-            document.getElementById('modal-container').innerHTML = '';
-            // Refresh table
-            htmx.trigger('#lineitem-table-container', 'lineitemSaved');
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.target.id === 'modal-container') {
+            if (typeof initializeTabs === 'function') {
+                initializeTabs();
+            }
         }
     });
 
-    // Re-initialize HTMX after content swap
-    document.body.addEventListener('htmx:afterSwap', function(evt) {
-        if (evt.detail.target.id === 'lineitem-table-container') {
-            htmx.process(evt.detail.target);
-        }
+    document.body.addEventListener('modalClosed', function() {
+        document.body.classList.remove('modal-open');
+        htmx.trigger('body', 'lineitemSaved');
     });
 </script>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Example</title>
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <!-- Include the navigation component -->
+    {% include 'components/navigation.html' %}
+
+    <!-- Main content area that will be updated by HTMX -->
+    <div id="main-content" class="container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold mb-4">Your Content Here</h1>
+        <p>This is an example of how to use the navigation component.</p>
+        <p>The navigation is completely independent and can be included in any template.</p>
+    </div>
+
+    <!-- Example of how to use in your own templates -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-gray-100 p-4 rounded-lg">
+            <h2 class="text-xl font-bold mb-4">Usage Instructions</h2>
+            <pre class="bg-white p-4 rounded overflow-x-auto">
+<!-- To include navigation in any template -->
+{% raw %}{% include 'components/navigation.html' %}{% endraw %}
+
+<!-- Ensure your content area has an id for HTMX updates -->
+&lt;div id="main-content"&gt;
+    Your content here
+&lt;/div&gt;
+
+<!-- Required dependencies -->
+&lt;script src="https://unpkg.com/htmx.org@1.9.6"&gt;&lt;/script&gt;
+&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+            </pre>
+            
+            <h3 class="text-lg font-bold mt-6 mb-2">Key Features:</h3>
+            <ul class="list-disc pl-6">
+                <li>Self-contained navigation component</li>
+                <li>No interference with existing templates</li>
+                <li>HTMX-powered for smooth updates</li>
+                <li>Responsive design (mobile-friendly)</li>
+                <li>Dropdown menus for each section</li>
+            </ul>
+
+            <h3 class="text-lg font-bold mt-6 mb-2">Menu Structure:</h3>
+            <ul class="list-disc pl-6">
+                <li>Vessel Ops: Companies → Vessels → Voyages → Manifests</li>
+                <li>Customers: Shippers → Consignees → Rates</li>
+                <li>Containers: Tracking → History → Status</li>
+                <li>Geography: Countries → Ports → Port Pairs</li>
+                <li>Cargo: Commodities → Pack Types → Line Items</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

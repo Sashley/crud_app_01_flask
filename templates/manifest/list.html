@@ -35,18 +35,43 @@
     </div>
 
     <script>
-        // Listen for successful form submission
-        document.body.addEventListener('htmx:afterSwap', function(evt) {
-            if (evt.detail.target.id === 'modal-container' && !evt.detail.xhr.response) {
-                // Trigger table refresh
+        // Global event handlers for modal and table refresh
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle modal closing and table refresh
+            document.body.addEventListener('htmx:afterSwap', function(evt) {
+                if (evt.detail.target.id === 'modal-container') {
+                    if (!evt.detail.xhr.response) {
+                        // Modal was closed
+                        document.body.classList.remove('modal-open');
+                        // Trigger table refresh
+                        htmx.trigger('body', 'manifestSaved');
+                    } else {
+                        // Modal was opened
+                        document.body.classList.add('modal-open');
+                    }
+                }
+            });
+
+            // Handle modalClosed event
+            document.body.addEventListener('modalClosed', function() {
+                document.body.classList.remove('modal-open');
                 htmx.trigger('body', 'manifestSaved');
-            }
+            });
+
+            // Prevent row click when clicking action buttons
+            document.addEventListener('click', function(evt) {
+                if (evt.target.matches('button')) {
+                    evt.stopPropagation();
+                }
+            });
         });
 
-        // Prevent row click when clicking action buttons
-        document.addEventListener('click', function(evt) {
-            if (evt.target.matches('button')) {
-                evt.stopPropagation();
+        // Re-initialize any needed JavaScript after content swap
+        document.body.addEventListener('htmx:afterSettle', function(evt) {
+            if (evt.target.id === 'modal-container' || evt.target.id === 'manifest-table') {
+                if (typeof initializeTabs === 'function') {
+                    initializeTabs();
+                }
             }
         });
     </script>
@@ -61,6 +86,11 @@
         .overflow-hidden {
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
+        }
+
+        /* Modal styles */
+        body.modal-open {
+            overflow: hidden;
         }
     </style>
 {% endblock %}

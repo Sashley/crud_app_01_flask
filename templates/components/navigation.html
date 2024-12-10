@@ -1,0 +1,119 @@
+<!-- Independent Navigation Component -->
+<!-- Include this where needed using: {% include 'components/navigation.html' %} -->
+
+<!-- Navigation Menu -->
+<div id="app-navigation" class="bg-gray-800 text-white">
+    <!-- Desktop Navigation -->
+    <div class="hidden sm:block">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex space-x-4 py-3" hx-target="#main-content">
+                <!-- Vessel Operations -->
+                <div class="relative group">
+                    <button class="px-3 py-2 text-gray-300 hover:text-white">
+                        Vessel Ops
+                        <span class="ml-1">▼</span>
+                    </button>
+                    <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden group-hover:block">
+                        <div class="py-1">
+                            <a hx-get="/vessel-ops/companies" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Companies</a>
+                            <a hx-get="/vessel-ops/vessels" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Vessels</a>
+                            <a hx-get="/vessel-ops/voyages" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Voyages</a>
+                            <a hx-get="/vessel-ops/manifests" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Manifests</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer/Trade -->
+                <div class="relative group">
+                    <button class="px-3 py-2 text-gray-300 hover:text-white">
+                        Customers
+                        <span class="ml-1">▼</span>
+                    </button>
+                    <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden group-hover:block">
+                        <div class="py-1">
+                            <a hx-get="/customer/shippers" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Shippers</a>
+                            <a hx-get="/customer/consignees" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Consignees</a>
+                            <a hx-get="/customer/rates" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Rates</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Container Management -->
+                <div class="relative group">
+                    <button class="px-3 py-2 text-gray-300 hover:text-white">
+                        Containers
+                        <span class="ml-1">▼</span>
+                    </button>
+                    <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden group-hover:block">
+                        <div class="py-1">
+                            <a hx-get="/container/tracking" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Tracking</a>
+                            <a hx-get="/container/history" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">History</a>
+                            <a hx-get="/container/status" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Status</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Geographic/Port -->
+                <div class="relative group">
+                    <button class="px-3 py-2 text-gray-300 hover:text-white">
+                        Geography
+                        <span class="ml-1">▼</span>
+                    </button>
+                    <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden group-hover:block">
+                        <div class="py-1">
+                            <a hx-get="/geography/countries" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Countries</a>
+                            <a hx-get="/geography/ports" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Ports</a>
+                            <a hx-get="/geography/port-pairs" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Port Pairs</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cargo Management -->
+                <div class="relative group">
+                    <button class="px-3 py-2 text-gray-300 hover:text-white">
+                        Cargo
+                        <span class="ml-1">▼</span>
+                    </button>
+                    <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden group-hover:block">
+                        <div class="py-1">
+                            <a hx-get="/cargo/commodities" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Commodities</a>
+                            <a hx-get="/cargo/pack-types" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Pack Types</a>
+                            <a hx-get="/cargo/line-items" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Line Items</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <div class="sm:hidden">
+        <button id="mobile-menu-button" class="px-4 py-3 text-gray-300 hover:text-white">
+            Menu ▼
+        </button>
+        <div id="mobile-menu" class="hidden px-2 pt-2 pb-3 space-y-1">
+            <a hx-get="/vessel-ops" class="block px-3 py-2 text-gray-300 hover:text-white">Vessel Ops</a>
+            <a hx-get="/customer" class="block px-3 py-2 text-gray-300 hover:text-white">Customers</a>
+            <a hx-get="/container" class="block px-3 py-2 text-gray-300 hover:text-white">Containers</a>
+            <a hx-get="/geography" class="block px-3 py-2 text-gray-300 hover:text-white">Geography</a>
+            <a hx-get="/cargo" class="block px-3 py-2 text-gray-300 hover:text-white">Cargo</a>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation JavaScript -->
+<script>
+    // Mobile menu toggle
+    document.getElementById('mobile-menu-button')?.addEventListener('click', function() {
+        document.getElementById('mobile-menu')?.classList.toggle('hidden');
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.group')) {
+            document.querySelectorAll('.group .absolute').forEach(dropdown => {
+                dropdown.classList.add('hidden');
+            });
+        }
+    });
+</script>

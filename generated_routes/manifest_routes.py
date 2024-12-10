@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, abort, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, abort, jsonify, make_response
 from database import db_session
 from sqlalchemy import or_, cast, String, func
 from sqlalchemy.orm import aliased
@@ -19,6 +19,13 @@ bp = Blueprint('manifest', __name__, url_prefix='/manifest')
 
 def register_manifest_routes(app):
     app.register_blueprint(bp)
+
+@bp.route('/empty')
+def empty():
+    """Return an empty response for closing modals"""
+    response = make_response('')
+    response.headers['HX-Trigger'] = 'modalClosed'
+    return response
 
 def get_form_choices():
     """Get all the choices needed for the manifest form dropdowns"""
@@ -295,8 +302,10 @@ def save_manifest():
             db_session.add(item)
         db_session.commit()
         
-        # Return empty response to clear the modal
-        return ''
+        # Create response with HX-Trigger header
+        response = make_response('')
+        response.headers['HX-Trigger'] = 'modalClosed manifestSaved'
+        return response
     except Exception as e:
         logger.error(f"Error in save_manifest: {str(e)}", exc_info=True)
         db_session.rollback()

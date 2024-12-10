@@ -1,161 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>{% block title %}{% endblock %}</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.6/htmx.min.js"></script>
-    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .nav-link {
-            padding: 0.5rem 1rem;
-            color: #374151;
-            font-weight: 500;
-            transition: color 0.2s;
-            font-size: 0.9375rem;
-        }
-        .nav-link:hover {
-            color: #111827;
-        }
-        .nav-link.active {
-            color: #111827;
-            font-weight: 600;
-        }
-        .nav-container {
-            background-color: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .logo {
-            font-weight: 600;
-            letter-spacing: -0.025em;
-        }
-        .selected-row {
-            background-color: #eff6ff !important;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Shipping System{% endblock %}</title>
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-white">
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 nav-container">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex justify-between h-16 px-4 sm:px-6 lg:px-8">
-                <!-- Logo and Brand -->
-                <div class="flex-shrink-0 flex items-center">
-                    <a href="{{ url_for('index') }}" class="text-xl logo text-gray-900">
-                        ShipTrack
-                    </a>
-                </div>
+<body class="bg-gray-100">
+    <!-- Include the menu -->
+    {% include 'menu.html' %}
 
-                <!-- Center Navigation -->
-                <div class="hidden sm:flex sm:items-center sm:justify-center flex-1">
-                    <div class="flex space-x-1">
-                        <a href="{{ url_for('manifest.list_manifest') }}" class="nav-link {% if request.endpoint == 'manifest.list_manifest' %}active{% endif %}">
-                            Manifests
-                        </a>
-                        <a href="{{ url_for('vessel.list_vessel') }}" class="nav-link {% if request.endpoint == 'vessel.list_vessel' %}active{% endif %}">
-                            Vessels
-                        </a>
-                        <a href="{{ url_for('voyage.list_voyage') }}" class="nav-link {% if request.endpoint == 'voyage.list_voyage' %}active{% endif %}">
-                            Voyages
-                        </a>
-                        <a href="{{ url_for('client.list_client') }}" class="nav-link {% if request.endpoint == 'client.list_client' %}active{% endif %}">
-                            Clients
-                        </a>
-                        <a href="{{ url_for('port.list_port') }}" class="nav-link {% if request.endpoint == 'port.list_port' %}active{% endif %}">
-                            Ports
-                        </a>
-                        <a href="{{ url_for('model_tree') }}" class="nav-link {% if request.endpoint == 'model_tree' %}active{% endif %}">
-                            Model Tree
-                        </a>
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">
+                {% block header %}{% endblock %}
+            </h1>
+            {% block subheader %}{% endblock %}
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-4 rounded-md {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                        {{ message }}
                     </div>
-                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-                <!-- Right side -->
-                <div class="hidden sm:flex sm:items-center">
-                    <button class="nav-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mobile menu button -->
-        <div class="sm:hidden absolute right-4 top-4">
-            <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500" aria-controls="mobile-menu" aria-expanded="false">
-                <span class="sr-only">Open main menu</span>
-                <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
-        </div>
-    </nav>
-
-    <!-- Mobile menu -->
-    <div class="sm:hidden hidden" id="mobile-menu">
-        <div class="px-2 pt-20 pb-3 space-y-1 bg-white shadow-lg">
-            <a href="{{ url_for('manifest.list_manifest') }}" class="nav-link block {% if request.endpoint == 'manifest.list_manifest' %}active{% endif %}">Manifests</a>
-            <a href="{{ url_for('vessel.list_vessel') }}" class="nav-link block {% if request.endpoint == 'vessel.list_vessel' %}active{% endif %}">Vessels</a>
-            <a href="{{ url_for('voyage.list_voyage') }}" class="nav-link block {% if request.endpoint == 'voyage.list_voyage' %}active{% endif %}">Voyages</a>
-            <a href="{{ url_for('client.list_client') }}" class="nav-link block {% if request.endpoint == 'client.list_client' %}active{% endif %}">Clients</a>
-            <a href="{{ url_for('port.list_port') }}" class="nav-link block {% if request.endpoint == 'port.list_port' %}active{% endif %}">Ports</a>
-            <a href="{{ url_for('model_tree') }}" class="nav-link block {% if request.endpoint == 'model_tree' %}active{% endif %}">Model Tree</a>
+        <!-- Main Content Area -->
+        <div class="bg-white shadow-md rounded-lg p-6">
+            {% block content %}{% endblock %}
         </div>
     </div>
 
-    <!-- Main Content -->
-    <main class="pt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {% block content %}{% endblock %}
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-300 mt-12">
+        <div class="container mx-auto px-4 py-6">
+            <p class="text-center">&copy; {{ current_year }} Shipping System. All rights reserved.</p>
         </div>
-    </main>
+    </footer>
 
-    <script>
-        // Mobile menu toggle
-        document.querySelector('button[aria-controls="mobile-menu"]').addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            const isExpanded = this.getAttribute('aria-expanded') === 'true';
-            this.setAttribute('aria-expanded', !isExpanded);
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // Debug HTMX events
-        document.body.addEventListener('htmx:beforeRequest', function(evt) {
-            console.log('HTMX beforeRequest:', {
-                target: evt.detail.target,
-                path: evt.detail.path,
-                requestConfig: evt.detail.requestConfig
-            });
-        });
-
-        document.body.addEventListener('htmx:afterRequest', function(evt) {
-            console.log('HTMX afterRequest:', {
-                target: evt.detail.target,
-                path: evt.detail.path,
-                successful: evt.detail.successful,
-                responseText: evt.detail.xhr.responseText
-            });
-        });
-
-        document.body.addEventListener('htmx:beforeSwap', function(evt) {
-            console.log('HTMX beforeSwap:', {
-                target: evt.detail.target,
-                swapStyle: evt.detail.swapStyle,
-                responseText: evt.detail.serverResponse
-            });
-        });
-
-        document.body.addEventListener('htmx:afterSwap', function(evt) {
-            console.log('HTMX afterSwap:', {
-                target: evt.detail.target,
-                swapStyle: evt.detail.swapStyle
-            });
-        });
-    </script>
+    <!-- Additional Scripts -->
+    {% block scripts %}{% endblock %}
 </body>
 </html>

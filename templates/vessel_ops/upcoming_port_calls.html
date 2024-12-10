@@ -1,0 +1,17 @@
+{% for leg in legs %}
+<div class="flex items-center justify-between p-3 border rounded-lg {% if loop.first %}border-blue-200 bg-blue-50{% else %}border-gray-200{% endif %}">
+    <div>
+        <div class="font-medium">{{ leg.vessel.name }}</div>
+        <div class="text-sm text-gray-600">Arriving at {{ leg.port.name }}</div>
+    </div>
+    <div class="text-right">
+        <div class="text-sm font-medium">{{ leg.eta.strftime('%Y-%m-%d') }}</div>
+        <div class="text-sm text-gray-600">{{ leg.eta.strftime('%H:%M') }}</div>
+    </div>
+</div>
+{% endfor %}
+{% if not legs %}
+<div class="text-center text-gray-500 py-4">
+    No upcoming port calls
+</div>
+{% endif %}

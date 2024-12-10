@@ -1,0 +1,13 @@
+{% for company, vessel_count in companies %}
+<div class="flex justify-between items-center mb-3">
+    <span class="text-gray-600">{{ company.name }}</span>
+    <span class="px-2 py-1 bg-gray-100 rounded-full text-sm">
+        {{ vessel_count }} vessel{% if vessel_count != 1 %}s{% endif %}
+    </span>
+</div>
+{% endfor %}
+{% if not companies %}
+<div class="text-center text-gray-500">
+    No shipping companies found
+</div>
+{% endif %}

@@ -9,7 +9,7 @@
     <form method="post" 
           hx-post="{{ url_for('lineitem.save_lineitem', id=item.id if item else None, manifest_id=item.manifest_id if item else manifest_id) }}" 
           hx-target="#modal-container"
-          hx-swap="outerHTML">
+          hx-swap="innerHTML">
         <input type="hidden" id="manifest_id" name="manifest_id" value="{{ item.manifest_id if item else manifest_id }}">
 
         <!-- Tab Navigation -->
@@ -103,7 +103,9 @@
                 Save
             </button>
             <button type="button" class="px-4 py-2 text-sm text-gray-700 rounded-md bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
-                    onclick="closeModal()">
+                    hx-get="{{ url_for('lineitem.empty') }}"
+                    hx-target="#modal-container"
+                    hx-swap="innerHTML">
                 Cancel
             </button>
         </div>
@@ -145,18 +147,4 @@
 
     // Initialize tabs immediately
     initializeTabs();
-
-    // Re-initialize tabs after HTMX content swap
-    document.body.addEventListener('htmx:afterSwap', function(evt) {
-        if (evt.detail.target.id === 'modal-container') {
-            initializeTabs();
-        }
-    });
-
-    // Handle successful form submission
-    document.body.addEventListener('htmx:afterRequest', function(evt) {
-        if (evt.detail.successful && evt.detail.target.id === 'modal-container' && !evt.detail.xhr.response) {
-            closeModal();
-        }
-    });
 </script>

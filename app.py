@@ -7,6 +7,7 @@ from config import HOST, PORT
 from jinja2 import ChoiceLoader, FileSystemLoader
 from generate_relationship_tree import register_routes
 import logging
+from datetime import datetime
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -20,6 +21,9 @@ from generated_routes import (
     voyage_routes, leg_routes, port_routes, portpair_routes,
     country_routes, client_routes, user_routes, rate_routes
 )
+
+# Import custom routes
+from routes.vessel_ops import vessel_ops
 
 load_dotenv()
 
@@ -35,6 +39,10 @@ app.jinja_loader = ChoiceLoader([
 
 CORS(app)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY') or 'fallback_secret_key'
+
+@app.context_processor
+def inject_year():
+    return {'current_year': datetime.now().year}
 
 @app.teardown_appcontext
 def shutdown_session_handler(exception=None):
@@ -73,6 +81,9 @@ country_routes.register_country_routes(app)
 client_routes.register_client_routes(app)
 user_routes.register_user_routes(app)
 rate_routes.register_rate_routes(app)
+
+# Register custom blueprints
+app.register_blueprint(vessel_ops)
 
 # Register relationship tree routes
 register_routes(app)

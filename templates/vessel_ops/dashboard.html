@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Vessel Operations - Shipping System{% endblock %}
+
+{% block header %}Vessel Operations{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Active Vessels -->
+    <div class="lg:col-span-2">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Active Vessels</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Vessel Name</th>
+                            <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Current Location</th>
+                            <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Next Port</th>
+                            <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">ETA</th>
+                            <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody hx-get="/vessel-ops/active-vessels" hx-trigger="load, every 5m">
+                        <tr>
+                            <td colspan="5" class="px-4 py-2 text-center text-gray-500">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="lg:col-span-1">
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Fleet Overview</h2>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Total Vessels</span>
+                    <span class="font-semibold" hx-get="/vessel-ops/stats/total-vessels" hx-trigger="load">...</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">In Transit</span>
+                    <span class="font-semibold" hx-get="/vessel-ops/stats/in-transit" hx-trigger="load">...</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">In Port</span>
+                    <span class="font-semibold" hx-get="/vessel-ops/stats/in-port" hx-trigger="load">...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Port Calls -->
+    <div class="lg:col-span-2">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Upcoming Port Calls</h2>
+            <div class="space-y-4" hx-get="/vessel-ops/upcoming-port-calls" hx-trigger="load, every 5m">
+                <div class="animate-pulse">
+                    <div class="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                    <div class="space-y-3">
+                        <div class="h-4 bg-gray-200 rounded"></div>
+                        <div class="h-4 bg-gray-200 rounded"></div>
+                        <div class="h-4 bg-gray-200 rounded"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vessel Status -->
+    <div class="lg:col-span-1">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Vessel Status</h2>
+            <div class="space-y-4" hx-get="/vessel-ops/status-summary" hx-trigger="load, every 5m">
+                <div class="animate-pulse">
+                    <div class="space-y-3">
+                        <div class="h-4 bg-gray-200 rounded"></div>
+                        <div class="h-4 bg-gray-200 rounded"></div>
+                        <div class="h-4 bg-gray-200 rounded"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

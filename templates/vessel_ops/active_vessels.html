@@ -1,0 +1,24 @@
+{% for vessel in vessels %}
+<tr class="hover:bg-gray-50">
+    <td class="px-4 py-2">{{ vessel.name }}</td>
+    <td class="px-4 py-2">{{ vessel.current_location }}</td>
+    <td class="px-4 py-2">{{ vessel.next_port }}</td>
+    <td class="px-4 py-2">{{ vessel.eta }}</td>
+    <td class="px-4 py-2">
+        <span class="px-2 py-1 text-sm rounded-full 
+            {% if vessel.status == 'In Transit' %}
+                bg-blue-100 text-blue-800
+            {% else %}
+                bg-green-100 text-green-800
+            {% endif %}
+        ">
+            {{ vessel.status }}
+        </span>
+    </td>
+</tr>
+{% endfor %}
+{% if not vessels %}
+<tr>
+    <td colspan="5" class="px-4 py-2 text-center text-gray-500">No active vessels found</td>
+</tr>
+{% endif %}

@@ -25,7 +25,7 @@
     <form method="post" 
           hx-post="{{ url_for('manifest.save_manifest', id=item.id if item else None) }}" 
           hx-target="#modal-container"
-          hx-swap="outerHTML">
+          hx-swap="innerHTML">
         <!-- Bill of Lading Tab -->
         <div id="bill-of-lading-tab" class="tab-content space-y-4">
             <div>
@@ -162,7 +162,9 @@
                     Save
                 </button>
                 <button type="button" class="px-4 py-2 text-sm text-gray-700 rounded-md bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
-                        onclick="document.getElementById('modal-container').innerHTML = ''">
+                        hx-get="{{ url_for('manifest.empty') }}"
+                        hx-target="#modal-container"
+                        hx-swap="innerHTML">
                     Cancel
                 </button>
             </div>
@@ -205,11 +207,4 @@
 
     // Initialize tabs immediately
     initializeTabs();
-
-    // Re-initialize tabs after HTMX content swap
-    document.body.addEventListener('htmx:afterSwap', function(evt) {
-        if (evt.detail.target.id === 'modal-container') {
-            initializeTabs();
-        }
-    });
 </script>
