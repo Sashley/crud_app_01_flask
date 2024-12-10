@@ -16,7 +16,7 @@
                    value="{{ search or '' }}"
                    hx-get="{{ url_for(routes.list) }}"
                    hx-trigger="keyup changed delay:300ms"
-                   hx-target="#tableContainer"
+                   hx-target="#{{ entity_name|lower }}-table"
                    hx-include="[name='page_size']"
                    autofocus>
             {% if search %}
@@ -35,7 +35,9 @@
 
     <div class="border rounded-lg shadow-sm bg-white overflow-hidden">
         <div id="tableContainer" class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-            {% block table_content %}{% endblock %}
+            <div id="{{ entity_name|lower }}-table">
+                {% block table_content %}{% endblock %}
+            </div>
         </div>
 
         <div class="p-3 sm:p-4 border-t bg-white sticky bottom-0 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
@@ -45,7 +47,7 @@
                         name="page_size"
                         class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
                         hx-get="{{ url_for(routes.list) }}"
-                        hx-target="#tableContainer"
+                        hx-target="#{{ entity_name|lower }}-table"
                         hx-include="[name='search']"
                         hx-trigger="change">
                     <option value="3" {% if page_size == 3 %}selected{% endif %}>3 per page</option>
@@ -154,8 +156,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(html => {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
-                const newResults = doc.querySelector('#tableContainer').innerHTML;
-                tableContainer.innerHTML = newResults;
+                const newResults = doc.querySelector(`#${entity_name.toLowerCase()}-table`).innerHTML;
+                document.querySelector(`#${entity_name.toLowerCase()}-table`).innerHTML = newResults;
                 document.getElementById('selectedItem').textContent = '';
                 selectedRow = null;
                 adjustTableHeight();

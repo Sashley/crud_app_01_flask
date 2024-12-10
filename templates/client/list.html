@@ -1,13 +1,31 @@
 {% extends "generic/list_base.html" %}
 
-{% set entity_name = 'Client' %}
-{% set routes = {
-    'list': 'client.list_client',
-    'create': 'client.create_client',
-    'edit': 'client.edit_client',
-    'delete': 'client.delete_client'
-} %}
+{% block title %}Clients{% endblock %}
+
+{% block entity_name %}Client{% endblock %}
+
+{% block before_table %}
+<div class="mb-4 flex justify-end">
+    <button type="button"
+            class="inline-flex items-center px-4 py-2 text-sm text-gray-700 rounded-md bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+            hx-get="{{ url_for('client.load_form') }}"
+            hx-target="#modal-container">
+        New Client
+    </button>
+</div>
+{% endblock %}
 
 {% block table_content %}
-{% include "client/table.html" %}
+    <div id="client-table"
+         class="overflow-hidden"
+         hx-trigger="modalClosed from:body"
+         hx-get="{{ url_for('client.list_client') }}"
+         hx-target="#client-table">
+        {% include 'client/table.html' %}
+    </div>
+{% endblock %}
+
+{% block after_table %}
+    <!-- Modal Container -->
+    <div id="modal-container"></div>
 {% endblock %}
