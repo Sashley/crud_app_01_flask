@@ -41,7 +41,6 @@ def parse_date(date_str):
     if date_str:
         try:
             logger.debug(f"Parsing date string: {date_str}")
-            # Add time component to make it a full datetime
             date_with_time = f"{date_str} 00:00:00"
             parsed_date = datetime.strptime(date_with_time, '%Y-%m-%d %H:%M:%S')
             logger.debug(f"Parsed date: {parsed_date}")
@@ -54,18 +53,15 @@ def parse_date(date_str):
 
 def get_filtered_query():
     """Get base query with all joins and filters applied"""
-    # Create aliases for the same table used multiple times
     ShipperAlias = aliased(Client)
     ConsigneeAlias = aliased(Client)
     
-    # Start with a query that joins all related entities
     query = db_session.query(Manifest)\
         .outerjoin(ShipperAlias, Manifest.shipper_id == ShipperAlias.id)\
         .outerjoin(ConsigneeAlias, Manifest.consignee_id == ConsigneeAlias.id)\
         .outerjoin(Vessel, Manifest.vessel_id == Vessel.id)\
         .outerjoin(Voyage, Manifest.voyage_id == Voyage.id)
     
-    # Apply search filters
     search = request.args.get('search', '').strip()
     logger.debug(f"Search parameter: '{search}'")
     
@@ -73,7 +69,6 @@ def get_filtered_query():
         search_term = f"%{search}%"
         logger.debug(f"Search term: '{search_term}'")
         
-        # Convert IDs to string for comparison if the search term looks like a number
         if search.isdigit():
             logger.debug("Search term is numeric")
             filters = [
@@ -82,42 +77,35 @@ def get_filtered_query():
                 cast(Manifest.consignee_id, String).ilike(search_term),
                 cast(Manifest.vessel_id, String).ilike(search_term),
                 cast(Manifest.voyage_id, String).ilike(search_term),
-                # Also search in bill of lading for numeric patterns
                 func.lower(Manifest.bill_of_lading).like(func.lower(search_term))
             ]
         else:
             logger.debug("Search term is text")
             filters = [
-                # Case-insensitive search for bill of lading
                 func.lower(Manifest.bill_of_lading).like(func.lower(search_term)),
                 func.lower(Manifest.place_of_delivery).like(func.lower(search_term)),
                 func.lower(Manifest.place_of_receipt).like(func.lower(search_term)),
-                # Search in related entities
                 func.lower(ShipperAlias.name).like(func.lower(search_term)),
                 func.lower(ConsigneeAlias.name).like(func.lower(search_term)),
                 func.lower(Vessel.name).like(func.lower(search_term)),
                 func.lower(Voyage.name).like(func.lower(search_term))
             ]
         
-        # Remove None filters
         filters = [f for f in filters if f is not None]
         
         if filters:
             query = query.filter(or_(*filters))
             logger.debug(f"Applied {len(filters)} search filters")
     
-    # Apply sorting
     sort = request.args.get('sort', '-id')
     logger.debug(f"Sort parameter: {sort}")
     
-    # Remove the minus sign if present, but remember the direction
     is_desc = sort.startswith('-')
     if is_desc:
         sort_field = sort[1:]
     else:
         sort_field = sort
 
-    # Handle special sorting cases for relationship fields
     if sort_field == 'shipper_name':
         if is_desc:
             query = query.order_by(ShipperAlias.name.desc())
@@ -139,13 +127,11 @@ def get_filtered_query():
         else:
             query = query.order_by(Voyage.name.asc())
     elif hasattr(Manifest, sort_field):
-        # For direct Manifest attributes
         if is_desc:
             query = query.order_by(getattr(Manifest, sort_field).desc())
         else:
             query = query.order_by(getattr(Manifest, sort_field).asc())
     
-    # Add columns to select
     query = query.add_columns(
         ShipperAlias.name.label('shipper_name'),
         ConsigneeAlias.name.label('consignee_name'),
@@ -164,16 +150,12 @@ def list_manifest():
         offset = (page - 1) * page_size
         
         query = get_filtered_query()
-        
-        # Get total count for pagination
         total_count = query.count()
         logger.debug(f"Total count: {total_count}")
         
-        # Apply pagination
         results = query.offset(offset).limit(page_size).all()
         logger.debug(f"Found {len(results)} manifests for page {page}")
         
-        # Process results
         items = []
         for result in results:
             manifest = result[0]
@@ -183,7 +165,6 @@ def list_manifest():
             manifest.voyage_name = result.voyage_name
             items.append(manifest)
 
-        # Common template variables
         template_vars = {
             'items': items,
             'search': request.args.get('search', ''),
@@ -242,20 +223,16 @@ def list_manifest():
             'identifier_field': 'bill_of_lading'
         }
         
-        # Check if this is an HTMX request
         is_htmx = request.headers.get('HX-Request') == 'true'
         logger.debug(f"Is HTMX request: {is_htmx}")
         
-        # If this is an HTMX request for more items, return just the rows
         if is_htmx and page > 1:
             logger.debug("Returning rows template for HTMX request")
             return render_template('manifest/rows.html', **template_vars)
         elif is_htmx:
-            # For other HTMX requests (like search), return the full table
             logger.debug("Returning table template for HTMX request")
             return render_template('manifest/table.html', **template_vars)
         
-        # Otherwise return the full page
         logger.debug("Returning full template")
         return render_template('manifest/list.html', **template_vars)
     except Exception as e:
@@ -263,77 +240,65 @@ def list_manifest():
         db_session.rollback()
         raise
 
-@bp.route('/new', methods=['GET', 'POST'])
-def create_manifest():
-    if request.method == 'POST':
-        try:
-            item = Manifest()
-            item.bill_of_lading = request.form.get('bill_of_lading')
-            item.shipper_id = request.form.get('shipper_id')
-            item.consignee_id = request.form.get('consignee_id')
-            item.vessel_id = request.form.get('vessel_id')
-            item.voyage_id = request.form.get('voyage_id')
-            item.port_of_loading_id = request.form.get('port_of_loading_id')
-            item.port_of_discharge_id = request.form.get('port_of_discharge_id')
-            item.place_of_delivery = request.form.get('place_of_delivery')
-            item.place_of_receipt = request.form.get('place_of_receipt')
-            item.clauses = request.form.get('clauses')
-            
-            date_str = request.form.get('date_of_receipt')
-            logger.debug(f"Create - Received date string: {date_str}")
-            item.date_of_receipt = parse_date(date_str)
-            logger.debug(f"Create - Parsed date: {item.date_of_receipt}")
-            
-            item.manifester_id = request.form.get('manifester_id')
-            
-            db_session.add(item)
-            db_session.commit()
-            return redirect(url_for('manifest.list_manifest'))
-        except Exception as e:
-            logger.error(f"Error in create_manifest: {str(e)}", exc_info=True)
-            db_session.rollback()
-            raise
-    
-    choices = get_form_choices()
-    return render_template('manifest/form.html', **choices)
-
-@bp.route('/<int:id>/edit', methods=['GET', 'POST'])
-def edit_manifest(id):
+@bp.route('/load-form', methods=['GET'])
+def load_form():
+    """Load the form content via HTMX"""
     try:
-        item = db_session.query(Manifest).get(id)
-        if item is None:
-            abort(404)
-        
-        if request.method == 'POST':
-            item.bill_of_lading = request.form.get('bill_of_lading')
-            item.shipper_id = request.form.get('shipper_id')
-            item.consignee_id = request.form.get('consignee_id')
-            item.vessel_id = request.form.get('vessel_id')
-            item.voyage_id = request.form.get('voyage_id')
-            item.port_of_loading_id = request.form.get('port_of_loading_id')
-            item.port_of_discharge_id = request.form.get('port_of_discharge_id')
-            item.place_of_delivery = request.form.get('place_of_delivery')
-            item.place_of_receipt = request.form.get('place_of_receipt')
-            item.clauses = request.form.get('clauses')
+        id = request.args.get('id')
+        if id:
+            item = db_session.query(Manifest).get(id)
+            if item is None:
+                abort(404)
+            if item.date_of_receipt:
+                item.date_of_receipt = item.date_of_receipt.strftime('%Y-%m-%d')
+        else:
+            item = None
             
-            date_str = request.form.get('date_of_receipt')
-            logger.debug(f"Edit - Received date string: {date_str}")
-            item.date_of_receipt = parse_date(date_str)
-            logger.debug(f"Edit - Parsed date: {item.date_of_receipt}")
-            
-            item.manifester_id = request.form.get('manifester_id')
-            
-            db_session.commit()
-            return redirect(url_for('manifest.list_manifest'))
-        
-        # Format the date for display in the form
-        if item.date_of_receipt:
-            item.date_of_receipt = item.date_of_receipt.strftime('%Y-%m-%d')
-        
         choices = get_form_choices()
-        return render_template('manifest/form.html', item=item, **choices)
+        return render_template('manifest/form_content.html', item=item, **choices)
     except Exception as e:
-        logger.error(f"Error in edit_manifest: {str(e)}", exc_info=True)
+        logger.error(f"Error in load_form: {str(e)}", exc_info=True)
+        db_session.rollback()
+        raise
+
+@bp.route('/save', methods=['POST'])
+def save_manifest():
+    """Save manifest via HTMX form submission"""
+    try:
+        id = request.args.get('id')
+        if id:
+            item = db_session.query(Manifest).get(id)
+            if item is None:
+                abort(404)
+        else:
+            item = Manifest()
+            
+        item.bill_of_lading = request.form.get('bill_of_lading')
+        item.shipper_id = request.form.get('shipper_id')
+        item.consignee_id = request.form.get('consignee_id')
+        item.vessel_id = request.form.get('vessel_id')
+        item.voyage_id = request.form.get('voyage_id')
+        item.port_of_loading_id = request.form.get('port_of_loading_id')
+        item.port_of_discharge_id = request.form.get('port_of_discharge_id')
+        item.place_of_delivery = request.form.get('place_of_delivery')
+        item.place_of_receipt = request.form.get('place_of_receipt')
+        item.clauses = request.form.get('clauses')
+        
+        date_str = request.form.get('date_of_receipt')
+        logger.debug(f"Save - Received date string: {date_str}")
+        item.date_of_receipt = parse_date(date_str)
+        logger.debug(f"Save - Parsed date: {item.date_of_receipt}")
+        
+        item.manifester_id = request.form.get('manifester_id')
+        
+        if not id:
+            db_session.add(item)
+        db_session.commit()
+        
+        # Return empty response to clear the form container
+        return ''
+    except Exception as e:
+        logger.error(f"Error in save_manifest: {str(e)}", exc_info=True)
         db_session.rollback()
         raise
 
