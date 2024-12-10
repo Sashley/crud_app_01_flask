@@ -1,0 +1,72 @@
+<!-- Modal Backdrop -->
+<div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-40 modal" aria-hidden="true"></div>
+
+<!-- Modal Container -->
+<div class="fixed inset-0 z-50 overflow-y-auto modal" style="padding-top: 6rem;">
+    <div class="flex justify-center">
+        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all w-full max-w-4xl mx-4">
+            <!-- Form Content -->
+            <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                {% include 'lineitem/form_content.html' %}
+            </div>
+            
+            <!-- Close button -->
+            <button onclick="closeModal()" 
+                    class="absolute top-0 right-0 mt-4 mr-4 text-gray-600 hover:text-gray-900 text-2xl font-bold z-50">
+                ×
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Prevent background interaction -->
+<style>
+    body.modal-open {
+        overflow: hidden;
+    }
+</style>
+
+<script>
+    function closeModal() {
+        // Remove modal elements
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => modal.remove());
+        // Remove body class
+        document.body.classList.remove('modal-open');
+        // Clear modal container
+        document.getElementById('modal-container').innerHTML = '';
+        // Trigger table refresh
+        htmx.trigger('#lineitem-table-container', 'lineitemSaved');
+    }
+
+    // Add modal-open class to body when modal is shown
+    document.body.classList.add('modal-open');
+    
+    // Handle successful form submission
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.successful && evt.detail.target.id === 'modal-container' && !evt.detail.xhr.response) {
+            closeModal();
+        }
+    });
+
+    // Handle ESC key to close modal
+    document.addEventListener('keydown', function(evt) {
+        if (evt.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    // Handle click outside modal to close
+    document.addEventListener('click', function(evt) {
+        if (evt.target.classList.contains('modal')) {
+            closeModal();
+        }
+    });
+
+    // Re-initialize HTMX after content swap
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.target.id === 'modal-container') {
+            htmx.process(evt.detail.target);
+        }
+    });
+</script>

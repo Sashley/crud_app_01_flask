@@ -1,15 +1,58 @@
-{% extends "generic/table_base.html" %}
+<div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead>
+            <tr>
+                {% for column in columns %}
+                <th scope="col" 
+                    class="{{ column.class }} {{ column.responsive_class|default('') }}"
+                    {% if column.sortable %}
+                    hx-get="{{ url_for(routes.list, sort=('-' + column.key) if sort == column.key else column.key) }}"
+                    hx-trigger="click"
+                    hx-target="#lineitem-table-container"
+                    style="cursor: pointer;"
+                    {% endif %}>
+                    {{ column.label }}
+                    {% if column.sortable %}
+                        {% if sort == column.key %}
+                        ↑
+                        {% elif sort == '-' + column.key %}
+                        ↓
+                        {% endif %}
+                    {% endif %}
+                </th>
+                {% endfor %}
+                <th scope="col" class="relative px-6 py-2">
+                    <span class="sr-only">Actions</span>
+                </th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200" id="lineitem-table-body">
+            {% include 'lineitem/rows.html' %}
+        </tbody>
+    </table>
+</div>
 
-{% block table_id %}lineitem-table{% endblock %}
+<script>
+    // Re-initialize HTMX after content swap
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.target.id === 'lineitem-table-container') {
+            // Re-process HTMX attributes
+            htmx.process(evt.detail.target);
+            // Clear modal container
+            const modalContainer = document.getElementById('modal-container');
+            if (modalContainer) {
+                modalContainer.innerHTML = '';
+            }
+        }
+    });
 
-{% block table_rows %}
-    {% if items %}
-        {% include 'lineitem/rows.html' %}
-    {% else %}
-        <tr>
-            <td colspan="{{ columns|length + 1 }}" class="px-6 py-4 text-center text-gray-500">
-                No line items found.
-            </td>
-        </tr>
-    {% endif %}
-{% endblock %}
+    // Handle successful form submission
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.successful && evt.detail.target.id === 'modal-container' && !evt.detail.xhr.response) {
+            // Clear modal
+            evt.detail.target.innerHTML = '';
+            // Refresh table
+            htmx.trigger('#lineitem-table-container', 'lineitemSaved');
+        }
+    });
+</script>

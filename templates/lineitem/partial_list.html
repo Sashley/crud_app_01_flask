@@ -1,26 +1,39 @@
-<div class="bg-white shadow overflow-hidden border-b border-gray-200 rounded-lg">
-    <div class="flex justify-between items-center p-4">
-        <h2 class="text-lg font-semibold">{{ manifest_number }} Items</h2>
-        {% if manifest %}
-        <a href="{{ url_for('lineitem.create_lineitem', manifest_id=manifest.id) }}" 
-           class="px-4 py-2 text-sm text-gray-700 rounded-md bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2">
-            Add Line Item
-        </a>
-        {% endif %}
-    </div>
-    
-    <div id="lineitem-table-container">
-        {% if items %}
-            {% include 'lineitem/table.html' %}
-        {% else %}
-            <div class="p-4 text-center text-gray-500">
-                No line items found for this manifest. Click "Add Line Item" to create one.
-            </div>
-        {% endif %}
+<div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Line Items for {{ manifest_number }}
+        </h3>
     </div>
 
-    <!-- Selected Line Item Display -->
-    <div class="p-4 bg-gray-50 border-t border-gray-200 text-xs text-gray-500">
-        <div id="selected-lineitem-display"></div>
+    <div class="mb-4 px-4 pt-4 flex justify-end">
+        <button type="button"
+                class="inline-flex items-center px-4 py-2 text-sm text-gray-700 rounded-md bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+                hx-get="{{ url_for('lineitem.load_form', manifest_id=manifest.id) }}"
+                hx-target="#modal-container">
+            New Line Item
+        </button>
+    </div>
+
+    <div id="lineitem-table-container">
+        {% include 'lineitem/table.html' %}
     </div>
 </div>
+
+<script>
+    // Handle successful form submission
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.successful && evt.detail.target.id === 'modal-container' && !evt.detail.xhr.response) {
+            // Clear modal
+            document.getElementById('modal-container').innerHTML = '';
+            // Refresh table
+            htmx.trigger('#lineitem-table-container', 'lineitemSaved');
+        }
+    });
+
+    // Re-initialize HTMX after content swap
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.target.id === 'lineitem-table-container') {
+            htmx.process(evt.detail.target);
+        }
+    });
+</script>

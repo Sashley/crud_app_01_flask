@@ -4,6 +4,14 @@
 
 {% block entity_name %}{{ manifest_number }} Items{% endblock %}
 
-{% block table %}
-    {% include 'lineitem/table.html' %}
+{% block table_content %}
+    <div id="lineitem-table"
+         class="overflow-hidden">
+        {% include 'lineitem/table.html' %}
+    </div>
+{% endblock %}
+
+{% block after_table %}
+    <!-- Modal Container -->
+    <div id="modal-container"></div>
 {% endblock %}

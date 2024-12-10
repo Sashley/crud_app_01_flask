@@ -50,13 +50,6 @@ def get_filtered_query():
     logger.debug(f"Filtering by manifest_id: {manifest_id}")
     if manifest_id:
         query = query.filter(LineItem.manifest_id == manifest_id)
-        # Debug: Check if any line items exist for this manifest
-        count = query.count()
-        logger.debug(f"Found {count} line items for manifest_id {manifest_id}")
-        # Debug: Print first few line items
-        items = query.limit(3).all()
-        for item in items:
-            logger.debug(f"Line item: id={item.id}, description={item.description}")
     
     # Apply search filters
     search = request.args.get('search', '').strip()
@@ -105,23 +98,11 @@ def get_filtered_query():
     else:
         query = query.order_by(getattr(LineItem, sort))
     
-    # Add columns to select
-    query = query.add_columns(
-        Manifest.bill_of_lading.label('manifest_bol'),
-        PackType.name.label('pack_type_name'),
-        Commodity.name.label('commodity_name'),
-        Container.number.label('container_number')
-    )
-    
     return query
 
 @bp.route('/')
 def list_lineitem():
     logger.debug("Entering list_lineitem route")
-    logger.debug(f"Request path: {request.path}")
-    logger.debug(f"Request method: {request.method}")
-    logger.debug(f"Request args: {request.args}")
-    logger.debug(f"Request headers: {request.headers}")
     try:
         page_size = int(request.args.get('page_size', '10'))
         page = int(request.args.get('page', '1'))
@@ -134,18 +115,8 @@ def list_lineitem():
         logger.debug(f"Total count: {total_count}")
         
         # Apply pagination
-        results = query.offset(offset).limit(page_size).all()
-        logger.debug(f"Found {len(results)} lineitems for page {page}")
-        
-        # Process results
-        items = []
-        for result in results:
-            lineitem = result[0]
-            lineitem.manifest_bol = result.manifest_bol
-            lineitem.pack_type_name = result.pack_type_name
-            lineitem.commodity_name = result.commodity_name
-            lineitem.container_number = result.container_number
-            items.append(lineitem)
+        items = query.offset(offset).limit(page_size).all()
+        logger.debug(f"Found {len(items)} lineitems for page {page}")
 
         # Get manifest if manifest_id is provided
         manifest_id = request.args.get('manifest_id')
@@ -170,12 +141,12 @@ def list_lineitem():
             'total_count': total_count,
             'has_more': total_count > (page * page_size),
             'entity_name': 'LineItem',
-            'manifest': manifest,  # Pass the manifest object
+            'manifest': manifest,
             'manifest_number': manifest_number,
             'routes': {
                 'list': 'lineitem.list_lineitem',
-                'create': 'lineitem.create_lineitem',
-                'edit': 'lineitem.edit_lineitem',
+                'create': 'lineitem.load_form',
+                'edit': 'lineitem.load_form',
                 'delete': 'lineitem.delete_lineitem'
             },
             'columns': [
@@ -242,19 +213,15 @@ def list_lineitem():
         is_htmx = request.headers.get('HX-Request') == 'true'
         logger.debug(f"Is HTMX request: {is_htmx}")
         
+        # If manifest_id is provided and this is a table refresh, return just the table
+        if manifest_id and is_htmx and request.headers.get('HX-Target') == 'lineitem-table-container':
+            logger.debug("Returning table template for HTMX refresh")
+            return render_template('lineitem/table.html', **template_vars)
+        
         # If manifest_id is provided, return partial template
         if manifest_id:
             logger.debug("Returning partial list template")
             return render_template('lineitem/partial_list.html', **template_vars)
-        
-        # If this is an HTMX request for more items, return just the rows
-        if is_htmx and page > 1:
-            logger.debug("Returning rows template for HTMX request")
-            return render_template('lineitem/rows.html', **template_vars)
-        elif is_htmx:
-            # For other HTMX requests (like search), return the full table
-            logger.debug("Returning table template for HTMX request")
-            return render_template('lineitem/table.html', **template_vars)
         
         # Otherwise return the full page
         logger.debug("Returning full template")
@@ -264,72 +231,59 @@ def list_lineitem():
         db_session.rollback()
         raise
 
-@bp.route('/new', methods=['GET', 'POST'])
-def create_lineitem():
-    if request.method == 'POST':
-        try:
-            item = LineItem()
-            item.manifest_id = request.form.get('manifest_id')
-            item.description = request.form.get('description')
-            item.quantity = request.form.get('quantity')
-            item.weight = request.form.get('weight')
-            item.volume = request.form.get('volume')
-            item.pack_type_id = request.form.get('pack_type_id')
-            item.commodity_id = request.form.get('commodity_id')
-            item.container_id = request.form.get('container_id')
-            item.manifester_id = request.form.get('manifester_id')
-            
-            db_session.add(item)
-            db_session.commit()
-            
-            # If manifest_id was provided in query params, redirect back to manifest list
-            manifest_id = request.args.get('manifest_id')
-            if manifest_id:
-                return redirect(url_for('manifest.list_manifest'))
-            return redirect(url_for('lineitem.list_lineitem'))
-        except Exception as e:
-            logger.error(f"Error in create_lineitem: {str(e)}", exc_info=True)
-            db_session.rollback()
-            raise
-    
-    # Pre-select manifest if manifest_id is provided
-    manifest_id = request.args.get('manifest_id')
-    if manifest_id:
-        manifest = db_session.query(Manifest).get(manifest_id)
-        if manifest is None:
-            abort(404)
-        item = LineItem(manifest_id=manifest_id)
-    else:
-        item = None
-    
-    choices = get_form_choices()
-    return render_template('lineitem/form.html', item=item, **choices)
-
-@bp.route('/<int:id>/edit', methods=['GET', 'POST'])
-def edit_lineitem(id):
+@bp.route('/load-form', methods=['GET'])
+def load_form():
+    """Load the form content via HTMX"""
     try:
-        item = db_session.query(LineItem).get(id)
-        if item is None:
-            abort(404)
+        id = request.args.get('id')
+        manifest_id = request.args.get('manifest_id')
         
-        if request.method == 'POST':
-            item.manifest_id = request.form.get('manifest_id')
-            item.description = request.form.get('description')
-            item.quantity = request.form.get('quantity')
-            item.weight = request.form.get('weight')
-            item.volume = request.form.get('volume')
-            item.pack_type_id = request.form.get('pack_type_id')
-            item.commodity_id = request.form.get('commodity_id')
-            item.container_id = request.form.get('container_id')
-            item.manifester_id = request.form.get('manifester_id')
+        if id:
+            item = db_session.query(LineItem).get(id)
+            if item is None:
+                abort(404)
+        else:
+            item = LineItem()
+            if manifest_id:
+                item.manifest_id = manifest_id
             
-            db_session.commit()
-            return redirect(url_for('manifest.list_manifest'))
-        
         choices = get_form_choices()
-        return render_template('lineitem/form.html', item=item, **choices)
+        return render_template('lineitem/form_modal.html', item=item, manifest_id=manifest_id, **choices)
     except Exception as e:
-        logger.error(f"Error in edit_lineitem: {str(e)}", exc_info=True)
+        logger.error(f"Error in load_form: {str(e)}", exc_info=True)
+        db_session.rollback()
+        raise
+
+@bp.route('/save', methods=['POST'])
+def save_lineitem():
+    """Save lineitem via HTMX form submission"""
+    try:
+        id = request.args.get('id')
+        if id:
+            item = db_session.query(LineItem).get(id)
+            if item is None:
+                abort(404)
+        else:
+            item = LineItem()
+            
+        item.manifest_id = request.form.get('manifest_id')
+        item.description = request.form.get('description')
+        item.quantity = request.form.get('quantity')
+        item.weight = request.form.get('weight')
+        item.volume = request.form.get('volume')
+        item.pack_type_id = request.form.get('pack_type_id')
+        item.commodity_id = request.form.get('commodity_id')
+        item.container_id = request.form.get('container_id')
+        item.manifester_id = request.form.get('manifester_id')
+        
+        if not id:
+            db_session.add(item)
+        db_session.commit()
+        
+        # Return empty response to clear the modal
+        return ''
+    except Exception as e:
+        logger.error(f"Error in save_lineitem: {str(e)}", exc_info=True)
         db_session.rollback()
         raise
 
