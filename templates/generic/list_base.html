@@ -127,12 +127,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     window.selectRow = function(row, identifier) {
-        console.log('Row clicked:', row);
-        console.log('Identifier:', identifier);
+        // Clear any existing selected rows in the entire table
+        document.querySelectorAll('.selected-row').forEach(function(r) {
+            r.classList.remove('selected-row');
+        });
         
-        if (selectedRow) {
-            selectedRow.classList.remove('selected-row');
-        }
+        // Select the clicked row
         row.classList.add('selected-row');
         selectedRow = row;
         document.getElementById('selectedItem').textContent = identifier;
@@ -183,15 +183,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.body.addEventListener('htmx:afterSwap', function(evt) {
         console.log('HTMX After Swap:', evt.detail);
-        if (selectedRow) {
-            const identifier = selectedRow.dataset.identifier;
-            const newRow = document.querySelector(`tr[data-identifier="${identifier}"]`);
-            if (newRow) {
-                newRow.classList.add('selected-row');
-                selectedRow = newRow;
-                document.getElementById('selectedItem').textContent = identifier;
-            }
-        }
         adjustTableHeight();
     });
 });
