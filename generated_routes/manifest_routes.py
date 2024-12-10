@@ -255,7 +255,7 @@ def load_form():
             item = None
             
         choices = get_form_choices()
-        return render_template('manifest/form_content.html', item=item, **choices)
+        return render_template('manifest/form_modal.html', item=item, **choices)
     except Exception as e:
         logger.error(f"Error in load_form: {str(e)}", exc_info=True)
         db_session.rollback()
@@ -295,7 +295,7 @@ def save_manifest():
             db_session.add(item)
         db_session.commit()
         
-        # Return empty response to clear the form container
+        # Return empty response to clear the modal
         return ''
     except Exception as e:
         logger.error(f"Error in save_manifest: {str(e)}", exc_info=True)

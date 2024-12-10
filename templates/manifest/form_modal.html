@@ -1,0 +1,39 @@
+<!-- Modal Backdrop -->
+<div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-40" aria-hidden="true"></div>
+
+<!-- Modal Container -->
+<div class="fixed inset-0 z-50 overflow-y-auto" style="padding-top: 6rem;">
+    <div class="flex justify-center">
+        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all w-full max-w-4xl mx-4">
+            <!-- Form Content -->
+            <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                {% include 'manifest/form_content.html' %}
+            </div>
+            
+            <!-- Close button -->
+            <button onclick="document.getElementById('modal-container').innerHTML = ''" 
+                    class="absolute top-0 right-0 mt-4 mr-4 text-gray-600 hover:text-gray-900 text-2xl font-bold z-50">
+                ×
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Prevent background interaction -->
+<style>
+    body.modal-open {
+        overflow: hidden;
+    }
+</style>
+
+<script>
+    // Add modal-open class to body when modal is shown
+    document.body.classList.add('modal-open');
+    
+    // Remove modal-open class when modal is closed
+    document.getElementById('modal-container').addEventListener('htmx:beforeSwap', function(evt) {
+        if (evt.detail.target.id === 'modal-container' && !evt.detail.xhr.response) {
+            document.body.classList.remove('modal-open');
+        }
+    });
+</script>
