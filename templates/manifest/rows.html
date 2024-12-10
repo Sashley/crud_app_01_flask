@@ -57,14 +57,3 @@
     </td>
 </tr>
 {% endfor %}
-
-{% if has_more %}
-<tr hx-get="{{ url_for('manifest.list_manifest', page=page + 1, search=search, sort=sort) }}"
-    hx-trigger="revealed"
-    hx-swap="afterend"
-    class="htmx-indicator">
-    <td colspan="6" class="px-6 py-2 whitespace-nowrap text-sm text-gray-500 text-center">
-        Loading more...
-    </td>
-</tr>
-{% endif %}
