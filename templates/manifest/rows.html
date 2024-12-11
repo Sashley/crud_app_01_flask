@@ -1,10 +1,10 @@
 {% for item in items %}
 <tr class="hover:bg-gray-50 cursor-pointer transition-colors duration-150 group h-9"
-    data-identifier="{{ item.id }}"
+    data-identifier="{{ item.bill_of_lading }}"
     hx-get="{{ url_for('lineitem.list_lineitem', manifest_id=item.id) }}"
     hx-target="#lineitem-container"
     hx-trigger="click"
-    onclick="selectRow(this, '{{ item.id }}')"
+    onclick="selectRow(this, '{{ item.bill_of_lading }}', '{{ item.bill_of_lading }}')"
     style="transition: background-color 0.15s ease-in-out;">
     <td class="px-6 py-1.5 text-sm text-gray-900 {{ columns[0].width_class }}">
         <div class="truncate max-w-[150px] sm:max-w-[170px]">

@@ -45,12 +45,17 @@ def get_form_choices():
 
 def get_filtered_query():
     """Get base query with all joins and filters applied"""
-    # Start with a query that joins all related entities
-    query = db_session.query(LineItem)\
-        .outerjoin(Manifest, LineItem.manifest_id == Manifest.id)\
-        .outerjoin(PackType, LineItem.pack_type_id == PackType.id)\
-        .outerjoin(Commodity, LineItem.commodity_id == Commodity.id)\
-        .outerjoin(Container, LineItem.container_id == Container.id)
+    # Start with a query that joins all related entities and selects their names
+    query = db_session.query(
+        LineItem,
+        PackType.name.label('pack_type_name'),
+        Commodity.name.label('commodity_name'),
+        Container.number.label('container_number'),
+        Manifest.bill_of_lading.label('bol_number')  # Add BoL number to query
+    ).outerjoin(Manifest, LineItem.manifest_id == Manifest.id)\
+     .outerjoin(PackType, LineItem.pack_type_id == PackType.id)\
+     .outerjoin(Commodity, LineItem.commodity_id == Commodity.id)\
+     .outerjoin(Container, LineItem.container_id == Container.id)
     
     # Filter by manifest_id if provided
     manifest_id = request.args.get('manifest_id')
@@ -122,7 +127,16 @@ def list_lineitem():
         logger.debug(f"Total count: {total_count}")
         
         # Apply pagination
-        items = query.offset(offset).limit(page_size).all()
+        results = query.offset(offset).limit(page_size).all()
+        # Convert results to dictionaries with all fields
+        items = []
+        for result in results:
+            item_dict = result[0].__dict__
+            item_dict['pack_type_name'] = result[1]
+            item_dict['commodity_name'] = result[2]
+            item_dict['container_number'] = result[3]
+            item_dict['bol_number'] = result[4]  # Add BoL number to item dictionary
+            items.append(item_dict)
         logger.debug(f"Found {len(items)} lineitems for page {page}")
 
         # Get manifest if manifest_id is provided
@@ -160,60 +174,61 @@ def list_lineitem():
                 {
                     'key': 'description',
                     'label': 'Description',
-                    'sortable': True,
-                    'class': 'w-[160px] sm:w-[180px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50',
-                    'width_class': 'max-w-[150px] sm:max-w-[170px]'
-                },
-                {
-                    'key': 'quantity',
-                    'label': 'Quantity',
-                    'sortable': True,
-                    'class': 'w-[100px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50',
-                    'responsive_class': 'hidden sm:table-cell',
-                    'width_class': 'max-w-[90px]'
-                },
-                {
-                    'key': 'weight',
-                    'label': 'Weight',
-                    'sortable': True,
-                    'class': 'w-[100px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50',
-                    'responsive_class': 'hidden md:table-cell',
-                    'width_class': 'max-w-[90px]'
-                },
-                {
-                    'key': 'volume',
-                    'label': 'Volume',
-                    'sortable': True,
-                    'class': 'w-[100px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50',
-                    'responsive_class': 'hidden lg:table-cell',
-                    'width_class': 'max-w-[90px]'
+                    'sortable': False,
+                    'class': 'px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider',
+                    'responsive_class': 'sm:w-[30%]',
+                    'width_class': 'max-w-full'
                 },
                 {
                     'key': 'pack_type_name',
                     'label': 'Pack Type',
                     'sortable': False,
-                    'class': 'w-[120px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50',
-                    'responsive_class': 'hidden xl:table-cell',
-                    'width_class': 'max-w-[110px]'
+                    'class': 'w-[15%] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider',
+                    'responsive_class': 'hidden sm:table-cell',
+                    'width_class': 'max-w-full'
                 },
                 {
                     'key': 'commodity_name',
                     'label': 'Commodity',
                     'sortable': False,
-                    'class': 'w-[120px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50',
-                    'responsive_class': 'hidden xl:table-cell',
-                    'width_class': 'max-w-[110px]'
+                    'class': 'w-[15%] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider',
+                    'responsive_class': 'hidden md:table-cell',
+                    'width_class': 'max-w-full'
                 },
                 {
                     'key': 'container_number',
                     'label': 'Container',
                     'sortable': False,
-                    'class': 'w-[120px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50',
+                    'class': 'w-[15%] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider',
+                    'responsive_class': 'hidden md:table-cell',
+                    'width_class': 'max-w-full'
+                },
+                {
+                    'key': 'quantity',
+                    'label': 'Quantity',
+                    'sortable': True,
+                    'class': 'w-[8%] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider',
+                    'responsive_class': 'hidden lg:table-cell',
+                    'width_class': 'max-w-full'
+                },
+                {
+                    'key': 'weight',
+                    'label': 'Weight',
+                    'sortable': True,
+                    'class': 'w-[8%] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider',
                     'responsive_class': 'hidden xl:table-cell',
-                    'width_class': 'max-w-[110px]'
+                    'width_class': 'max-w-full'
+                },
+                {
+                    'key': 'volume',
+                    'label': 'Volume',
+                    'sortable': True,
+                    'class': 'w-[8%] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider',
+                    'responsive_class': 'hidden xl:table-cell',
+                    'width_class': 'max-w-full'
                 }
             ],
-            'identifier_field': 'description'
+            'identifier_field': 'bol_number'  # Changed to use BoL number as identifier
         }
         
         # Check if this is an HTMX request

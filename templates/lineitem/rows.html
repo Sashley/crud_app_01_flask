@@ -1,8 +1,8 @@
 {% for item in items %}
 <tr class="hover:bg-gray-50 cursor-pointer transition-colors duration-150 group h-9" 
     data-selectable="true"
-    data-identifier="{{ item[identifier_field] }}"
-    onclick="selectLineItemRow(this, '{{ item[identifier_field] }}')"
+    data-identifier="{{ item.bol_number }}"
+    onclick="selectLineItemRow(this)"
     style="transition: background-color 0.15s ease-in-out;">
     {% for column in columns %}
     <td class="px-6 py-1.5 text-sm text-gray-900 {{ column.responsive_class|default('') }}">
@@ -11,8 +11,8 @@
         </div>
     </td>
     {% endfor %}
-    <td class="px-6 py-1.5 text-sm text-gray-900">
-        <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+    <td class="w-[120px] px-6 py-1.5 text-sm text-gray-900">
+        <div class="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
             <button type="button"
                     hx-get="{{ url_for('lineitem.load_form', id=item.id, manifest_id=manifest.id) }}"
                     hx-target="#modal-container"
@@ -50,10 +50,3 @@
     </td>
 </tr>
 {% endif %}
-
-<!-- Selected Line Item Display -->
-<tr class="bg-gray-50">
-    <td colspan="{{ columns|length + 1 }}" class="px-6 py-2 text-xs text-gray-500 text-left">
-        <div id="selected-lineitem-display"></div>
-    </td>
-</tr>

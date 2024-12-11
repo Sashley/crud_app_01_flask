@@ -1,38 +1,60 @@
-<div class="overflow-x-auto">
-    <table class="min-w-full divide-y divide-gray-200">
-        <thead>
-            <tr>
-                {% for column in columns %}
-                <th scope="col" 
-                    class="{{ column.class }} {{ column.responsive_class|default('') }}"
-                    {% if column.sortable %}
-                    hx-get="{{ url_for(routes.list, sort=('-' + column.key) if sort == column.key else column.key) }}"
-                    hx-trigger="click"
-                    hx-target="#lineitem-table-container"
-                    style="cursor: pointer;"
-                    {% endif %}>
-                    {{ column.label }}
-                    {% if column.sortable %}
-                        {% if sort == column.key %}
-                        ↑
-                        {% elif sort == '-' + column.key %}
-                        ↓
+<div class="relative">
+    <div class="overflow-x-auto border rounded-lg">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+                <tr class="bg-gray-50">
+                    {% for column in columns %}
+                    <th scope="col" 
+                        class="{{ column.class }} {{ column.responsive_class|default('') }}"
+                        {% if column.sortable %}
+                        hx-get="{{ url_for(routes.list, sort=('-' + column.key) if sort == column.key else column.key) }}"
+                        hx-trigger="click"
+                        hx-target="#lineitem-table-container"
+                        style="cursor: pointer;"
+                        {% endif %}>
+                        {{ column.label }}
+                        {% if column.sortable %}
+                            {% if sort == column.key %}
+                            ↑
+                            {% elif sort == '-' + column.key %}
+                            ↓
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
-                </th>
-                {% endfor %}
-                <th scope="col" class="relative px-6 py-2">
-                    <span class="sr-only">Actions</span>
-                </th>
-            </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200" id="lineitem-table-body">
-            {% include 'lineitem/rows.html' %}
-        </tbody>
-    </table>
+                    </th>
+                    {% endfor %}
+                    <th scope="col" class="w-[120px] px-6 py-2 text-right bg-gray-50">
+                        <span class="sr-only">Actions</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200" id="lineitem-table-body">
+                {% include 'lineitem/rows.html' %}
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-2 text-right pr-4">
+        <span id="selected-bol" class="text-sm font-medium text-gray-700">jjjj</span>
+    </div>
 </div>
 
 <script>
+    function selectLineItemRow(row) {
+        // Remove selected class from all rows
+        document.querySelectorAll('#lineitem-table-body tr').forEach(tr => {
+            tr.classList.remove('selected-row', 'bg-blue-50');
+        });
+
+        // Add selected class to clicked row
+        row.classList.add('selected-row', 'bg-blue-50');
+
+        // Update BoL display
+        const bol = row.getAttribute('data-identifier');
+        const bolDisplay = document.getElementById('selected-bol');
+        if (bolDisplay) {
+            bolDisplay.textContent = bol ? `BoL: ${bol}` : '';
+        }
+    }
+
     // Re-initialize HTMX after content swap
     document.body.addEventListener('htmx:afterSwap', function(evt) {
         if (evt.detail.target.id === 'lineitem-table-container') {
@@ -42,6 +64,11 @@
             const modalContainer = document.getElementById('modal-container');
             if (modalContainer) {
                 modalContainer.innerHTML = '';
+            }
+            // Clear BoL display
+            const bolDisplay = document.getElementById('selected-bol');
+            if (bolDisplay) {
+                bolDisplay.textContent = '';
             }
         }
     });

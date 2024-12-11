@@ -23,7 +23,10 @@ def register_manifest_routes(app):
 @bp.route('/empty')
 def empty():
     """Return an empty response for closing modals"""
-    response = make_response('')
+    response = make_response()
+    # Add out-of-band swap to clear modal container
+    response.headers['HX-Reswap'] = 'innerHTML'
+    response.headers['HX-Retarget'] = '#modal-container'
     response.headers['HX-Trigger'] = 'modalClosed'
     return response
 
@@ -303,7 +306,9 @@ def save_manifest():
         db_session.commit()
         
         # Create response with HX-Trigger header
-        response = make_response('')
+        response = make_response()
+        response.headers['HX-Reswap'] = 'innerHTML'
+        response.headers['HX-Retarget'] = '#modal-container'
         response.headers['HX-Trigger'] = 'modalClosed manifestSaved'
         return response
     except Exception as e:

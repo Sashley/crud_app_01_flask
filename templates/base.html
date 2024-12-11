@@ -5,14 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Shipping System{% endblock %}</title>
     <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.11"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body.modal-open {
+            overflow: hidden;
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
+<body class="">
     <!-- Include the menu -->
     {% include 'menu.html' %}
 
     <!-- Main Content -->
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto">
         <!-- Page Header -->
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-gray-900">
@@ -33,7 +39,7 @@
         {% endwith %}
 
         <!-- Main Content Area -->
-        <div class="bg-white shadow-md rounded-lg p-6">
+        <div class="bg-white">
             {% block content %}{% endblock %}
         </div>
     </div>
@@ -41,12 +47,29 @@
     <!-- Modal Container -->
     <div id="modal-container"></div>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-gray-300 mt-12">
-        <div class="container mx-auto px-4 py-6">
-            <p class="text-center">&copy; {{ current_year }} Shipping System. All rights reserved.</p>
-        </div>
-    </footer>
+    <!-- Modal Event Handling -->
+    <script>
+        htmx.on("htmx:afterSettle", function(evt) {
+            // Handle modal state after content is settled
+            const modalContainer = document.getElementById('modal-container');
+            if (modalContainer && modalContainer.innerHTML.trim()) {
+                document.body.classList.add('modal-open');
+            } else {
+                document.body.classList.remove('modal-open');
+            }
+        });
+
+        // Handle escape key
+        document.addEventListener('keydown', function(evt) {
+            if (evt.key === 'Escape') {
+                const modalContainer = document.getElementById('modal-container');
+                if (modalContainer && modalContainer.innerHTML.trim()) {
+                    const closeButton = modalContainer.querySelector('button[data-close-modal]');
+                    if (closeButton) closeButton.click();
+                }
+            }
+        });
+    </script>
 
     <!-- Additional Scripts -->
     {% block scripts %}{% endblock %}

@@ -78,13 +78,15 @@ document.addEventListener('htmx:afterOnLoad', function (event) {
 
 // Store the currently selected row identifiers and descriptions
 let selectedManifestIdentifier = null;
+let selectedManifestBol = null;
 let selectedLineItemIdentifier = null;
 let selectedLineItemDescription = null;
 
 // Handle manifest row selection
-function selectRow(row, identifier) {
-  // Store the selected manifest identifier
+function selectRow(row, identifier, bol) {
+  // Store the selected manifest identifier and BoL
   selectedManifestIdentifier = identifier;
+  selectedManifestBol = bol;
 
   // Remove selected class from all manifest rows
   document.querySelectorAll('#manifest-table tr.selected-row').forEach(tr => {
@@ -93,6 +95,12 @@ function selectRow(row, identifier) {
 
   // Add selected class to clicked manifest row
   row.classList.add('selected-row', 'bg-blue-50');
+
+  // Update the manifest selection display if it exists
+  const manifestDisplay = document.querySelector('#selected-manifest-display');
+  if (manifestDisplay) {
+    manifestDisplay.textContent = selectedManifestBol || '';
+  }
 
   // Clear line item selection when a new manifest is selected
   selectedLineItemIdentifier = null;
@@ -158,6 +166,11 @@ document.addEventListener('htmx:afterSwap', function (evt) {
     const manifestRow = document.querySelector(`#manifest-table tr[data-identifier="${selectedManifestIdentifier}"]`);
     if (manifestRow) {
       manifestRow.classList.add('selected-row', 'bg-blue-50');
+      // Restore manifest display
+      const manifestDisplay = document.querySelector('#selected-manifest-display');
+      if (manifestDisplay) {
+        manifestDisplay.textContent = selectedManifestBol || '';
+      }
     }
   }
 
