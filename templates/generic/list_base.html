@@ -4,7 +4,17 @@
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-2 sm:px-4">
-    <h1 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">{{ entity_name }}</h1>
+    <div class="flex justify-between items-center mb-4 sm:mb-6">
+        <h1 class="text-xl sm:text-2xl font-bold">{{ entity_name }}</h1>
+        {% if new_button_text %}
+        <button type="button"
+                class="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                hx-get="{{ url_for(routes.edit) }}"
+                hx-target="#modal-container">
+            {{ new_button_text }}
+        </button>
+        {% endif %}
+    </div>
     
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 sm:mb-6">
         <div class="flex-1 max-w-full sm:max-w-lg">
@@ -12,7 +22,7 @@
                    id="searchInput"
                    name="search"
                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2" 
-                   placeholder="Search..." 
+                   placeholder="{{ search_placeholder or 'Search...' }}" 
                    value="{{ search or '' }}"
                    hx-get="{{ url_for(routes.list) }}"
                    hx-trigger="keyup changed delay:300ms"
@@ -33,8 +43,9 @@
         </div>
     </div>
 
-    <div class="border rounded-lg shadow-sm bg-white overflow-hidden">
-        <div id="tableContainer" class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+    <div class="border rounded-lg shadow-sm bg-white">
+        <!-- Dynamic height container with overflow -->
+        <div id="tableContainer" class="overflow-auto">
             <div id="{{ entity_name|lower }}-table">
                 {% block table_content %}{% endblock %}
             </div>
@@ -58,10 +69,11 @@
                     <option value="100" {% if page_size == 100 %}selected{% endif %}>100 per page</option>
                 </select>
                 {% if has_more %}
-                <button hx-get="{{ url_for(routes.list, page=page+1) }}"
+                <button type="button"
+                        hx-get="{{ url_for(routes.list, page=page+1, sort=sort) }}"
                         hx-target="#{{ entity_name|lower }}TableBody"
                         hx-swap="beforeend"
-                        hx-include="[name='page_size'], [name='search'], [name='sort']"
+                        hx-include="[name='page_size'], [name='search']"
                         class="px-4 py-2 text-sm text-gray-700 rounded-md bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2">
                     Load More
                 </button>
@@ -78,29 +90,45 @@
     background-color: #EBF5FF !important;
 }
 
-.scrollbar-thin::-webkit-scrollbar {
-    height: 8px;
+/* Custom scrollbar styling */
+.overflow-auto::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
 }
 
-.scrollbar-thin::-webkit-scrollbar-track {
+.overflow-auto::-webkit-scrollbar-track {
     background: #f1f1f1;
     border-radius: 4px;
 }
 
-.scrollbar-thin::-webkit-scrollbar-thumb {
+.overflow-auto::-webkit-scrollbar-thumb {
     background: #d1d5db;
     border-radius: 4px;
 }
 
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+.overflow-auto::-webkit-scrollbar-thumb:hover {
     background: #9ca3af;
 }
 
 @media (max-width: 640px) {
-    .scrollbar-thin::-webkit-scrollbar {
+    .overflow-auto::-webkit-scrollbar {
+        width: 4px;
         height: 4px;
     }
+}
+
+/* Ensure table header stays fixed */
+thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: white;
+}
+
+/* Force table to maintain its structure */
+table {
+    width: 100%;
+    table-layout: fixed;
 }
 </style>
 
@@ -114,18 +142,40 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedRow = null;
 
     function adjustTableHeight() {
-        const headerHeight = document.querySelector('thead').offsetHeight;
-        const rowHeight = 36;
         const pageSize = parseInt(pageSizeSelect.value);
-        const maxRows = Math.min(pageSize, 25);
-        const totalHeight = headerHeight + (maxRows * rowHeight);
-        tableContainer.style.height = `${totalHeight}px`;
+        const rowHeight = 36; // Approximate height of each row
+        const headerHeight = document.querySelector('thead').offsetHeight;
+        let containerHeight;
+
+        if (pageSize <= 3) {
+            containerHeight = (rowHeight * 3) + headerHeight;
+        } else if (pageSize <= 5) {
+            containerHeight = (rowHeight * 5) + headerHeight;
+        } else if (pageSize <= 10) {
+            containerHeight = (rowHeight * 10) + headerHeight;
+        } else {
+            containerHeight = Math.min(window.innerHeight - 300, (rowHeight * pageSize) + headerHeight);
+        }
+
+        tableContainer.style.height = `${containerHeight}px`;
     }
 
+    // Initial height adjustment
     adjustTableHeight();
-    window.addEventListener('resize', adjustTableHeight);
+
+    // Adjust height when page size changes
     pageSizeSelect.addEventListener('change', function() {
-        setTimeout(adjustTableHeight, 100);
+        setTimeout(adjustTableHeight, 100); // Wait for HTMX to update the content
+    });
+
+    // Adjust height when window resizes
+    window.addEventListener('resize', adjustTableHeight);
+
+    // Adjust height after HTMX swaps
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.target.id === `${entity_name.toLowerCase()}-table`) {
+            adjustTableHeight();
+        }
     });
 
     window.selectRow = function(row, identifier) {

@@ -9,6 +9,37 @@
             
             <!-- Main Navigation -->
             <div class="flex">
+
+                <!-- Generic Dropdown -->
+                <div class="relative group ml-4">
+                    <button class="flex items-center text-gray-300 hover:text-white px-3 py-2">
+                        <span>Generic Tables</span>
+                        <svg class="ml-1 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    <div class="absolute z-50 left-0 mt-2 w-[800px] rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                        <div class="py-1 grid grid-cols-4 gap-1" role="menu">
+                            <a href="/manifest" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Manifests</a>
+                            <a href="/client" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Clients</a>
+                            <a href="/commodity" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Commodities</a>
+                            <a href="/container" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Containers</a>
+                            <a href="/containerhistory" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Container Histories</a>
+                            <a href="/containerstatus" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Container Status</a>
+                            <a href="/country" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Countries</a>
+                            <a href="/leg" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Legs</a>
+                            <a href="/packtype" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Pack Types</a>
+                            <a href="/port" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Ports</a>
+                            <a href="/portpair" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Port Pairs</a>
+                            <a href="/rate" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Rates</a>
+                            <a href="/shippingcompany" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Shipping Companies</a>
+                            <a href="/user" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Users</a>
+                            <a href="/vessel" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Vessels</a>
+                            <a href="/voyage" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Voyages</a>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Vessel Operations Dropdown -->
                 <div class="relative group ml-4">
                     <button class="flex items-center text-gray-300 hover:text-white px-3 py-2">

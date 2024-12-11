@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, request, redirect, url_for, abort, make_response
+from flask import Blueprint, render_template, request, redirect, url_for, abort, make_response, jsonify
 from database import db_session
 from generated_models.client import Client
 from generated_models.country import Country
 from sqlalchemy import or_ as db_or
+import json
 
 bp = Blueprint('client', __name__)
 
@@ -18,6 +19,13 @@ def empty():
 
 @bp.route('/client')
 def list_client():
+    # Debug request information
+    print("\n=== Request Information ===")
+    print(f"URL: {request.url}")
+    print(f"Method: {request.method}")
+    print(f"Headers: {dict(request.headers)}")
+    print(f"Args: {dict(request.args)}")
+    
     query = Client.query.join(Client.country)
     
     # Apply search filters
@@ -60,21 +68,71 @@ def list_client():
         'page_size': page_size,
         'has_more': has_more,
         'entity_name': 'Client',
+        'identifier_field': 'name',  # Added this line
         'routes': {
             'list': 'client.list_client',
-            'create': 'client.create_client',
+            'create': 'client.save_client',
             'edit': 'client.load_form',
             'delete': 'client.delete_client'
-        }
+        },
+        'columns': [  # Added columns configuration
+            {
+                'key': 'name',
+                'label': 'Name',
+                'sortable': True,
+                'class': 'px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50'
+            },
+            {
+                'key': 'address',
+                'label': 'Address',
+                'sortable': True,
+                'class': 'hidden lg:table-cell px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50'
+            },
+            {
+                'key': 'town',
+                'label': 'Town',
+                'sortable': True,
+                'class': 'hidden xl:table-cell px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50'
+            },
+            {
+                'key': 'country_name',
+                'label': 'Country',
+                'sortable': True,
+                'class': 'hidden 2xl:table-cell px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50'
+            },
+            {
+                'key': 'contact_person',
+                'label': 'Contact Person',
+                'sortable': True,
+                'class': 'hidden 2xl:table-cell px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50'
+            }
+        ]
     }
 
     # Handle HTMX requests differently
     is_htmx = request.headers.get('HX-Request') == 'true'
-    if is_htmx and page > 1:
-        return render_template('client/rows.html', **template_vars)
-    elif is_htmx:
-        return render_template('client/table.html', **template_vars)
     
+    # Debug response information
+    print("\n=== Response Information ===")
+    print(f"Is HTMX Request: {is_htmx}")
+    print(f"Page > 1: {page > 1}")
+    
+    if is_htmx:
+        if page > 1:
+            # For load more, just return the rows without any wrapping elements
+            print("Rendering rows template for load more")
+            response = make_response(render_template('client/rows.html', **template_vars))
+            response.headers['HX-Trigger'] = json.dumps({
+                'showMessage': f'Loaded {len(items)} more items'
+            })
+            return response
+        else:
+            # For other HTMX requests (search, sort, etc.), return the full table
+            print("Rendering full table template for HTMX request")
+            return render_template('client/table.html', **template_vars)
+    
+    # For regular page load, return the full list template
+    print("Rendering full list template for regular request")
     return render_template('client/list.html', **template_vars)
 
 @bp.route('/client/load-form')
