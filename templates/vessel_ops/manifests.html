@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="manifest-container">
+    <h1 class="text-2xl font-bold mb-6">Vessel Manifests</h1>
+    
+    <div id="manifest-table" class="bg-white shadow-md rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Manifest ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vessel</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Voyage</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Received</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for manifest in manifests %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.id }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.voyage.vessel.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.voyage.voyage_number }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ manifest.date_of_receipt.strftime('%Y-%m-%d %H:%M') if manifest.date_of_receipt else 'N/A' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <button 
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                            hx-get="{{ url_for('manifest.load_form', id=manifest.id) }}"
+                            hx-target="#modal-container"
+                            hx-swap="innerHTML">
+                            Edit
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Container -->
+<div id="modal-container" 
+     hx-swap-oob="true"
+     hx-trigger="manifestSaved from:body"
+     hx-get="{{ url_for('vessel_ops.manifests') }}"
+     hx-target="#manifest-container"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.body.addEventListener('htmx:afterSwap', function(evt) {
+    if (evt.detail.target.id === 'modal-container') {
+        // Re-initialize any needed JavaScript after modal content is swapped
+        if (typeof initializeTabs === 'function') {
+            initializeTabs();
+        }
+    }
+});
+</script>
+{% endblock %}

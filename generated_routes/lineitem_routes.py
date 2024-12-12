@@ -176,14 +176,14 @@ def list_lineitem():
                     'label': 'Description',
                     'sortable': False,
                     'class': 'px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider',
-                    'responsive_class': 'sm:w-[30%]',
+                    'responsive_class': '', #sm:w-[30%]
                     'width_class': 'max-w-full'
                 },
                 {
                     'key': 'pack_type_name',
                     'label': 'Pack Type',
                     'sortable': False,
-                    'class': 'w-[15%] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider',
+                    'class': 'px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider',
                     'responsive_class': 'hidden sm:table-cell',
                     'width_class': 'max-w-full'
                 },

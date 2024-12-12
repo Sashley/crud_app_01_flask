@@ -11,7 +11,7 @@
         </div>
     </td>
     {% endfor %}
-    <td class="w-[120px] px-6 py-1.5 text-sm text-gray-900">
+    <td class="w-[80px] md:w-[120px] px-6 py-1.5 text-sm text-gray-900">
         <div class="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
             <button type="button"
                     hx-get="{{ url_for('lineitem.load_form', id=item.id, manifest_id=manifest.id) }}"
