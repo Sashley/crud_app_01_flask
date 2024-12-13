@@ -2,95 +2,75 @@
 
 {% block title %}Manifests{% endblock %}
 
-{% block entity_name %}Manifest{% endblock %}
+{% block header %}Manifests{% endblock %}
 
 {% block before_table %}
-<div class="mb-4 flex justify-end">
-    <button type="button"
-            class="inline-flex items-center px-4 py-2 text-sm text-gray-700 rounded-md bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
-            hx-get="{{ url_for('manifest.load_form') }}"
-            hx-target="#modal-container">
-        New Manifest
-    </button>
+<button type="button"
+        class="inline-flex items-center px-4 py-2 text-sm bg-gray-200 hover:bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        hx-get="{{ url_for('manifest.load_form') }}"
+        hx-target="#modal-container">
+    <!-- <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+    </svg> -->
+    New Manifest
+</button>
+
+<!-- Modal Container -->
+<div id="modal-container" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50" style="display: none;">
+    <!-- Modal content will be loaded here -->
 </div>
 {% endblock %}
 
 {% block table_content %}
-    <div id="manifest-table"
-         class="overflow-hidden"
-         hx-trigger="manifestSaved from:body"
-         hx-get="{{ url_for('manifest.list_manifest') }}"
-         hx-target="#manifest-table">
-        {% include 'manifest/table.html' %}
-    </div>
+<div id="manifest-table"
+     class="overflow-hidden"
+     hx-trigger="manifestSaved from:body"
+     hx-get="{{ url_for('manifest.list_manifest') }}"
+     hx-target="#manifest-table">
+    {% include 'manifest/table.html' %}
+</div>
 {% endblock %}
 
 {% block after_table %}
-    <!-- Modal Container -->
-    <div id="modal-container"></div>
+<!-- Line Items Section -->
+<div id="lineitem-container" class="mt-6 bg-white shadow rounded-lg">
+    <!-- Line items will be loaded here when a manifest is clicked -->
+</div>
 
-    <!-- Line Items Section -->
-    <div id="lineitem-container" class="mt-4">
-        <!-- Line items will be loaded here when a manifest is clicked -->
-    </div>
-
-    <script>
-        // Global event handlers for modal and table refresh
-        document.addEventListener('DOMContentLoaded', function() {
-            // Handle modal closing and table refresh
-            document.body.addEventListener('htmx:afterSwap', function(evt) {
-                if (evt.detail.target.id === 'modal-container') {
-                    if (!evt.detail.xhr.response) {
-                        // Modal was closed
-                        document.body.classList.remove('modal-open');
-                        // Trigger table refresh
-                        htmx.trigger('body', 'manifestSaved');
-                    } else {
-                        // Modal was opened
-                        document.body.classList.add('modal-open');
-                    }
-                }
-            });
-
-            // Handle modalClosed event
-            document.body.addEventListener('modalClosed', function() {
-                document.body.classList.remove('modal-open');
-                htmx.trigger('body', 'manifestSaved');
-            });
-
-            // Prevent row click when clicking action buttons
-            document.addEventListener('click', function(evt) {
-                if (evt.target.matches('button')) {
-                    evt.stopPropagation();
-                }
-            });
-        });
-
-        // Re-initialize any needed JavaScript after content swap
-        document.body.addEventListener('htmx:afterSettle', function(evt) {
-            if (evt.target.id === 'modal-container' || evt.target.id === 'manifest-table') {
-                if (typeof initializeTabs === 'function') {
-                    initializeTabs();
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle modal closing and table refresh
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            if (evt.detail.target.id === 'modal-container') {
+                const modalContainer = document.getElementById('modal-container');
+                if (!evt.detail.xhr.response) {
+                    // Modal was closed
+                    document.body.classList.remove('modal-open');
+                    modalContainer.style.display = 'none';
+                    // Trigger table refresh
+                    htmx.trigger('body', 'manifestSaved');
+                } else {
+                    // Modal was opened
+                    document.body.classList.add('modal-open');
+                    modalContainer.style.display = 'flex';
                 }
             }
         });
-    </script>
 
-    <style>
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        .overflow-hidden::-webkit-scrollbar {
-            display: none;
-        }
+        // Handle modalClosed event
+        document.body.addEventListener('modalClosed', function() {
+            const modalContainer = document.getElementById('modal-container');
+            document.body.classList.remove('modal-open');
+            modalContainer.style.display = 'none';
+            htmx.trigger('body', 'manifestSaved');
+        });
 
-        /* Hide scrollbar for IE, Edge and Firefox */
-        .overflow-hidden {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        /* Modal styles */
-        body.modal-open {
-            overflow: hidden;
-        }
-    </style>
+        // Prevent row click when clicking action buttons
+        document.addEventListener('click', function(evt) {
+            if (evt.target.matches('button')) {
+                evt.stopPropagation();
+            }
+        });
+    });
+</script>
 {% endblock %}

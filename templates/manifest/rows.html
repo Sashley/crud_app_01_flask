@@ -7,7 +7,7 @@
     onclick="selectRow(this, '{{ item.bill_of_lading }}', '{{ item.bill_of_lading }}')"
     style="transition: background-color 0.15s ease-in-out;">
     <td class="px-6 py-1.5 text-sm text-gray-900 {{ columns[0].width_class }}">
-        <div class="truncate max-w-[150px] sm:max-w-[170px]">
+        <div class="max-w-[150px] sm:max-w-[170px]">
             {{ item.bill_of_lading }}
         </div>
     </td>
@@ -31,7 +31,7 @@
             {{ item.voyage_name }}
         </div>
     </td>
-    <td class="w-[80px] sm:w-[120px] px-6 py-1.5 text-sm text-gray-900">
+    <td class="min-w-[200px] sm:w-[120px] px-6 py-1.5 text-sm text-gray-900">
         <div class="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
             <button type="button"
                     class="inline-flex items-center justify-center px-2 py-0.5 text-gray-700 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"

@@ -195,8 +195,8 @@ def list_manifest():
                     'key': 'bill_of_lading',
                     'label': 'Bill of Lading',
                     'sortable': True,
-                    'class': 'w-[140px] sm:w-[160px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50',
-                    'width_class': 'max-w-[150px] sm:max-w-[150px]'
+                    'class': 'w-[100px] sm:w-[160px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50',
+                    'width_class': 'max-w-[150px] sm:max-w-[1200px]'
                 },
                 {
                     'key': 'shipper_name',
@@ -210,7 +210,7 @@ def list_manifest():
                     'label': 'Consignee',
                     'sortable': True,
                     'class': 'w-[160px] sm:w-[180px] px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50',
-                    'responsive_class': 'hidden lg:table-cell',
+                    'responsive_class': 'hidden md:table-cell',
                     'width_class': 'max-w-[150px] sm:max-w-[170px]'
                 },
                 {

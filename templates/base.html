@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,71 +7,242 @@
     <script src="https://unpkg.com/htmx.org@1.9.6"></script>
     <script src="https://unpkg.com/hyperscript.org@0.9.11"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body.modal-open {
-            overflow: hidden;
-        }
-    </style>
 </head>
-<body class="">
-    <!-- Include the menu -->
-    {% include 'menu.html' %}
-
-    <!-- Main Content -->
-    <div class="container mx-auto">
-        <!-- Page Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">
-                {% block header %}{% endblock %}
-            </h1>
-            {% block subheader %}{% endblock %}
+<body class="h-full" data-menu-open="false">
+    <div class="min-h-full">
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="fixed inset-y-0 left-0 w-64 bg-gray-800 transform -translate-x-full transition-transform duration-300 ease-in-out lg:hidden z-50">
+            <div class="flex h-full flex-col">
+                <!-- Logo -->
+                <div class="flex h-16 items-center justify-between px-4 bg-gray-900">
+                    <a href="{{ url_for('index') }}" class="text-xl font-bold text-white">Shipping System</a>
+                    <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <!-- Navigation -->
+                <nav class="flex-1 overflow-y-auto px-4 py-4">
+                    <!-- Vessel Operations Section -->
+                    <div class="mb-8">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Vessel Operations</h3>
+                        <div class="mt-3 space-y-2">
+                            <a href="{{ url_for('vessel_ops.dashboard') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Operations Dashboard</a>
+                            <a href="{{ url_for('vessel_ops.active_vessels') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Active Vessels</a>
+                            <a href="{{ url_for('vessel_ops.upcoming_port_calls') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Upcoming Port Calls</a>
+                            <a href="{{ url_for('vessel_ops.status_summary') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Status Summary</a>
+                            <a href="{{ url_for('vessel_ops.manifests') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Operations Manifests</a>
+                        </div>
+                    </div>
+                    <!-- Shipping Section -->
+                    <div class="mb-8">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Shipping</h3>
+                        <div class="mt-3 space-y-2">
+                            <a href="{{ url_for('manifest.list_manifest') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Manifests</a>
+                            <a href="{{ url_for('shippingcompany.list_shippingcompany') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Shipping Companies</a>
+                            <a href="{{ url_for('vessel.list_vessel') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Vessels</a>
+                            <a href="{{ url_for('voyage.list_voyage') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Voyages</a>
+                            <a href="{{ url_for('lineitem.list_lineitem') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Line Items</a>
+                            <a href="{{ url_for('user.list_user') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Users</a>
+                        </div>
+                    </div>
+                    <!-- Containers Section -->
+                    <div class="mb-8">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Containers</h3>
+                        <div class="mt-3 space-y-2">
+                            <a href="{{ url_for('container.list_container') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Containers</a>
+                            <a href="{{ url_for('containerhistory.list_containerhistory') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Container Histories</a>
+                            <a href="{{ url_for('containerstatus.list_containerstatus') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Container Status</a>
+                        </div>
+                    </div>
+                    <!-- Geography Section -->
+                    <div class="mb-8">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Geography</h3>
+                        <div class="mt-3 space-y-2">
+                            <a href="{{ url_for('country.list_country') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Countries</a>
+                            <a href="{{ url_for('port.list_port') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Ports</a>
+                            <a href="{{ url_for('portpair.list_portpair') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Port Pairs</a>
+                            <a href="{{ url_for('leg.list_leg') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Legs</a>
+                        </div>
+                    </div>
+                    <!-- Business Section -->
+                    <div class="mb-8">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Business</h3>
+                        <div class="mt-3 space-y-2">
+                            <a href="{{ url_for('client.list_client') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Clients</a>
+                            <a href="{{ url_for('commodity.list_commodity') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Commodities</a>
+                            <a href="{{ url_for('packtype.list_packtype') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Pack Types</a>
+                            <a href="{{ url_for('rate.list_rate') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Rates</a>
+                        </div>
+                    </div>
+                    <!-- System Section -->
+                    <div class="mb-8">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">System</h3>
+                        <div class="mt-3 space-y-2">
+                            <a href="{{ url_for('model_tree') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Model Tree</a>
+                            <a href="{{ url_for('relationship_tree') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Relationship Tree</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
         </div>
 
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="mb-4 p-4 rounded-md {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        <!-- Overlay -->
+        <div id="mobile-menu-overlay" class="fixed inset-0 bg-black opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out lg:hidden z-40" onclick="toggleMobileMenu()"></div>
 
-        <!-- Main Content Area -->
-        <div class="bg-white">
-            {% block content %}{% endblock %}
+        <!-- Static sidebar for desktop -->
+        <div class="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
+            <div class="flex min-h-0 flex-1 flex-col bg-gray-800">
+                <div class="flex h-16 items-center bg-gray-900 px-4">
+                    <a href="{{ url_for('index') }}" class="text-xl font-bold text-white">Shipping System</a>
+                </div>
+                <nav class="flex-1 overflow-y-auto px-4 py-4">
+                    <!-- Desktop Navigation -->
+                    <!-- Vessel Operations Section -->
+                    <div class="mb-8">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Vessel Operations</h3>
+                        <div class="mt-3 space-y-2">
+                            <a href="{{ url_for('vessel_ops.dashboard') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Operations Dashboard</a>
+                            <a href="{{ url_for('vessel_ops.active_vessels') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Active Vessels</a>
+                            <a href="{{ url_for('vessel_ops.upcoming_port_calls') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Upcoming Port Calls</a>
+                            <a href="{{ url_for('vessel_ops.status_summary') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Status Summary</a>
+                            <a href="{{ url_for('vessel_ops.manifests') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Operations Manifests</a>
+                        </div>
+                    </div>
+                    <!-- Shipping Section -->
+                    <div class="mb-8">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Shipping</h3>
+                        <div class="mt-3 space-y-2">
+                            <a href="{{ url_for('manifest.list_manifest') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Manifests</a>
+                            <a href="{{ url_for('shippingcompany.list_shippingcompany') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Shipping Companies</a>
+                            <a href="{{ url_for('vessel.list_vessel') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Vessels</a>
+                            <a href="{{ url_for('voyage.list_voyage') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Voyages</a>
+                            <a href="{{ url_for('lineitem.list_lineitem') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Line Items</a>
+                            <a href="{{ url_for('user.list_user') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Users</a>
+                        </div>
+                    </div>
+                    <!-- Containers Section -->
+                    <div class="mb-8">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Containers</h3>
+                        <div class="mt-3 space-y-2">
+                            <a href="{{ url_for('container.list_container') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Containers</a>
+                            <a href="{{ url_for('containerhistory.list_containerhistory') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Container Histories</a>
+                            <a href="{{ url_for('containerstatus.list_containerstatus') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Container Status</a>
+                        </div>
+                    </div>
+                    <!-- Geography Section -->
+                    <div class="mb-8">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Geography</h3>
+                        <div class="mt-3 space-y-2">
+                            <a href="{{ url_for('country.list_country') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Countries</a>
+                            <a href="{{ url_for('port.list_port') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Ports</a>
+                            <a href="{{ url_for('portpair.list_portpair') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Port Pairs</a>
+                            <a href="{{ url_for('leg.list_leg') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Legs</a>
+                        </div>
+                    </div>
+                    <!-- Business Section -->
+                    <div class="mb-8">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Business</h3>
+                        <div class="mt-3 space-y-2">
+                            <a href="{{ url_for('client.list_client') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Clients</a>
+                            <a href="{{ url_for('commodity.list_commodity') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Commodities</a>
+                            <a href="{{ url_for('packtype.list_packtype') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Pack Types</a>
+                            <a href="{{ url_for('rate.list_rate') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Rates</a>
+                        </div>
+                    </div>
+                    <!-- System Section -->
+                    <div class="mb-8">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">System</h3>
+                        <div class="mt-3 space-y-2">
+                            <a href="{{ url_for('model_tree') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Model Tree</a>
+                            <a href="{{ url_for('relationship_tree') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Relationship Tree</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="lg:pl-64">
+            <!-- Top bar -->
+            <div class="sticky top-0 z-30 flex h-16 bg-white shadow">
+                <button type="button" class="px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 lg:hidden" onclick="toggleMobileMenu()">
+                    <span class="sr-only">Open sidebar</span>
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+                <div class="flex flex-1 justify-between px-4">
+                    <div class="flex flex-1">
+                        <h1 class="text-2xl font-semibold text-gray-900 my-auto">{% block header %}{% endblock %}</h1>
+                    </div>
+                    <div class="ml-4 flex items-center md:ml-6">
+                        <!-- User dropdown -->
+                        <div class="relative">
+                            <button type="button" class="flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" id="user-menu-button">
+                                <span class="sr-only">Open user menu</span>
+                                <span class="inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
+                                    <svg class="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main content area -->
+            <main class="py-10">
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    {% block content %}{% endblock %}
+                </div>
+            </main>
         </div>
     </div>
 
-    <!-- Modal Container -->
-    <div id="modal-container"></div>
-
-    <!-- Modal Event Handling -->
     <script>
-        htmx.on("htmx:afterSettle", function(evt) {
-            // Handle modal state after content is settled
-            const modalContainer = document.getElementById('modal-container');
-            if (modalContainer && modalContainer.innerHTML.trim()) {
-                document.body.classList.add('modal-open');
+        function toggleMobileMenu() {
+            const body = document.body;
+            const menu = document.getElementById('mobile-menu');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            const isOpen = body.getAttribute('data-menu-open') === 'true';
+            
+            if (!isOpen) {
+                body.setAttribute('data-menu-open', 'true');
+                menu.classList.remove('-translate-x-full');
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
             } else {
-                document.body.classList.remove('modal-open');
+                body.setAttribute('data-menu-open', 'false');
+                menu.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
             }
+        }
+
+        // Initialize mobile menu state
+        document.addEventListener('DOMContentLoaded', function() {
+            const body = document.body;
+            const menu = document.getElementById('mobile-menu');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            
+            body.setAttribute('data-menu-open', 'false');
+            menu.classList.add('-translate-x-full');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
         });
 
-        // Handle escape key
-        document.addEventListener('keydown', function(evt) {
-            if (evt.key === 'Escape') {
-                const modalContainer = document.getElementById('modal-container');
-                if (modalContainer && modalContainer.innerHTML.trim()) {
-                    const closeButton = modalContainer.querySelector('button[data-close-modal]');
-                    if (closeButton) closeButton.click();
-                }
+        // Handle resize events
+        window.addEventListener('resize', function() {
+            const body = document.body;
+            const menu = document.getElementById('mobile-menu');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            
+            if (window.innerWidth >= 1024) {
+                body.setAttribute('data-menu-open', 'false');
+                menu.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
             }
         });
     </script>
-
-    <!-- Additional Scripts -->
-    {% block scripts %}{% endblock %}
 </body>
 </html>

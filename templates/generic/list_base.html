@@ -1,27 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}{{ entity_name }} List{% endblock %}
-
 {% block content %}
-<div class="max-w-7xl mx-auto px-2 sm:px-4">
-    <div class="flex justify-between items-center mb-4 sm:mb-6">
-        <h1 class="text-xl sm:text-2xl font-bold">{{ entity_name }}</h1>
-        {% if new_button_text %}
-        <button type="button"
-                class="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                hx-get="{{ url_for(routes.edit) }}"
-                hx-target="#modal-container">
-            {{ new_button_text }}
-        </button>
-        {% endif %}
-    </div>
-    
-    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 sm:mb-6">
-        <div class="flex-1 max-w-full sm:max-w-lg">
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <div class="flex-1 max-w-lg">
             <input type="text" 
                    id="searchInput"
                    name="search"
-                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2" 
+                   class="block p-2 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" 
                    placeholder="{{ search_placeholder or 'Search...' }}" 
                    value="{{ search or '' }}"
                    hx-get="{{ url_for(routes.list) }}"
@@ -43,7 +29,7 @@
         </div>
     </div>
 
-    <div class="border rounded-lg shadow-sm bg-white">
+    <div class="bg-white shadow rounded-lg">
         <!-- Dynamic height container with overflow -->
         <div id="tableContainer" class="overflow-auto">
             <div id="{{ entity_name|lower }}-table">
@@ -51,7 +37,7 @@
             </div>
         </div>
 
-        <div class="p-3 sm:p-4 border-t bg-white sticky bottom-0 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+        <div class="p-4 border-t bg-white sticky bottom-0 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
             <div id="selectedItem" class="text-sm text-gray-900 font-medium min-w-0 sm:min-w-[200px] truncate"></div>
             <div class="flex items-center gap-2 sm:gap-4">
                 <select id="pageSize" 
@@ -218,24 +204,6 @@ document.addEventListener('DOMContentLoaded', function() {
     searchInput.addEventListener('input', function(e) {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(performSearch, 300);
-    });
-
-    // Add HTMX event listeners for debugging
-    document.body.addEventListener('htmx:beforeRequest', function(evt) {
-        console.log('HTMX Request Starting:', evt.detail);
-    });
-
-    document.body.addEventListener('htmx:afterRequest', function(evt) {
-        console.log('HTMX Request Complete:', evt.detail);
-    });
-
-    document.body.addEventListener('htmx:beforeSwap', function(evt) {
-        console.log('HTMX Before Swap:', evt.detail);
-    });
-
-    document.body.addEventListener('htmx:afterSwap', function(evt) {
-        console.log('HTMX After Swap:', evt.detail);
-        adjustTableHeight();
     });
 });
 </script>
