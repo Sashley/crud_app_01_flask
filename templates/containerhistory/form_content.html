@@ -1,0 +1,77 @@
+<form hx-post="{{ url_for('containerhistory.save', id=history.id if history else None) }}"
+      hx-target="#modal-container"
+      hx-swap="innerHTML"
+      class="space-y-4">
+    {% if history %}
+    <input type="hidden" name="id" value="{{ history.id }}">
+    {% endif %}
+
+    <div>
+        <label for="container_id" class="block text-sm font-medium text-gray-700">Container</label>
+        <select id="container_id" 
+                name="container_id" 
+                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                required>
+            <option value="">Select a container</option>
+            {% for container in containers %}
+            <option value="{{ container.id }}" {% if history and history.container_id == container.id %}selected{% endif %}>
+                {{ container.container_number }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="container_status_id" class="block text-sm font-medium text-gray-700">Status</label>
+        <select id="container_status_id" 
+                name="container_status_id" 
+                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                required>
+            <option value="">Select a status</option>
+            {% for status in statuses %}
+            <option value="{{ status.id }}" {% if history and history.container_status_id == status.id %}selected{% endif %}>
+                {{ status.name }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="port_id" class="block text-sm font-medium text-gray-700">Port</label>
+        <select id="port_id" 
+                name="port_id" 
+                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                required>
+            <option value="">Select a port</option>
+            {% for port in ports %}
+            <option value="{{ port.id }}" {% if history and history.port_id == port.id %}selected{% endif %}>
+                {{ port.name }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="damage" class="block text-sm font-medium text-gray-700">Damage</label>
+        <input type="text" 
+               id="damage" 
+               name="damage" 
+               value="{{ history.damage if history else '' }}"
+               class="mt-1 block w-full shadow-sm sm:text-sm focus:ring-blue-500 focus:border-blue-500 border-gray-300 rounded-md"
+               placeholder="Enter damage description (if any)">
+    </div>
+
+    <div class="flex justify-end pt-4">
+        <button type="button"
+                class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                hx-get="{{ url_for('containerhistory.empty') }}"
+                hx-target="#modal-container"
+                hx-swap="outerHTML">
+            Cancel
+        </button>
+        <button type="submit"
+                class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Save
+        </button>
+    </div>
+</form>

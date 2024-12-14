@@ -32,7 +32,7 @@ def get_form_choices():
     manifests = db_session.query(Manifest).order_by(Manifest.bill_of_lading).all()
     pack_types = db_session.query(PackType).order_by(PackType.name).all()
     commodities = db_session.query(Commodity).order_by(Commodity.name).all()
-    containers = db_session.query(Container).order_by(Container.number).all()
+    containers = db_session.query(Container).order_by(Container.container_number).all()
     manifesters = db_session.query(User).order_by(User.name).all()
     
     return {
@@ -50,7 +50,7 @@ def get_filtered_query():
         LineItem,
         PackType.name.label('pack_type_name'),
         Commodity.name.label('commodity_name'),
-        Container.number.label('container_number'),
+        Container.container_number.label('container_number'),
         Manifest.bill_of_lading.label('bol_number')  # Add BoL number to query
     ).outerjoin(Manifest, LineItem.manifest_id == Manifest.id)\
      .outerjoin(PackType, LineItem.pack_type_id == PackType.id)\
@@ -90,7 +90,7 @@ def get_filtered_query():
                 func.lower(Manifest.bill_of_lading).like(func.lower(search_term)),
                 func.lower(PackType.name).like(func.lower(search_term)),
                 func.lower(Commodity.name).like(func.lower(search_term)),
-                func.lower(Container.number).like(func.lower(search_term))
+                func.lower(Container.container_number).like(func.lower(search_term))
             ]
         
         # Remove None filters

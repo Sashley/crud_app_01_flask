@@ -1,0 +1,22 @@
+if __name__ == '__main__':
+    try:
+        print("Starting test data generation...")
+        sys.stdout.flush()
+        
+        # Create all sequences
+        data = create_sequence_1()
+        data.update(create_sequence_2(data))
+        data.update(create_sequence_3(data))
+        data.update(create_sequence_4(data))
+        data.update(create_sequence_5(data))
+        data.update(create_sequence_6(data))
+        data.update(create_sequence_7(data))
+        
+        print("\nTest data generation completed successfully!")
+        sys.stdout.flush()
+        
+    except Exception as e:
+        print(f"Fatal error: {str(e)}")
+        print(traceback.format_exc())
+        sys.stdout.flush()
+        sys.exit(1)

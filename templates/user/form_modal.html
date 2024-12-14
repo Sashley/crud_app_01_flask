@@ -1,0 +1,42 @@
+<!-- Modal Backdrop -->
+<div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-40" aria-hidden="true"></div>
+
+<!-- Modal Content -->
+<div class="fixed inset-0 z-50 overflow-y-auto" style="padding-top: 6rem;">
+    <div class="flex justify-center">
+        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all w-full max-w-4xl mx-4">
+            <!-- Form Content -->
+            <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                <form hx-post="{{ url_for('user.save_user', id=item.id if item else None) }}"
+                      hx-target="#modal-container"
+                      class="space-y-4">
+                    {% include 'user/form_content.html' %}
+                    
+                    <!-- Form footer -->
+                    <div class="flex items-center justify-end space-x-2 border-t pt-4">
+                        <button type="button"
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                hx-get="{{ url_for('user.empty') }}"
+                                hx-target="#modal-container"
+                                hx-swap="outerHTML">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Close button -->
+            <button data-close-modal
+                    hx-get="{{ url_for('user.empty') }}"
+                    hx-target="#modal-container"
+                    hx-swap="outerHTML"
+                    class="absolute top-0 right-0 mt-4 mr-4 text-gray-600 hover:text-gray-900 text-2xl font-bold z-50">
+                ×
+            </button>
+        </div>
+    </div>
+</div>

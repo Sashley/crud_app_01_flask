@@ -34,7 +34,7 @@ def get_form_choices():
     """Get all the choices needed for the manifest form dropdowns"""
     clients = db_session.query(Client).order_by(Client.name).all()
     vessels = db_session.query(Vessel).order_by(Vessel.name).all()
-    voyages = db_session.query(Voyage).order_by(Voyage.name).all()
+    voyages = db_session.query(Voyage).order_by(Voyage.voyage_number).all()
     ports = db_session.query(Port).order_by(Port.name).all()
     manifesters = db_session.query(User).order_by(User.name).all()
     
@@ -98,7 +98,7 @@ def get_filtered_query():
                 func.lower(ShipperAlias.name).like(func.lower(search_term)),
                 func.lower(ConsigneeAlias.name).like(func.lower(search_term)),
                 func.lower(Vessel.name).like(func.lower(search_term)),
-                func.lower(Voyage.name).like(func.lower(search_term))
+                func.lower(Voyage.voyage_number).like(func.lower(search_term))
             ]
         
         filters = [f for f in filters if f is not None]
@@ -133,9 +133,9 @@ def get_filtered_query():
             query = query.order_by(Vessel.name.asc())
     elif sort_field == 'voyage_name':
         if is_desc:
-            query = query.order_by(Voyage.name.desc())
+            query = query.order_by(Voyage.voyage_number.desc())
         else:
-            query = query.order_by(Voyage.name.asc())
+            query = query.order_by(Voyage.voyage_number.asc())
     elif hasattr(Manifest, sort_field):
         if is_desc:
             query = query.order_by(getattr(Manifest, sort_field).desc())
@@ -146,7 +146,7 @@ def get_filtered_query():
         ShipperAlias.name.label('shipper_name'),
         ConsigneeAlias.name.label('consignee_name'),
         Vessel.name.label('vessel_name'),
-        Voyage.name.label('voyage_name')
+        Voyage.voyage_number.label('voyage_name')
     )
     
     return query

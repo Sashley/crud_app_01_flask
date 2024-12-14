@@ -1,0 +1,9 @@
+{% extends "modal.html" %}
+
+{% block modal_title %}
+    {% if item %}Edit Container Status{% else %}New Container Status{% endif %}
+{% endblock %}
+
+{% block modal_content %}
+    {% include 'containerstatus/form_content.html' %}
+{% endblock %}

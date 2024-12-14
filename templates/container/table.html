@@ -1,0 +1,31 @@
+<div class="overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                {% for column in columns %}
+                <th scope="col" 
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider {% if column.responsive_class %}{{ column.responsive_class }}{% endif %}"
+                    {% if column.sortable %}
+                    hx-get="{{ url_for(routes.list, sort=('-' + column.key) if sort == column.key else column.key, search=search) }}"
+                    hx-target="#container-table"
+                    {% endif %}>
+                    {{ column.label }}
+                    {% if column.sortable %}
+                        {% if sort == column.key %}
+                        <span class="ml-1">↑</span>
+                        {% elif sort == '-' + column.key %}
+                        <span class="ml-1">↓</span>
+                        {% endif %}
+                    {% endif %}
+                </th>
+                {% endfor %}
+                <th scope="col" class="relative px-6 py-3">
+                    <span class="sr-only">Actions</span>
+                </th>
+            </tr>
+        </thead>
+        <tbody id="containerTableBody" class="bg-white divide-y divide-gray-200">
+            {% include 'container/rows.html' %}
+        </tbody>
+    </table>
+</div>

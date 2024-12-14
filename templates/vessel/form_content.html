@@ -1,0 +1,46 @@
+<form hx-post="{{ url_for('vessel.save_vessel') }}"
+      hx-target="#modal-container"
+      class="space-y-4">
+    {% if vessel and vessel.id %}
+        <input type="hidden" name="id" value="{{ vessel.id }}">
+    {% endif %}
+    
+    <div>
+        <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+        <input type="text" 
+               name="name" 
+               id="name" 
+               value="{{ vessel.name if vessel else '' }}"
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+               required>
+    </div>
+
+    <div>
+        <label for="shipping_company_id" class="block text-sm font-medium text-gray-700">Shipping Company</label>
+        <select name="shipping_company_id" 
+                id="shipping_company_id"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                required>
+            <option value="">Select a shipping company</option>
+            {% for company in shipping_companies %}
+                <option value="{{ company.id }}" 
+                        {% if vessel and vessel.shipping_company_id == company.id %}selected{% endif %}>
+                    {{ company.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="flex justify-end space-x-3 mt-4">
+        <button type="button"
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                hx-get="{{ url_for('vessel.empty') }}"
+                hx-target="#modal-container">
+            Cancel
+        </button>
+        <button type="submit"
+                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Save
+        </button>
+    </div>
+</form>

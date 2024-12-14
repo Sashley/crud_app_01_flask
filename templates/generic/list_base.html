@@ -47,12 +47,12 @@
                         hx-target="#{{ entity_name|lower }}-table"
                         hx-include="[name='search']"
                         hx-trigger="change">
-                    <option value="3" {% if page_size == 3 %}selected{% endif %}>3 per page</option>
-                    <option value="5" {% if page_size == 5 %}selected{% endif %}>5 per page</option>
+                    <option value="3" {% if page_size == 3 %}{% endif %}>3 per page</option>
+                    <option value="5" {% if page_size == 5 %}{% endif %}>5 per page</option>
                     <option value="10" {% if page_size == 10 %}selected{% endif %}>10 per page</option>
-                    <option value="25" {% if page_size == 25 %}selected{% endif %}>25 per page</option>
-                    <option value="50" {% if page_size == 50 %}selected{% endif %}>50 per page</option>
-                    <option value="100" {% if page_size == 100 %}selected{% endif %}>100 per page</option>
+                    <option value="25" {% if page_size == 25 %}{% endif %}>25 per page</option>
+                    <option value="50" {% if page_size == 50 %}{% endif %}>50 per page</option>
+                    <option value="100" {% if page_size == 100 %}{% endif %}>100 per page</option>
                 </select>
                 {% if has_more %}
                 <button type="button"
