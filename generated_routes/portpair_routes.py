@@ -1,4 +1,3 @@
-
 from flask import Blueprint, render_template, request, redirect, url_for
 from database import db_session
 from generated_models.portpair import PortPair
@@ -41,6 +40,7 @@ def create_portpair():
         item.pol_id = request.form.get('pol_id')
         item.pod_id = request.form.get('pod_id')
         item.distance = request.form.get('distance')
+        item.distance_code = request.form.get('distance_code', type=int)
         
         db_session.add(item)
         db_session.commit()
@@ -56,6 +56,7 @@ def edit_portpair(id):
         item.pol_id = request.form.get('pol_id')
         item.pod_id = request.form.get('pod_id')
         item.distance = request.form.get('distance')
+        item.distance_code = request.form.get('distance_code', type=int)
         
         db_session.commit()
         return redirect(url_for('portpair.list_portpair'))

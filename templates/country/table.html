@@ -1,0 +1,45 @@
+<table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+        <tr>
+            <th scope="col" class="w-1/3 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <a href="?sort={% if sort == 'name' %}-{% endif %}name" 
+                   class="group inline-flex items-center">
+                    Name
+                    {% if sort == 'name' %}
+                    <svg class="ml-2 h-5 w-5 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L10 13.586l3.293-3.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    {% endif %}
+                </a>
+            </th>
+            <th scope="col" class="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <a href="?sort={% if sort == 'code' %}-{% endif %}code" 
+                   class="group inline-flex items-center">
+                    Code
+                    {% if sort == 'code' %}
+                    <svg class="ml-2 h-5 w-5 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L10 13.586l3.293-3.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    {% endif %}
+                </a>
+            </th>
+            <th scope="col" class="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <a href="?sort={% if sort == 'region' %}-{% endif %}region" 
+                   class="group inline-flex items-center">
+                    Region
+                    {% if sort == 'region' %}
+                    <svg class="ml-2 h-5 w-5 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L10 13.586l3.293-3.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    {% endif %}
+                </a>
+            </th>
+            <th scope="col" class="w-1/6 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+            </th>
+        </tr>
+    </thead>
+    <tbody id="countryTableBody" class="bg-white divide-y divide-gray-200">
+        {% include 'country/rows.html' %}
+    </tbody>
+</table>

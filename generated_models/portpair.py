@@ -1,5 +1,4 @@
-
-from sqlalchemy import Column, DateTime, Float, Integer, String, ForeignKey
+from sqlalchemy import Column, DateTime, Float, Integer, String, ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -14,6 +13,11 @@ class PortPair(Base):
     
     distance = Column(Integer, nullable=True)
 
+    distance_code = Column(Integer, nullable=False)
+    __table_args__ = (
+        CheckConstraint('distance_code >= 1 AND distance_code <= 8', name='check_distance_code_range'),
+    )
+
     # Relationships
     pol = relationship("Port", foreign_keys=[pol_id])
     pod = relationship("Port", foreign_keys=[pod_id])
@@ -24,6 +28,7 @@ class PortPair(Base):
             'pol_id': getattr(self, 'pol_id'),
             'pod_id': getattr(self, 'pod_id'),
             'distance': getattr(self, 'distance'),
+            'distance_code': getattr(self, 'distance_code'),
             'pol': getattr(self, 'pol').to_dict() if getattr(self, 'pol') else None,
             'pod': getattr(self, 'pod').to_dict() if getattr(self, 'pod') else None,
         }

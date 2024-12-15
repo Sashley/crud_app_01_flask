@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, make_response
+from flask import Blueprint, render_template, request, jsonify, make_response, abort
 from database import db_session
 from generated_models.containerhistory import ContainerHistory
 from generated_models.container import Container
@@ -60,13 +60,27 @@ def empty():
     return response
 
 def get_filtered_query():
+    # Start with base query
     query = ContainerHistory.query
+    
+    # Add explicit joins with proper conditions
+    query = query.join(Container, ContainerHistory.container_id == Container.id)
+    query = query.join(ContainerStatus, ContainerHistory.container_status_id == ContainerStatus.id)
+    query = query.join(Port, ContainerHistory.port_id == Port.id)
     
     # Apply search filters
     search = request.args.get('search')
     if search:
         filters = []
+        # Search in ContainerHistory fields
         filters.append(ContainerHistory.damage.ilike(f'%{search}%'))
+        # Search in Container fields
+        filters.append(Container.container_number.ilike(f'%{search}%'))
+        # Search in ContainerStatus fields
+        filters.append(ContainerStatus.name.ilike(f'%{search}%'))
+        # Search in Port fields
+        filters.append(Port.name.ilike(f'%{search}%'))
+        filters.append(Port.prefix.ilike(f'%{search}%'))
         query = query.filter(or_(*filters))
     
     # Apply sorting
@@ -116,7 +130,9 @@ def load_form():
     history_id = request.args.get('id')
     history = None
     if history_id:
-        history = ContainerHistory.query.get_or_404(history_id)
+        history = ContainerHistory.query.filter_by(id=history_id).first()
+        if not history:
+            abort(404)
     
     containers = Container.query.all()
     statuses = ContainerStatus.query.all()
@@ -135,7 +151,9 @@ def save():
     history_id = request.args.get('id') or request.form.get('id')
     
     if history_id:
-        history = ContainerHistory.query.get_or_404(history_id)
+        history = ContainerHistory.query.filter_by(id=history_id).first()
+        if not history:
+            abort(404)
     else:
         history = ContainerHistory()
         db_session.add(history)
@@ -164,7 +182,10 @@ def close_modal():
 
 @bp.route('/<int:id>/delete', methods=['DELETE'])
 def delete(id):
-    history = ContainerHistory.query.get_or_404(id)
+    history = ContainerHistory.query.filter_by(id=id).first()
+    if not history:
+        abort(404)
+        
     db_session.delete(history)
     db_session.commit()
     

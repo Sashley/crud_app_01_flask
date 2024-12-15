@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Float, Integer, String, ForeignKey
+from sqlalchemy import Column, DateTime, Float, Integer, String, ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -7,7 +7,10 @@ class Rate(Base):
     
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     
-    distance = Column(Integer, nullable=True)
+    distance_code = Column(Integer, nullable=False)
+    __table_args__ = (
+        CheckConstraint('distance_code >= 1 AND distance_code <= 8', name='check_rate_distance_code_range'),
+    )
     
     commodity_id = Column(Integer, ForeignKey("commodity.id"), nullable=True)
     
@@ -27,7 +30,7 @@ class Rate(Base):
     def to_dict(self):
         return {
             'id': getattr(self, 'id'),
-            'distance': getattr(self, 'distance'),
+            'distance_code': getattr(self, 'distance_code'),
             'commodity_id': getattr(self, 'commodity_id'),
             'pack_type_id': getattr(self, 'pack_type_id'),
             'client_id': getattr(self, 'client_id'),

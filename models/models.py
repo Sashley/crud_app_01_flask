@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Float, Integer, String, ForeignKey
+from sqlalchemy import Column, DateTime, Float, Integer, String, ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -142,7 +142,7 @@ class Port(Base):
     __tablename__ = 'port'
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     name = Column(String, nullable=True)
-    country_id = Column(Integer, ForeignKey("country.id"), nullable=True)  # Fixed column name
+    country_id = Column(Integer, ForeignKey("country.id"), nullable=True)
     prefix = Column(String, nullable=True)
     
     containers = relationship("Container", back_populates="port")
@@ -154,6 +154,10 @@ class PortPair(Base):
     pol_id = Column(Integer, ForeignKey("port.id"), nullable=True)
     pod_id = Column(Integer, ForeignKey("port.id"), nullable=True)
     distance = Column(Integer, nullable=True)
+    distance_code = Column(Integer, nullable=False)
+    __table_args__ = (
+        CheckConstraint('distance_code >= 1 AND distance_code <= 8', name='check_distance_code_range'),
+    )
     
     port_of_loading = relationship("Port", foreign_keys=[pol_id])
     port_of_discharge = relationship("Port", foreign_keys=[pod_id])
@@ -194,12 +198,15 @@ class User(Base):
 class Rate(Base):
     __tablename__ = 'rate'
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    distance = Column(Integer, nullable=True)
+    distance_code = Column(Integer, nullable=False)
     commodity_id = Column(Integer, ForeignKey("commodity.id"), nullable=True)
     pack_type_id = Column(Integer, ForeignKey("packtype.id"), nullable=True)
     client_id = Column(Integer, ForeignKey("client.id"), nullable=True)
     rate = Column(Float, nullable=True)
     effective = Column(DateTime, nullable=True)
+    __table_args__ = (
+        CheckConstraint('distance_code >= 1 AND distance_code <= 8', name='check_rate_distance_code_range'),
+    )
     
     commodity = relationship("Commodity", back_populates="rates")
     pack_type = relationship("PackType", back_populates="rates")

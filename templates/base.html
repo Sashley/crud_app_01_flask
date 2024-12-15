@@ -25,63 +25,63 @@
                 <!-- Navigation -->
                 <nav class="flex-1 overflow-y-auto px-4 py-4">
                     <!-- Vessel Operations Section -->
-                    <div class="mb-8">
+                    <div class="mb-4">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Vessel Operations</h3>
-                        <div class="mt-3 space-y-2">
-                            <a href="{{ url_for('vessel_ops.dashboard') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Operations Dashboard</a>
-                            <a href="{{ url_for('vessel_ops.active_vessels') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Active Vessels</a>
-                            <a href="{{ url_for('vessel_ops.upcoming_port_calls') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Upcoming Port Calls</a>
-                            <a href="{{ url_for('vessel_ops.status_summary') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Status Summary</a>
-                            <a href="{{ url_for('vessel_ops.manifests') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Operations Manifests</a>
+                        <div class="mt-2 space-y-1">
+                            <a href="{{ url_for('vessel_ops.dashboard') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Operations Dashboard</a>
+                            <a href="{{ url_for('vessel_ops.active_vessels') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Active Vessels</a>
+                            <a href="{{ url_for('vessel_ops.upcoming_port_calls') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Upcoming Port Calls</a>
+                            <a href="{{ url_for('vessel_ops.status_summary') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Status Summary</a>
+                            <a href="{{ url_for('vessel_ops.manifests') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Operations Manifests</a>
                         </div>
                     </div>
                     <!-- Shipping Section -->
-                    <div class="mb-8">
+                    <div class="mb-4">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Shipping</h3>
-                        <div class="mt-3 space-y-2">
-                            <a href="{{ url_for('manifest.list_manifest') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Manifests</a>
-                            <a href="{{ url_for('shippingcompany.list_shippingcompany') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Shipping Companies</a>
-                            <a href="{{ url_for('vessel.list_vessel') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Vessels</a>
-                            <a href="{{ url_for('voyage.list_voyage') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Voyages</a>
-                            <a href="{{ url_for('lineitem.list_lineitem') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Line Items</a>
-                            <a href="{{ url_for('user.list_user') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Users</a>
+                        <div class="mt-2 space-y-1">
+                            <a href="{{ url_for('manifest.list_manifest') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Manifests</a>
+                            <a href="{{ url_for('shippingcompany.list_shippingcompany') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Shipping Companies</a>
+                            <a href="{{ url_for('vessel.list_vessel') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Vessels</a>
+                            <a href="{{ url_for('voyage.list_voyage') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Voyages</a>
+                            <a href="{{ url_for('lineitem.list_lineitem') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Line Items</a>
+                            <a href="{{ url_for('user.list_user') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Users</a>
                         </div>
                     </div>
                     <!-- Containers Section -->
-                    <div class="mb-8">
+                    <div class="mb-4">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Containers</h3>
-                        <div class="mt-3 space-y-2">
-                            <a href="{{ url_for('container.list_container') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Containers</a>
-                            <a href="{{ url_for('containerhistory.list_containerhistory') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Container Histories</a>
-                            <a href="{{ url_for('containerstatus.list_containerstatus') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Container Status</a>
+                        <div class="mt-2 space-y-1">
+                            <a href="{{ url_for('container.list_container') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Containers</a>
+                            <a href="{{ url_for('containerhistory.list_containerhistory') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Container History</a>
+                            <a href="{{ url_for('containerstatus.list_containerstatus') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Container Status</a>
                         </div>
                     </div>
                     <!-- Geography Section -->
-                    <div class="mb-8">
+                    <div class="mb-4">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Geography</h3>
-                        <div class="mt-3 space-y-2">
-                            <a href="{{ url_for('country.list_country') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Countries</a>
-                            <a href="{{ url_for('port.list_port') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Ports</a>
-                            <a href="{{ url_for('portpair.list_portpair') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Port Pairs</a>
-                            <a href="{{ url_for('leg.list_leg') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Legs</a>
+                        <div class="mt-2 space-y-1">
+                            <a href="{{ url_for('country.list_country') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Countries</a>
+                            <a href="{{ url_for('port.list_port') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Ports</a>
+                            <a href="{{ url_for('portpair.list_portpair') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Port Pairs</a>
+                            <a href="{{ url_for('leg.list_leg') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Legs</a>
                         </div>
                     </div>
                     <!-- Business Section -->
-                    <div class="mb-8">
+                    <div class="mb-4">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Business</h3>
-                        <div class="mt-3 space-y-2">
-                            <a href="{{ url_for('client.list_client') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Clients</a>
-                            <a href="{{ url_for('commodity.list_commodity') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Commodities</a>
-                            <a href="{{ url_for('packtype.list_packtype') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Pack Types</a>
-                            <a href="{{ url_for('rate.list_rate') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Rates</a>
+                        <div class="mt-2 space-y-1">
+                            <a href="{{ url_for('client.list_client') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Clients</a>
+                            <a href="{{ url_for('commodity.list_commodity') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Commodities</a>
+                            <a href="{{ url_for('packtype.list_packtype') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Pack Types</a>
+                            <a href="{{ url_for('rate.list_rate') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Rates</a>
                         </div>
                     </div>
                     <!-- System Section -->
-                    <div class="mb-8">
+                    <div class="mb-4">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">System</h3>
-                        <div class="mt-3 space-y-2">
-                            <a href="{{ url_for('model_tree') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Model Tree</a>
-                            <a href="{{ url_for('relationship_tree') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Relationship Tree</a>
+                        <div class="mt-2 space-y-1">
+                            <a href="{{ url_for('model_tree') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Model Tree</a>
+                            <a href="{{ url_for('relationship_tree') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Relationship Tree</a>
                         </div>
                     </div>
                 </nav>
@@ -100,63 +100,63 @@
                 <nav class="flex-1 overflow-y-auto px-4 py-4">
                     <!-- Desktop Navigation -->
                     <!-- Vessel Operations Section -->
-                    <div class="mb-8">
+                    <div class="mb-4">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Vessel Operations</h3>
-                        <div class="mt-3 space-y-2">
-                            <a href="{{ url_for('vessel_ops.dashboard') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Operations Dashboard</a>
-                            <a href="{{ url_for('vessel_ops.active_vessels') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Active Vessels</a>
-                            <a href="{{ url_for('vessel_ops.upcoming_port_calls') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Upcoming Port Calls</a>
-                            <a href="{{ url_for('vessel_ops.status_summary') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Status Summary</a>
-                            <a href="{{ url_for('vessel_ops.manifests') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Operations Manifests</a>
+                        <div class="mt-2 space-y-1">
+                            <a href="{{ url_for('vessel_ops.dashboard') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Operations Dashboard</a>
+                            <a href="{{ url_for('vessel_ops.active_vessels') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Active Vessels</a>
+                            <a href="{{ url_for('vessel_ops.upcoming_port_calls') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Upcoming Port Calls</a>
+                            <a href="{{ url_for('vessel_ops.status_summary') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Status Summary</a>
+                            <a href="{{ url_for('vessel_ops.manifests') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Operations Manifests</a>
                         </div>
                     </div>
                     <!-- Shipping Section -->
-                    <div class="mb-8">
+                    <div class="mb-4">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Shipping</h3>
-                        <div class="mt-3 space-y-2">
-                            <a href="{{ url_for('manifest.list_manifest') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Manifests</a>
-                            <a href="{{ url_for('shippingcompany.list_shippingcompany') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Shipping Companies</a>
-                            <a href="{{ url_for('vessel.list_vessel') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Vessels</a>
-                            <a href="{{ url_for('voyage.list_voyage') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Voyages</a>
-                            <a href="{{ url_for('lineitem.list_lineitem') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Line Items</a>
-                            <a href="{{ url_for('user.list_user') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Users</a>
+                        <div class="mt-2 space-y-1">
+                            <a href="{{ url_for('manifest.list_manifest') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Manifests</a>
+                            <a href="{{ url_for('shippingcompany.list_shippingcompany') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Shipping Companies</a>
+                            <a href="{{ url_for('vessel.list_vessel') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Vessels</a>
+                            <a href="{{ url_for('voyage.list_voyage') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Voyages</a>
+                            <a href="{{ url_for('lineitem.list_lineitem') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Line Items</a>
+                            <a href="{{ url_for('user.list_user') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Users</a>
                         </div>
                     </div>
                     <!-- Containers Section -->
-                    <div class="mb-8">
+                    <div class="mb-4">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Containers</h3>
-                        <div class="mt-3 space-y-2">
-                            <a href="{{ url_for('container.list_container') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Containers</a>
-                            <a href="{{ url_for('containerhistory.list_containerhistory') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Container Histories</a>
-                            <a href="{{ url_for('containerstatus.list_containerstatus') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Container Status</a>
+                        <div class="mt-2 space-y-1">
+                            <a href="{{ url_for('container.list_container') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Containers</a>
+                            <a href="{{ url_for('containerhistory.list_containerhistory') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Container Histories</a>
+                            <a href="{{ url_for('containerstatus.list_containerstatus') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Container Status</a>
                         </div>
                     </div>
                     <!-- Geography Section -->
-                    <div class="mb-8">
+                    <div class="mb-4">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Geography</h3>
-                        <div class="mt-3 space-y-2">
-                            <a href="{{ url_for('country.list_country') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Countries</a>
-                            <a href="{{ url_for('port.list_port') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Ports</a>
-                            <a href="{{ url_for('portpair.list_portpair') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Port Pairs</a>
-                            <a href="{{ url_for('leg.list_leg') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Legs</a>
+                        <div class="mt-2 space-y-1">
+                            <a href="{{ url_for('country.list_country') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Countries</a>
+                            <a href="{{ url_for('port.list_port') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Ports</a>
+                            <a href="{{ url_for('portpair.list_portpair') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Port Pairs</a>
+                            <a href="{{ url_for('leg.list_leg') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Legs</a>
                         </div>
                     </div>
                     <!-- Business Section -->
-                    <div class="mb-8">
+                    <div class="mb-4">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Business</h3>
-                        <div class="mt-3 space-y-2">
-                            <a href="{{ url_for('client.list_client') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Clients</a>
-                            <a href="{{ url_for('commodity.list_commodity') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Commodities</a>
-                            <a href="{{ url_for('packtype.list_packtype') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Pack Types</a>
-                            <a href="{{ url_for('rate.list_rate') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Rates</a>
+                        <div class="mt-2 space-y-1">
+                            <a href="{{ url_for('client.list_client') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Clients</a>
+                            <a href="{{ url_for('commodity.list_commodity') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Commodities</a>
+                            <a href="{{ url_for('packtype.list_packtype') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Pack Types</a>
+                            <a href="{{ url_for('rate.list_rate') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Rates</a>
                         </div>
                     </div>
                     <!-- System Section -->
-                    <div class="mb-8">
+                    <div class="mb-4">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">System</h3>
-                        <div class="mt-3 space-y-2">
-                            <a href="{{ url_for('model_tree') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Model Tree</a>
-                            <a href="{{ url_for('relationship_tree') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Relationship Tree</a>
+                        <div class="mt-2 space-y-1">
+                            <a href="{{ url_for('model_tree') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Model Tree</a>
+                            <a href="{{ url_for('relationship_tree') }}" class="block px-3 py-0.5 text-sm font-normal text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Relationship Tree</a>
                         </div>
                     </div>
                 </nav>

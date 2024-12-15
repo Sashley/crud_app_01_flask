@@ -3,94 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRUD App</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <title>Rates</title>
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="/">CRUD App</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/model-tree">Model Tree</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    
-<div class="container">
-    <h1>Rate List</h1>
-    
-    <div class="row mb-3">
-        <div class="col">
-            <form method="get" class="form-inline">
-                <div class="input-group">
-                    <input type="text" name="search" class="form-control" 
-                           placeholder="Search..." value="">
-                    <div class="input-group-append">
-                        <button type="submit" class="btn btn-primary">Search</button>
-                    </div>
-                </div>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold mb-6">Rates</h1>
+        
+        <div class="flex justify-between items-center mb-6">
+            <form method="get" class="flex gap-2">
+                <input type="text" name="search" 
+                       class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                       placeholder="Search..." value="{{ search }}">
+                <button type="submit" 
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Search
+                </button>
             </form>
+            
+            <a href="{{ url_for('rate.create_rate') }}" 
+               class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                Add New
+            </a>
         </div>
-        <div class="col-auto">
-            <a href="#" 
-               class="btn btn-success">Add New</a>
+
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <a href="?sort={{ '-' if sort == 'distance_code' else '' }}distance_code" 
+                               class="hover:text-gray-900">
+                                Distance Code
+                                {% if sort == 'distance_code' %}↓{% elif sort == '-distance_code' %}↑{% endif %}
+                            </a>
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <a href="?sort={{ '-' if sort == 'commodity_id' else '' }}commodity_id"
+                               class="hover:text-gray-900">
+                                Commodity
+                                {% if sort == 'commodity_id' %}↓{% elif sort == '-commodity_id' %}↑{% endif %}
+                            </a>
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <a href="?sort={{ '-' if sort == 'pack_type_id' else '' }}pack_type_id"
+                               class="hover:text-gray-900">
+                                Pack Type
+                                {% if sort == 'pack_type_id' %}↓{% elif sort == '-pack_type_id' %}↑{% endif %}
+                            </a>
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <a href="?sort={{ '-' if sort == 'client_id' else '' }}client_id"
+                               class="hover:text-gray-900">
+                                Client
+                                {% if sort == 'client_id' %}↓{% elif sort == '-client_id' %}↑{% endif %}
+                            </a>
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <a href="?sort={{ '-' if sort == 'rate' else '' }}rate"
+                               class="hover:text-gray-900">
+                                Rate
+                                {% if sort == 'rate' %}↓{% elif sort == '-rate' %}↑{% endif %}
+                            </a>
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <a href="?sort={{ '-' if sort == 'effective' else '' }}effective"
+                               class="hover:text-gray-900">
+                                Effective Date
+                                {% if sort == 'effective' %}↓{% elif sort == '-effective' %}↑{% endif %}
+                            </a>
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for item in items %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {{ item.distance_code }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {{ item.commodity.name if item.commodity else 'N/A' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {{ item.pack_type.name if item.pack_type else 'N/A' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {{ item.client.name if item.client else 'Standard Rate' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {{ "%.2f"|format(item.rate) if item.rate else 'N/A' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {{ item.effective.strftime('%Y-%m-%d %H:%M') if item.effective else 'N/A' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <a href="{{ url_for('rate.edit_rate', id=item.id) }}" 
+                               class="text-indigo-600 hover:text-indigo-900 mr-4">
+                                Edit
+                            </a>
+                            <button hx-post="{{ url_for('rate.delete_rate', id=item.id) }}"
+                                    hx-confirm="Are you sure you want to delete this rate?"
+                                    class="text-red-600 hover:text-red-900">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    <a href="#">
-                        Distance
-                        
-                    </a>
-                </th>
-                <th>
-                    <a href="#">
-                        Commodity_id
-                        
-                    </a>
-                </th>
-                <th>
-                    <a href="#">
-                        Pack_type_id
-                        
-                    </a>
-                </th>
-                <th>
-                    <a href="#">
-                        Client_id
-                        
-                    </a>
-                </th>
-                <th>
-                    <a href="#">
-                        Rate
-                        
-                    </a>
-                </th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            
-        </tbody>
-    </table>
-</div>
-
-
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
