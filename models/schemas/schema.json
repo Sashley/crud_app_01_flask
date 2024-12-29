@@ -1,0 +1,86 @@
+{
+    "A001_Plant": {
+        "Fields": {
+            "id": "ID",
+            "plant": "String",
+            "description": "String",
+            "maintenanceGroup": "A016_MaintenanceGroup",
+            "make": "String",
+            "model": "String",
+            "smuCurrent": "Integer",
+            "smuUpdated": "DateTime",
+            "smuAverage": "A017_SmuAverage",
+            "supplier": "A003_Supplier",
+            "maintenanceCycle": "Integer",
+            "createdAt": "DateTime",
+            "updateAt": "DateTime",
+            "deletedAt": "DateTime",
+            "deleted": "Boolean",
+            "tenant": "A015_Tenant"
+        }
+    },
+    "A022_History": {
+        "Fields": {
+            "id": "ID",
+            "plant": "A001_Plant",
+            "componentCode": "A013_ComponentCode",
+            "repairCode": "A014_RepairCode",
+            "completionStatus": "A015_HistoryStatus",
+            "maintenanceGroup": "A016_MaintenanceGroup",
+            "repairDate": "DateTime",
+            "smu": "Integer",
+            "summary": "String",
+            "detail": "String",
+            "cost": "A018_Cost",
+            "downtime": "A019_Downtime",
+            "cause": "A020_Cause",
+            "createdAt": "DateTime",
+            "updateAt": "DateTime",
+            "deletedAt": "DateTime",
+            "deleted": "Boolean",
+            "tenant": "A015_Tenant"
+        }
+    },
+    "A016_MaintenanceGroup": {
+        "Fields": {
+            "id": "ID",
+            "maintenanceGroup": "String",
+            "periodSMU": "Integer",
+            "periodTime": "DateTime",
+            "smuAverage": "A017_SmuAverage",
+            "createdAt": "DateTime",
+            "updateAt": "DateTime",
+            "deletedAt": "DateTime",
+            "deleted": "Boolean",
+            "tenant": "A015_Tenant"
+        }
+    },
+    "A017_SmuAverage": {
+        "Fields": {
+            "id": "ID",
+            "maintenanceGroup": "A016_MaintenanceGroup",
+            "description": "String",
+            "medianSmu": "Integer",
+            "createdAt": "DateTime",
+            "updateAt": "DateTime",
+            "deletedAt": "DateTime",
+            "deleted": "Boolean",
+            "tenant": "A015_Tenant"
+        }
+    },
+    "A021_MaintenanceSchedule": {
+        "Fields": {
+            "id": "ID",
+            "maintenanceGroup": "A016_MaintenanceGroup",
+            "cycle": "Integer",
+            "description": "Text",
+            "cost": "A018_Cost",
+            "downtime": "A019_Downtime",
+            "createdAt": "DateTime",
+            "updateAt": "DateTime",
+            "deletedAt": "DateTime",
+            "deleted": "Boolean",
+            "tenant": "A015_Tenant"
+        }
+    }
+}

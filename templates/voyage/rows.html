@@ -1,9 +1,9 @@
 {% for item in items %}
 <tr class="hover:bg-gray-50 cursor-pointer transition-colors duration-150 group h-9"
     data-identifier="{{ item.voyage_number }}"
-    onclick="selectRow(this, '{{ item.voyage_number }}', '{{ item.voyage_number }}')"
+    onclick="selectRow(this, '{{ item.voyage_number }}')"
     style="transition: background-color 0.15s ease-in-out;">
-    <td class="px-6 py-1.5 text-sm text-gray-900 {{ columns[0].width_class }} {{ columns[0].responsive_class }}">
+    <td class="px-6 py-1.5 text-sm text-gray-900 {{ columns[0].width_class }}">
         <div class="max-w-[150px] sm:max-w-[170px]">
             {{ item.voyage_number }}
         </div>

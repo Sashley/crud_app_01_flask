@@ -4,7 +4,7 @@
             <tr>
                 {% for column in columns %}
                 <th scope="col" 
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider {% if column.responsive_class %}{{ column.responsive_class }}{% endif %}"
+                    class="{{ column.class }}"
                     {% if column.sortable %}
                     hx-get="{{ url_for(routes.list, sort=('-' + column.key) if sort == column.key else column.key, search=search) }}"
                     hx-target="#voyage-table"

@@ -1,0 +1,189 @@
+{
+    "Models": {
+        "A000_Common": {
+            "Fields": {
+                "id": "ID !#",
+                "createdAt": "DateTime #",
+                "updateAt": "DateTime #",
+                "deletedAt": "DateTime #",
+                "deleted": "Boolean #",
+                "tenant": "A015_Tenant #"
+            },
+            "Indices": {
+                "byTenant": ["tenant", "deleted"]
+            }
+        },
+        "A001_Plant": {
+            "Fields": {
+                "plant": "String",
+                "description": "String",
+                "maintenanceGroup": "A016_MaintenanceGroup",
+                "make": "String",
+                "model": "String",
+                "smuCurrent": "Integer",
+                "smuUpdated": "DateTime",
+                "smuAverage": "A017_SmuAverage",
+                "supplier": "A003_Supplier",
+                "maintenanceCycle": "Integer"
+            },
+            "Indices": {
+                "byPlant": ["plant"],
+                "byMaintenanceGroup": ["maintenanceGroup"],
+                "bySupplier": ["supplier"],
+                "byMake": ["make"]
+            },
+            "Lookup": ["plant", "description"],
+            "Scroll": ["plant", "description", "model"],
+            "Navigation": ["History", "Maintenance"]
+        },
+        "A003_Supplier": {
+            "Fields": {
+                "supplier": "String"
+            },
+            "Indices": {
+                "bySupplier": ["supplier"]
+            },
+            "Lookup": ["supplier"],
+            "Scroll": ["supplier"],
+            "Navigation": ["Plant", "Maintenance"]
+        },
+        "A022_History": {
+            "Fields": {
+                "plant": "A001_Plant",
+                "componentCode": "A013_ComponentCode",
+                "repairCode": "A014_RepairCode",
+                "status": "A015_HistoryStatus",
+                "maintenanceSchedule": "A016_MaintenanceSchedule",
+                "repairDate": "DateTime",
+                "smu": "Integer",
+                "summary": "String",
+                "detail": "String",
+                "cost": "A018_Cost",
+                "downtime": "A019_Downtime",
+                "cause": "A020_Cause"
+            },
+            "Indices": {
+                "byPlant": ["plant", "repairDate(desc)"],
+                "byStatus": ["status", "repairDate(desc)"],
+                "byCause": ["cause", "repairDate(desc)"],
+                "byDowntime": ["downTime", "repairDate(desc)"],
+                "byCost": ["cost", "repairDate(desc)"]
+            },
+            "Lookup": ["plant", "repairDate", "summary"],
+            "Scroll": ["plant", "repairDate", "summary"]
+        },
+        "A013_ComponentCode": {
+            "Fields": {
+                "code": "String",
+                "description": "String"
+            },
+            "Indices": {
+                "byCode": ["Code"],
+                "byDescription": ["description"]
+            },
+            "Lookup": ["code", "description"],
+            "Scroll": ["code", "description"],
+            "Navigation": ["History"]
+        },
+        "A014_RepairCode": {
+            "Fields": {
+                "description": "String"
+            },
+            "Indices": {
+                "byDescription": ["Tenant", "description"]
+            },
+            "Lookup": ["description"],
+            "Scroll": ["description"],
+            "Navigation": ["History"]
+        },
+        "A015_HistoryStatus": {
+            "Fields": {
+                "description": "String"
+            },
+            "Indices": {
+                "byDescription": ["description"]
+            },
+            "Lookup": ["description"],
+            "Scroll": ["description"],
+            "Navigation": ["History", "Plant"]
+        },
+        "A016_MaintenanceGroup": {
+            "Fields": {
+                "group": "String"
+            },
+            "Indices": {
+                "byDescription": ["group"]
+            },
+            "Lookup": ["group"],
+            "Scroll": ["group"],
+            "Navigation": ["History", "Plant"]
+        },
+        "A017_SmuAverage": {
+            "Fields": {
+                "mGroup": "A016_MaintenanceGroup",
+                "description": "String",
+                "medianSmu": "Integer"
+            },
+            "Indices": {
+                "byDescription": ["mGroup", "description"]
+            },
+            "Lookup": ["description", "medianSmu"],
+            "Scroll": ["mGroup", "description", "medianSmu"],
+            "Navigation": ["Plant"]
+        },
+        "A005_Tennant": {
+            "Fields": {
+                "description": "String"
+            },
+            "Scroll": ["description"]
+        },
+        "A018_Cost": {
+            "Fields": {
+                "rating": "String",
+                "meanValue": "Integer"
+            },
+            "Indices": {
+                "byRating": ["rating"]
+            },
+            "Lookup": ["rating", "meanValue"],
+            "Navigation": ["History"]
+        },
+        "A019_Downtime": {
+            "Fields": {
+                "rating": "String",
+                "meanValue": "Integer"
+            },
+            "Indices": {
+                "byRating": ["rating"]
+            },
+            "Lookup": ["rating", "meanValue"],
+            "Scroll": ["rating", "meanValue"],
+            "Navigation": ["History"]
+        },
+        "A020_Cause": {
+            "Fields": {
+                "rating": "String"
+            },
+            "Indices": {
+                "byRating": ["rating"]
+            },
+            "Lookup": ["rating"],
+            "Scroll": ["rating"],
+            "Navigation": ["History"]
+        },
+        "A021_MaintenanceSchedule": {
+            "Fields": {
+                "group": "A016_MaintenanceGroup",
+                "cycle": "Integer",
+                "periodSMU": "Integer",
+                "periodTime": "DateTime",
+                "description": "Text"
+            },
+            "Indices": {
+                "byDescription": ["group", "cycle"]
+            },
+            "Lookup": ["cycle", "description"],
+            "Scroll": ["group", "cycle", "description"]
+        }
+    }
+}

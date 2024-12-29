@@ -14,16 +14,16 @@
                     
                     <!-- Form footer -->
                     <div class="flex items-center justify-end space-x-2 border-t pt-4">
+                        <button type="submit"
+                            class="px-4 py-2 text-sm font-medium text-white bg-gray-100 border border-transparent rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Save
+                        </button>
                         <button type="button"
-                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                 hx-get="{{ url_for('user.empty') }}"
                                 hx-target="#modal-container"
                                 hx-swap="outerHTML">
                             Cancel
-                        </button>
-                        <button type="submit"
-                                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Save
                         </button>
                     </div>
                 </form>

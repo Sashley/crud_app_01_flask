@@ -4,18 +4,19 @@
 <!-- Modal Content -->
 <div class="fixed inset-0 z-50 overflow-y-auto" style="padding-top: 6rem;">
     <div class="flex justify-center">
-        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all w-full max-w-4xl mx-4">
+        <div class="relative transform overflow-hidden rounded-lg bg-white text-left transition-all w-full max-w-4xl mx-4">
             <!-- Form Content -->
             <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                 {% include 'voyage/form_content.html' %}
             </div>
             
             <!-- Close button -->
-            <button data-close-modal
-                    hx-get="{{ url_for('voyage.load_form') }}"
+            <button type="button"
+                    class="absolute top-0 right-0 mt-4 mr-4 text-gray-600 hover:text-gray-900 text-2xl font-bold z-50"
+                    hx-get="{{ url_for('voyage.empty') }}"
                     hx-target="#modal-container"
-                    hx-swap="outerHTML"
-                    class="absolute top-0 right-0 mt-4 mr-4 text-gray-600 hover:text-gray-900 text-2xl font-bold z-50">
+                    hx-trigger="click"
+                    onclick="document.dispatchEvent(new Event('modalClosed'))">
                 ×
             </button>
         </div>

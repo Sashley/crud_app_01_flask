@@ -19,12 +19,14 @@
 {% endblock %}
 
 {% block table_content %}
-<div id="voyage-table"
-     class="overflow-hidden"
-     hx-trigger="voyageSaved from:body"
-     hx-get="{{ url_for('voyage.list_voyage') }}"
-     hx-target="#voyage-table">
-    {% include 'voyage/table.html' %}
+<!-- Dynamic height container with overflow -->
+<div id="tableContainer" class="overflow-auto">
+    <div id="voyage-table"
+         hx-trigger="voyageSaved from:body"
+         hx-get="{{ url_for('voyage.list_voyage') }}"
+         hx-target="#voyage-table">
+        {% include 'voyage/table.html' %}
+    </div>
 </div>
 {% endblock %}
 
